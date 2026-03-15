@@ -1,0 +1,48 @@
+[
+  {
+    "date": "2026-03-13",
+    "serverDiff": "Medium",
+    "score": 44,
+    "tier": "Basic",
+    "details": {
+      "startingHome": 0,
+      "castledKings": 1,
+      "pawnsNearHome": 1,
+      "defenderBlockers": 1,
+      "totalPieces": 19,
+      "kingDist": 4,
+      "hiddenEmpties": 1,
+      "hiddenCheckers": 1,
+      "avgHiddenDist": 1.8
+    },
+    "stats": {
+      "pctSolved3": "97.0",
+      "failPct": "0.0",
+      "avgGuesses": "2.00",
+      "total": "(pct)"
+    }
+  },
+  {
+    "date": "2026-03-14",
+    "serverDiff": "Hard",
+    "score": 50,
+    "tier": "Medium",
+    "details": {
+      "startingHome": 0,
+      "castledKings": 0,
+      "pawnsNearHome": 1,
+      "defenderBlockers": 1,
+      "totalPieces": 19,
+      "kingDist": 3,
+      "hiddenEmpties": 0,
+      "hiddenCheckers": 1,
+      "avgHiddenDist": 1.2
+    },
+    "stats": {
+      "pctSolved3": "80.0",
+      "failPct": "0.0",
+      "avgGuesses": "2.72",
+      "total": "(pct)"
+    }
+  }
+]

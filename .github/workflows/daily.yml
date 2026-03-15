@@ -1,0 +1,37 @@
+name: Daily Puzzle Fetch & Benchmark
+
+on:
+  schedule:
+    # Run at 08:00 UTC daily – gives time for the puzzle + stats to be populated
+    - cron: "0 8 * * *"
+  workflow_dispatch: # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-and-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - run: npm ci
+
+      - name: Fetch latest puzzles & stats
+        run: node fetch.js
+
+      - name: Run benchmark & update README
+        run: node benchmark.js
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ benchmark-results.json README.md
+          # Only commit if there are changes
+          git diff --staged --quiet || git commit -m "chore: daily puzzle fetch & benchmark update"
+          git push

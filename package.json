@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "fetch": "node fetch.js",
+    "benchmark": "node benchmark.js",
+    "update": "node fetch.js && node benchmark.js"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0"
+  }
+}
