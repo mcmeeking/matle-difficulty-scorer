@@ -49,16 +49,14 @@ node benchmark.js
 A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark, and commit updates.
 
 <!-- BENCHMARK:START -->
-
 ## Benchmark Results
 
 ### Last updated: 2026-03-15
 
-| Date       | Server | Actual Results                    | Actual Tier | Our Rating  | Accuracy | Δ   |
-| ---------- | ------ | --------------------------------- | ----------- | ----------- | -------- | --- |
-| 2026-03-13 | Medium | %≤3: 97.0 · Fail: 0.0 · Avg: 2.00 | Basic       | Basic (44)  | ✅ Match | —   |
-| 2026-03-14 | Hard   | %≤3: 80.0 · Fail: 0.0 · Avg: 2.72 | Medium      | Medium (50) | ✅ Match | —   |
+| Date | Server | Actual Results | Actual Tier | Our Rating | Accuracy | Δ |
+|------|--------|----------------|-------------|------------|----------|---|
+| 2026-03-13 | Medium | %≤3: 97.0 · Fail: 0.0 · Avg: 2.00 | Basic | Basic (44) | ✅ Match | — |
+| 2026-03-14 | Hard | %≤3: 80.0 · Fail: 0.0 · Avg: 2.72 | Medium | Medium (50) | ✅ Match | — |
 
 **Accuracy: 2/2 (100%)** across puzzles with community stats.
-
 <!-- BENCHMARK:END -->
