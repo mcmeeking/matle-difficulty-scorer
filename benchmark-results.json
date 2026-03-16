@@ -44,5 +44,28 @@
       "avgGuesses": "2.72",
       "total": "(pct)"
     }
+  },
+  {
+    "date": "2026-03-15",
+    "serverDiff": "Medium",
+    "score": 62,
+    "tier": "Medium",
+    "details": {
+      "startingHome": 0,
+      "castledKings": 0,
+      "pawnsNearHome": 0,
+      "defenderBlockers": 0,
+      "totalPieces": 22,
+      "kingDist": 6,
+      "hiddenEmpties": 2,
+      "hiddenCheckers": 1,
+      "avgHiddenDist": 1.2
+    },
+    "stats": {
+      "pctSolved3": "90.0",
+      "failPct": "0.0",
+      "avgGuesses": "2.06",
+      "total": "(pct)"
+    }
   }
 ]
