@@ -51,7 +51,7 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 <!-- BENCHMARK:START -->
 ## Benchmark Results
 
-### Last updated: 2026-03-18
+### Last updated: 2026-03-19
 
 | Date | Server | Actual Results | Actual Tier | Our Rating | Accuracy | Δ |
 |------|--------|----------------|-------------|------------|----------|---|
@@ -60,6 +60,7 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-03-15 | Medium | %≤3: 90.0 · Fail: 0.0 · Avg: 2.06 | Basic | Medium (62) | ❌ Miss | ↑ Harder |
 | 2026-03-16 | Hard | %≤3: 82.0 · Fail: 0.0 · Avg: 2.47 | Basic | Medium (47) | ❌ Miss | ↑ Harder |
 | 2026-03-17 | Basic | %≤3: 98.0 · Fail: 0.0 · Avg: 1.76 | Basic | Basic (14) | ✅ Match | — |
+| 2026-03-18 | Medium | %≤3: 96.0 · Fail: 0.0 · Avg: 1.88 | Basic | Basic (42) | ✅ Match | — |
 
-**Accuracy: 3/5 (60%)** across puzzles with community stats.
+**Accuracy: 4/6 (67%)** across puzzles with community stats.
 <!-- BENCHMARK:END -->
