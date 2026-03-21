@@ -3,7 +3,7 @@ name: Daily Puzzle Fetch & Benchmark
 on:
   schedule:
     # Run at 08:00 UTC daily – gives time for the puzzle + stats to be populated
-    - cron: "0 8 * * *"
+    - cron: 0 8 * * *
   workflow_dispatch: # allow manual trigger
 
 permissions:
