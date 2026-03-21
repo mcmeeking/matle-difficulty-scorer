@@ -10,20 +10,17 @@ Heuristic difficulty scoring for [Matle.io](https://matle.io) chess puzzles.
 
 `difficulty.js` scores each puzzle 0–100 based on board features:
 
-| Feature                                | Effect                              |
-| -------------------------------------- | ----------------------------------- |
-| Defender pieces adjacent to mated king | Harder (passive blockers)           |
-| Fewer total pieces                     | Harder (sparser board)              |
-| King far from starting square          | Harder                              |
-| Hidden checking pieces                 | Harder                              |
-| Hidden empty squares                   | Harder (more combinatorial options) |
-| Hidden squares far from mated king     | Harder                              |
-| Pieces on starting squares             | Easier (obvious placement)          |
-| King on castled square (g1/g8/c1/c8)   | Easier (trivially guessable)        |
-| Pawns near home rank                   | Easier (predictable)                |
-| Multiple easy-to-guess hidden pieces   | Easier (compound discount)          |
+| Feature                            | Effect                               |
+| ---------------------------------- | ------------------------------------ |
+| Fewer total pieces                 | Harder (sparser board)               |
+| Hidden squares close to mated king | Harder (part of mating net)          |
+| Mate-net attackers                 | Harder (complex mating pattern)      |
+| Both kings hidden                  | Harder (fewer anchor points)         |
+| Promoted pieces hidden             | Harder (unexpected piece types)      |
+| Hidden empty squares               | Easier (fewer pieces to guess)       |
+| Multiple easy-to-guess squares     | Easier (compound elimination effect) |
 
-**Tiers:** Basic (<45) · Medium (45–74) · Hard (≥75)
+**Tiers:** Basic (0–32) · Medium (33–60) · Hard (61–100)
 
 ## Usage
 
@@ -49,20 +46,22 @@ node benchmark.js
 A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark, and commit updates.
 
 <!-- BENCHMARK:START -->
+
 ## Benchmark Results
 
 ### Last updated: 2026-03-21
 
-| Date | Server | Actual Results | Actual Tier | Our Rating | Accuracy | Δ |
-|------|--------|----------------|-------------|------------|----------|---|
-| 2026-03-13 | Medium | %≤3: 97.0 · Fail: 0.0 · Avg: 2.00 | Basic | Basic (44) | ✅ Match | — |
-| 2026-03-14 | Hard | %≤3: 80.0 · Fail: 0.0 · Avg: 2.72 | Medium | Medium (50) | ✅ Match | — |
-| 2026-03-15 | Medium | %≤3: 90.0 · Fail: 0.0 · Avg: 2.06 | Basic | Medium (62) | ❌ Miss | ↑ Harder |
-| 2026-03-16 | Hard | %≤3: 82.0 · Fail: 0.0 · Avg: 2.47 | Basic | Medium (47) | ❌ Miss | ↑ Harder |
-| 2026-03-17 | Basic | %≤3: 98.0 · Fail: 0.0 · Avg: 1.76 | Basic | Basic (14) | ✅ Match | — |
-| 2026-03-18 | Medium | %≤3: 96.0 · Fail: 0.0 · Avg: 1.88 | Basic | Basic (42) | ✅ Match | — |
-| 2026-03-19 | Hard | %≤3: 81.0 · Fail: 0.0 · Avg: 2.68 | Medium | Medium (57) | ✅ Match | — |
-| 2026-03-20 | Medium | %≤3: 90.0 · Fail: 0.0 · Avg: 2.21 | Basic | Basic (42) | ✅ Match | — |
+| Date       | Server | Actual Results                | Actual Tier | Our Rating  | Accuracy | Δ        |
+| ---------- | ------ | ----------------------------- | ----------- | ----------- | -------- | -------- |
+| 2026-03-13 | Medium | %≤3: 83 · Fail: 0 · Avg: 3.00 | Medium (38) | Medium (39) | ✅ Match | —        |
+| 2026-03-14 | Hard   | %≤3: 46 · Fail: 4 · Avg: 3.72 | Hard (62)   | Hard (61)   | ✅ Match | —        |
+| 2026-03-15 | Medium | %≤3: 72 · Fail: 2 · Avg: 3.06 | Medium (42) | Medium (50) | ✅ Match | —        |
+| 2026-03-16 | Hard   | %≤3: 58 · Fail: 6 · Avg: 3.47 | Medium (58) | Medium (52) | ✅ Match | ↑ Harder |
+| 2026-03-17 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.76 | Basic (31)  | Basic (31)  | ✅ Match | —        |
+| 2026-03-18 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.88 | Medium (36) | Medium (41) | ✅ Match | —        |
+| 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68 | Hard (61)   | Hard (72)   | ✅ Match | —        |
+| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21 | Medium (44) | Medium (38) | ✅ Match | —        |
 
-**Accuracy: 6/8 (75%)** across puzzles with community stats.
+**Accuracy: 8/8 (100%)** across puzzles with community stats.
+
 <!-- BENCHMARK:END -->

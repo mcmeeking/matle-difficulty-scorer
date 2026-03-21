@@ -2,184 +2,176 @@
   {
     "date": "2026-03-13",
     "serverDiff": "Medium",
-    "score": 44,
-    "tier": "Basic",
+    "score": 39,
+    "tier": "Medium",
     "details": {
-      "startingHome": 0,
-      "castledKings": 1,
-      "pawnsNearHome": 1,
-      "defenderBlockers": 1,
       "totalPieces": 19,
-      "kingDist": 4,
+      "avgHiddenDist": 1.8,
+      "mateNetAttackers": 5,
       "hiddenEmpties": 1,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.8
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 2,
+      "compoundDiscount": 10
     },
     "stats": {
-      "pctSolved3": "97.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.00",
+      "pctSolved3": 83,
+      "failPct": 0,
+      "avgGuesses": "3.00",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-14",
     "serverDiff": "Hard",
-    "score": 50,
-    "tier": "Medium",
+    "score": 61,
+    "tier": "Hard",
     "details": {
-      "startingHome": 0,
-      "castledKings": 0,
-      "pawnsNearHome": 1,
-      "defenderBlockers": 1,
       "totalPieces": 19,
-      "kingDist": 3,
+      "avgHiddenDist": 1.2,
+      "mateNetAttackers": 6,
       "hiddenEmpties": 0,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.2
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 1,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "80.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.72",
+      "pctSolved3": 46,
+      "failPct": 4,
+      "avgGuesses": "3.72",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-15",
     "serverDiff": "Medium",
-    "score": 62,
+    "score": 50,
     "tier": "Medium",
     "details": {
-      "startingHome": 0,
-      "castledKings": 0,
-      "pawnsNearHome": 0,
-      "defenderBlockers": 0,
       "totalPieces": 22,
-      "kingDist": 6,
+      "avgHiddenDist": 1.2,
+      "mateNetAttackers": 5,
       "hiddenEmpties": 2,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.2
+      "bothKingsHidden": 1,
+      "promotedHidden": 0,
+      "easyGuesses": 0,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "90.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.06",
+      "pctSolved3": 72,
+      "failPct": 2,
+      "avgGuesses": "3.06",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-16",
     "serverDiff": "Hard",
-    "score": 47,
+    "score": 52,
     "tier": "Medium",
     "details": {
-      "startingHome": 0,
-      "castledKings": 0,
-      "pawnsNearHome": 1,
-      "defenderBlockers": 0,
       "totalPieces": 18,
-      "kingDist": 3,
+      "avgHiddenDist": 1.2,
+      "mateNetAttackers": 3,
       "hiddenEmpties": 1,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.2
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 1,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "82.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.47",
+      "pctSolved3": 58,
+      "failPct": 6,
+      "avgGuesses": "3.47",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-17",
     "serverDiff": "Basic",
-    "score": 14,
+    "score": 31,
     "tier": "Basic",
     "details": {
-      "startingHome": 1,
-      "castledKings": 0,
-      "pawnsNearHome": 0,
-      "defenderBlockers": 0,
       "totalPieces": 30,
-      "kingDist": 2,
+      "avgHiddenDist": 1.8,
+      "mateNetAttackers": 4,
       "hiddenEmpties": 0,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.8
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 1,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "98.0",
-      "failPct": "0.0",
-      "avgGuesses": "1.76",
+      "pctSolved3": 90,
+      "failPct": 0,
+      "avgGuesses": "2.76",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-18",
     "serverDiff": "Medium",
-    "score": 42,
-    "tier": "Basic",
+    "score": 41,
+    "tier": "Medium",
     "details": {
-      "startingHome": 1,
-      "castledKings": 0,
-      "pawnsNearHome": 1,
-      "defenderBlockers": 1,
       "totalPieces": 15,
-      "kingDist": 1,
+      "avgHiddenDist": 1.8,
+      "mateNetAttackers": 3,
       "hiddenEmpties": 0,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.8
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 2,
+      "compoundDiscount": 10
     },
     "stats": {
-      "pctSolved3": "96.0",
-      "failPct": "0.0",
-      "avgGuesses": "1.88",
+      "pctSolved3": 86,
+      "failPct": 1,
+      "avgGuesses": "2.88",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-19",
     "serverDiff": "Hard",
-    "score": 57,
-    "tier": "Medium",
+    "score": 72,
+    "tier": "Hard",
     "details": {
-      "startingHome": 0,
-      "castledKings": 0,
-      "pawnsNearHome": 0,
-      "defenderBlockers": 0,
       "totalPieces": 12,
-      "kingDist": 2,
+      "avgHiddenDist": 1,
+      "mateNetAttackers": 4,
       "hiddenEmpties": 0,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1
+      "bothKingsHidden": 1,
+      "promotedHidden": 0,
+      "easyGuesses": 0,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "81.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.68",
+      "pctSolved3": 42,
+      "failPct": 4,
+      "avgGuesses": "3.68",
       "total": "(pct)"
     }
   },
   {
     "date": "2026-03-20",
     "serverDiff": "Medium",
-    "score": 42,
-    "tier": "Basic",
+    "score": 38,
+    "tier": "Medium",
     "details": {
-      "startingHome": 0,
-      "castledKings": 0,
-      "pawnsNearHome": 0,
-      "defenderBlockers": 0,
       "totalPieces": 24,
-      "kingDist": 3,
+      "avgHiddenDist": 1.6,
+      "mateNetAttackers": 3,
       "hiddenEmpties": 1,
-      "hiddenCheckers": 1,
-      "avgHiddenDist": 1.6
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 0,
+      "compoundDiscount": 0
     },
     "stats": {
-      "pctSolved3": "90.0",
-      "failPct": "0.0",
-      "avgGuesses": "2.21",
+      "pctSolved3": 65,
+      "failPct": 1,
+      "avgGuesses": "3.21",
       "total": "(pct)"
     }
   }

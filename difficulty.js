@@ -141,6 +141,17 @@ function attacks(piece, fromSq, targetSq, boardMap) {
   }
 }
 
+// ── Shared tier thresholds ────────────────────────────────────────
+export const TIER_BASIC_MAX = 33; // Basic:  score < 33  (0–32)
+export const TIER_HARD_MIN = 61; // Hard:   score >= 61 (61–100)
+// Medium: 33–60
+
+export function tierFromScore(score) {
+  if (score < TIER_BASIC_MAX) return "Basic";
+  if (score >= TIER_HARD_MIN) return "Hard";
+  return "Medium";
+}
+
 // ── Main export ──────────────────────────────────────────────────
 
 /**
@@ -241,41 +252,108 @@ export function calculateDifficulty(puzzle) {
     const kingDist = chebyshev(kingSq, kingHome);
     const avgHiddenDist = distSum / hidden.length;
 
+    // ── Both kings hidden ────────────────────────────────────────
+    const hiddenSet = new Set(hidden);
+    let wKingSq = null,
+      bKingSq = null;
+    for (const sq of ALL_SQUARES) {
+      const p = boardMap[sq];
+      if (p && p.type === "k") {
+        if (p.color === "w") wKingSq = sq;
+        else bKingSq = sq;
+      }
+    }
+    const bothKingsHidden =
+      wKingSq && bKingSq && hiddenSet.has(wKingSq) && hiddenSet.has(bKingSq)
+        ? 1
+        : 0;
+
+    // ── Promoted pieces hidden ───────────────────────────────────
+    const STARTING_COUNTS = { q: 1, r: 2, b: 2, n: 2, p: 8, k: 1 };
+    const pieceCounts = { w: {}, b: {} };
+    for (const sq of ALL_SQUARES) {
+      const p = boardMap[sq];
+      if (p) {
+        pieceCounts[p.color][p.type] = (pieceCounts[p.color][p.type] || 0) + 1;
+      }
+    }
+    let promotedHidden = 0;
+    for (const color of ["w", "b"]) {
+      for (const type of ["q", "r", "b", "n"]) {
+        const excess = (pieceCounts[color][type] || 0) - STARTING_COUNTS[type];
+        if (excess > 0) {
+          let hiddenOfType = 0;
+          for (const sq of hidden) {
+            const p = boardMap[sq];
+            if (p && p.type === type && p.color === color) hiddenOfType++;
+          }
+          promotedHidden += Math.min(excess, hiddenOfType);
+        }
+      }
+    }
+
+    // ── Mate-net attackers ───────────────────────────────────────
+    // Count attacker pieces that control the king zone (king sq + adj)
+    const kingZone = [kingSq];
+    const [kf, kr] = fr(kingSq);
+    for (let df = -1; df <= 1; df++) {
+      for (let dr = -1; dr <= 1; dr++) {
+        if (df === 0 && dr === 0) continue;
+        const nf = kf + df,
+          nr = kr + dr;
+        if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
+          kingZone.push(toSq(nf, nr));
+        }
+      }
+    }
+    let mateNetAttackers = 0;
+    for (const sq of ALL_SQUARES) {
+      const p = boardMap[sq];
+      if (!p || p.color !== attackerColor) continue;
+      for (const target of kingZone) {
+        if (attacks(p, sq, target, boardMap)) {
+          mateNetAttackers++;
+          break;
+        }
+      }
+    }
+
     // ── Score ────────────────────────────────────────────────────
-    // "Easy guesses" = hidden pieces that are trivially deducible
+    // Compound ease: a single "easy guess" doesn't help much (4 unknowns
+    // remain), but 2+ easy guesses compound — each narrows the field.
     const easyGuesses = startingHome + castledKings + pawnsNearHome;
-    // Compound discount: when ≥2 squares are freebies, the rest get
-    // much easier by elimination.
-    const compoundEase = easyGuesses >= 2 ? (easyGuesses - 1) * 4 : 0;
+    const compoundDiscount = easyGuesses >= 2 ? (easyGuesses - 1) * 10 : 0;
+
+    // Both kings hidden is offset when empties reduce unknowns.
+    const bothKingsContrib = bothKingsHidden
+      ? Math.max(0, 4 - hiddenEmpties * 2)
+      : 0;
 
     const raw =
-      defenderBlockers * 11 +
-      (32 - totalPieces) * 2.1 +
-      kingDist * 3.2 +
-      hiddenCheckers * 7 +
-      hiddenEmpties * 6.5 +
-      avgHiddenDist * 1.4 -
-      startingHome * 6 -
-      castledKings * 12 -
-      pawnsNearHome * 7 -
-      compoundEase;
+      (32 - totalPieces) * 1.5 +
+      (2 - avgHiddenDist) * 12 +
+      mateNetAttackers * 3 +
+      hiddenEmpties * -2 +
+      bothKingsContrib +
+      promotedHidden * 8 -
+      compoundDiscount +
+      14;
 
     const score = Math.round(Math.max(0, Math.min(100, raw)));
-    const tier = score < 45 ? "Basic" : score < 75 ? "Medium" : "Hard";
+    const tier = tierFromScore(score);
 
     return {
       score,
       tier,
       details: {
-        startingHome,
-        castledKings,
-        pawnsNearHome,
-        defenderBlockers,
         totalPieces,
-        kingDist,
-        hiddenEmpties,
-        hiddenCheckers,
         avgHiddenDist: Math.round(avgHiddenDist * 100) / 100,
+        mateNetAttackers,
+        hiddenEmpties,
+        bothKingsHidden,
+        promotedHidden,
+        easyGuesses,
+        compoundDiscount,
       },
     };
   } catch (err) {
