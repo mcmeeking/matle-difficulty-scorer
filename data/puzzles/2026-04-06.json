@@ -1,0 +1,40 @@
+{
+  "HiddenSquares": [
+    "c8",
+    "g3",
+    "f3",
+    "h5",
+    "g2"
+  ],
+  "Difficulty": "Basic",
+  "Board": "r . b . . r k .\np p p . b p p p\n. . . . . . . .\nn . P . p . . n\nN . B q . . . .\n. . . . . P K .\nP P Q P . . P P\nR . B . . . N R",
+  "Mainline": [
+    "c2c4",
+    "b8c6",
+    "b1c3",
+    "e7e5",
+    "f2f3",
+    "f8c5",
+    "c3a4",
+    "c5e7",
+    "c4c5",
+    "g8f6",
+    "e2e4",
+    "d7d5",
+    "e4d5",
+    "f6d5",
+    "f1c4",
+    "d5f4",
+    "d1b3",
+    "e8g8",
+    "e1f2",
+    "c6a5",
+    "b3c2",
+    "d8d4",
+    "f2g3",
+    "f4h5"
+  ],
+  "achievements": [
+    "knight"
+  ]
+}
