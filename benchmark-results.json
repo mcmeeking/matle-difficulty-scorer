@@ -614,5 +614,27 @@
       "avgGuesses": "2.71",
       "total": "(pct)"
     }
+  },
+  {
+    "date": "2026-04-10",
+    "serverDiff": "Medium",
+    "score": 28,
+    "tier": "Basic",
+    "details": {
+      "totalPieces": 22,
+      "avgHiddenDist": 1,
+      "mateNetAttackers": 3,
+      "hiddenEmpties": 1,
+      "bothKingsHidden": 0,
+      "promotedHidden": 0,
+      "easyGuesses": 3,
+      "compoundDiscount": 20
+    },
+    "stats": {
+      "pctSolved3": 72,
+      "failPct": 1,
+      "avgGuesses": "3.15",
+      "total": "(pct)"
+    }
   }
 ]
