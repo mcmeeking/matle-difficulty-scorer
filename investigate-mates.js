@@ -23,11 +23,12 @@ import {
 import { countPossibleMates } from "./possibleMates.js";
 
 function parseArgs(argv) {
-  const args = { limit: Infinity, maxCandidates: 500_000 };
+  const args = { limit: Infinity, maxCandidates: 500_000, reasonable: true };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--limit") args.limit = Number(argv[++i]);
     else if (a === "--max-candidates") args.maxCandidates = Number(argv[++i]);
+    else if (a === "--no-reasonable") args.reasonable = false;
   }
   return args;
 }
@@ -59,7 +60,7 @@ function pad(s, w) {
 }
 
 export function main() {
-  const { limit, maxCandidates } = parseArgs(process.argv.slice(2));
+  const { limit, maxCandidates, reasonable } = parseArgs(process.argv.slice(2));
 
   const rows = loadLocalData({ includePuzzle: true });
   if (!rows.length) {
@@ -69,7 +70,7 @@ export function main() {
 
   const subset = rows.slice(0, limit);
   console.log(
-    `Investigating ${subset.length} puzzle(s) (maxCandidates=${maxCandidates})…\n`,
+    `Investigating ${subset.length} puzzle(s) (maxCandidates=${maxCandidates}, reasonable=${reasonable})…\n`,
   );
 
   const cols = [
@@ -87,7 +88,7 @@ export function main() {
   const records = [];
   for (const row of subset) {
     const t0 = Date.now();
-    const res = countPossibleMates(row.puzzle, { maxCandidates });
+    const res = countPossibleMates(row.puzzle, { maxCandidates, reasonable });
     const elapsedMs = Date.now() - t0;
 
     if (res.error) {

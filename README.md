@@ -70,18 +70,28 @@ through), and a clean integer count would map naturally onto a rating-out-of-N.
 `node investigate-mates.js` runs the count over every cached puzzle, prints a
 comparison table against the current heuristic + community stats, and reports
 Pearson correlation against the community-derived "actual" difficulty score.
-On the current local dataset (43 puzzles) the result is:
 
-| Signal                  | r vs. actual difficulty |
-| ----------------------- | ----------------------- |
-| Current heuristic score | ~0.62                   |
-| `possibleMates` count   | ~0.14                   |
-| `log(possibleMates)`    | ~0.15                   |
+By default the search applies a "reasonableness" bracket: each colour is
+capped at its starting count of every piece type (k:1, q:1, r:2, b:2, n:2,
+p:8). Three queens or four rooks are theoretically possible via promotion but
+vanishingly rare, so excluding them shrinks the candidate pool substantially
+without dropping any realistic mate. Pass `--no-reasonable` to lift the cap.
 
-So the count of possible mates **on its own** is a weak signal compared with
-the existing rule-based heuristic. It may still be useful as one feature among
-many — folding it into `extractDifficultyFeatures` and re-running
-`calibrate.js` is the natural next step if we want to pursue the idea further.
+On the current local dataset (43 puzzles):
+
+| Signal                            | r vs. actual difficulty |
+| --------------------------------- | ----------------------- |
+| Current heuristic score           | ~0.62                   |
+| `possibleMates` (unfiltered)      | ~0.14                   |
+| `log(possibleMates)` (unfiltered) | ~0.15                   |
+| `possibleMates` (reasonable)      | ~0.29                   |
+| `log(possibleMates)` (reasonable) | ~0.49                   |
+
+The reasonableness bracket roughly **triples** the strength of the log-scaled
+signal. It is still weaker on its own than the existing rule-based heuristic,
+but now plausible as one feature among many — folding it into
+`extractDifficultyFeatures` and re-running `calibrate.js` is the natural next
+step if we want to pursue the idea further.
 
 ## Automation
 

@@ -24,6 +24,14 @@ import {
 const COLORS = ["w", "b"];
 const PIECE_TYPES = ["k", "q", "r", "b", "n", "p"];
 
+/**
+ * Per-colour starting piece counts. Real games almost never exceed these
+ * (a third queen / fourth rook is theoretically possible via promotion but
+ * vanishingly rare in practice), so they form a useful "reasonableness"
+ * bracket for shrinking the candidate pool.
+ */
+const STARTING_COUNTS = { k: 1, q: 1, r: 2, b: 2, n: 2, p: 8 };
+
 /** Build a FEN string directly from a square→piece map. */
 function mapToFen(boardMap, turn) {
   const ranks = [];
@@ -96,12 +104,15 @@ function detectMatedColor(boardMap) {
  * Count mate-equivalent arrangements consistent with the visible board.
  *
  * @param {{Board: string, HiddenSquares: string[]}} puzzle
- * @param {{maxCandidates?: number}} [options]
+ * @param {{maxCandidates?: number, reasonable?: boolean}} [options]
+ *   `reasonable` (default `true`) caps each colour's piece counts at the
+ *   starting counts ({k:1, q:1, r:2, b:2, n:2, p:8}). Set `false` to allow
+ *   theoretically-possible promotion stacks (e.g. three queens).
  * @returns {{count: number, examined: number, capped: boolean,
  *            matedColor: string} | {error: string}}
  */
 export function countPossibleMates(puzzle, options = {}) {
-  const { maxCandidates = 500_000 } = options;
+  const { maxCandidates = 500_000, reasonable = true } = options;
   const { Board: boardStr, HiddenSquares: hidden } = puzzle ?? {};
 
   if (!boardStr || !Array.isArray(hidden) || hidden.length !== 5) {
@@ -121,20 +132,39 @@ export function countPossibleMates(puzzle, options = {}) {
   // truly knows when staring at a Matle puzzle.
   const hiddenSet = new Set(hidden);
   const visibleMap = {};
-  const visibleKings = { w: 0, b: 0 };
+  const visibleCounts = {
+    w: { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 },
+    b: { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 },
+  };
   for (const sq of ALL_SQUARES) {
     const p = fullMap[sq];
     if (!p || hiddenSet.has(sq)) continue;
     visibleMap[sq] = p;
-    if (p.type === "k") visibleKings[p.color]++;
+    visibleCounts[p.color][p.type]++;
   }
-  if (visibleKings.w > 1 || visibleKings.b > 1) {
+  if (visibleCounts.w.k > 1 || visibleCounts.b.k > 1) {
     return { error: "Visible board has more than one king of a colour" };
+  }
+
+  // Per-colour caps for the "reasonable" bracket: starting counts minus what
+  // the visible board already accounts for. Non-positive caps prune the type
+  // entirely. Kings are always capped at 1 regardless of the flag.
+  const remainingCaps = { w: {}, b: {} };
+  for (const color of COLORS) {
+    for (const type of PIECE_TYPES) {
+      const cap = reasonable || type === "k" ? STARTING_COUNTS[type] : Infinity;
+      remainingCaps[color][type] = cap - visibleCounts[color][type];
+    }
   }
 
   const perSquare = hidden.map(squareCandidates);
   const placement = new Array(hidden.length).fill(null);
-  const kingCounts = { w: visibleKings.w, b: visibleKings.b };
+  // Working counts of pieces *placed on hidden squares so far*. Combined with
+  // `remainingCaps` they enforce the reasonableness bracket.
+  const placedCounts = {
+    w: { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 },
+    b: { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 },
+  };
 
   let count = 0;
   let examined = 0;
@@ -149,7 +179,9 @@ export function countPossibleMates(puzzle, options = {}) {
         return;
       }
       // Need exactly one king of each colour for a loadable mate position.
-      if (kingCounts.w !== 1 || kingCounts.b !== 1) return;
+      const wKings = visibleCounts.w.k + placedCounts.w.k;
+      const bKings = visibleCounts.b.k + placedCounts.b.k;
+      if (wKings !== 1 || bKings !== 1) return;
 
       const matedKingSq = findKing(workingMap, matedColor);
       const otherKingSq = findKing(workingMap, attackerColor);
@@ -173,17 +205,22 @@ export function countPossibleMates(puzzle, options = {}) {
 
     const sq = hidden[i];
     for (const cand of perSquare[i]) {
-      if (cand && cand.type === "k") {
-        if (kingCounts[cand.color] >= 1) continue;
-        kingCounts[cand.color]++;
+      if (cand) {
+        // Reasonableness / king-uniqueness bracket: skip any placement that
+        // would push this colour's count of this piece type above the cap.
+        if (placedCounts[cand.color][cand.type] >= remainingCaps[cand.color][cand.type]) {
+          continue;
+        }
+        placedCounts[cand.color][cand.type]++;
+        workingMap[sq] = cand;
+      } else {
+        delete workingMap[sq];
       }
       placement[i] = cand;
-      if (cand) workingMap[sq] = cand;
-      else delete workingMap[sq];
 
       recurse(i + 1, workingMap);
 
-      if (cand && cand.type === "k") kingCounts[cand.color]--;
+      if (cand) placedCounts[cand.color][cand.type]--;
       // `sq` is a hidden square and therefore never present in `visibleMap`,
       // so unconditionally clearing it correctly restores the pre-call state.
       delete workingMap[sq];
