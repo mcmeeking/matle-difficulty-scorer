@@ -45,16 +45,43 @@ node benchmark.js
 
 ## Scripts
 
-| Script                 | Purpose                                             |
-| ---------------------- | --------------------------------------------------- |
-| `node fetch.js [days]` | Fetch puzzles + stats → `data/` (default: 2 days)   |
-| `node calibrate.js`    | Tune score weights + tier cutoffs, save local JSON  |
-| `node benchmark.js`    | Score all local puzzles, print table, update README |
+| Script                            | Purpose                                             |
+| --------------------------------- | --------------------------------------------------- |
+| `node fetch.js [days]`            | Fetch puzzles + stats → `data/` (default: 2 days)   |
+| `node calibrate.js`               | Tune score weights + tier cutoffs, save local JSON  |
+| `node benchmark.js`               | Score all local puzzles, print table, update README |
+| `node investigate-mates.js`       | Count alternative checkmates per puzzle (research)  |
 
 `node calibrate.js` writes `calibration-results.json` with the baseline metrics,
 the best locally tuned calibration it found, and the miss list before/after.
 Add `--apply` to write those tuned values into `difficulty.js`, or `--prompt`
 to ask before applying them.
+
+## Investigations
+
+### "All possible mates" as a difficulty signal
+
+`possibleMates.js` answers a focused research question: given the visible
+board and the 5 hidden squares, how many distinct piece arrangements at those
+hidden squares still produce a checkmate? In theory more "alternative mates"
+should mean a harder puzzle (more legitimate guesses for the player to weed
+through), and a clean integer count would map naturally onto a rating-out-of-N.
+
+`node investigate-mates.js` runs the count over every cached puzzle, prints a
+comparison table against the current heuristic + community stats, and reports
+Pearson correlation against the community-derived "actual" difficulty score.
+On the current local dataset (43 puzzles) the result is:
+
+| Signal                  | r vs. actual difficulty |
+| ----------------------- | ----------------------- |
+| Current heuristic score | ~0.62                   |
+| `possibleMates` count   | ~0.14                   |
+| `log(possibleMates)`    | ~0.15                   |
+
+So the count of possible mates **on its own** is a weak signal compared with
+the existing rule-based heuristic. It may still be useful as one feature among
+many — folding it into `extractDifficultyFeatures` and re-running
+`calibrate.js` is the natural next step if we want to pursue the idea further.
 
 ## Automation
 

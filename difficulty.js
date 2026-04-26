@@ -29,13 +29,15 @@ function pawnHomeRank(color) {
   return color === "w" ? 1 : 6;
 } // 0-indexed
 // ── Coordinate helpers ───────────────────────────────────────────
-function fr(sq) {
+export function fr(sq) {
   return [sq.charCodeAt(0) - 97, +sq[1] - 1]; // [file 0-7, rank 0-7]
 }
 
-function toSq(f, r) {
+export function toSq(f, r) {
   return FILES[f] + (r + 1);
 }
+
+export { ALL_SQUARES, FILES };
 
 function chebyshev(a, b) {
   const [af, ar] = fr(a);
@@ -46,7 +48,7 @@ function chebyshev(a, b) {
 // ── Board parsing ────────────────────────────────────────────────
 
 /** Parse the Matle "Board" string into a { [square]: {type, color} } map. */
-function parseBoardMap(boardStr) {
+export function parseBoardMap(boardStr) {
   const map = {};
   const rows = boardStr.split("\n").filter((l) => l.trim());
   for (let row = 0; row < 8; row++) {
@@ -65,7 +67,7 @@ function parseBoardMap(boardStr) {
 }
 
 /** Convert the Matle board string to a FEN with the given side to move. */
-function toFen(boardStr, turn) {
+export function toFen(boardStr, turn) {
   const rows = boardStr.split("\n").filter((l) => l.trim());
   const fenRanks = [];
   for (const line of rows) {
@@ -105,7 +107,7 @@ function lineClear(ff, fRank, tf, tRank, boardMap) {
 }
 
 /** Does `piece` sitting on `fromSq` attack `targetSq`? */
-function attacks(piece, fromSq, targetSq, boardMap) {
+export function attacks(piece, fromSq, targetSq, boardMap) {
   const [ff, fRank] = fr(fromSq);
   const [tf, tRank] = fr(targetSq);
   const df = tf - ff;
