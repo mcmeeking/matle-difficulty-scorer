@@ -63,6 +63,12 @@ export const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
 export const ACTUAL_TIER_BASIC_MAX = 33;
 export const ACTUAL_TIER_HARD_MIN = 61;
 
+function tierDeltaArrow(rating, actual) {
+  if (!rating || !actual) return "-";
+  if (rating === actual) return "-";
+  return TIER_ORDER[rating] > TIER_ORDER[actual] ? "↑" : "↓";
+}
+
 export function actualDifficultyScore(s) {
   if (!s.total) return null;
   const avg = parseFloat(s.avgGuesses);
@@ -150,7 +156,7 @@ export function buildTable(results) {
     let accuracy, delta;
     if (!gt) {
       accuracy = "-";
-      delta = "-";
+      delta = "-S -O";
     } else {
       total++;
       if (r.tier === gt) {
@@ -159,12 +165,9 @@ export function buildTable(results) {
       } else {
         accuracy = "❌ Miss";
       }
-      if (r.serverDiff === gt) {
-        delta = "—";
-      } else {
-        delta =
-          TIER_ORDER[r.serverDiff] > TIER_ORDER[gt] ? "↑ Harder" : "↓ Easier";
-      }
+      const serverDelta = tierDeltaArrow(r.serverDiff, gt);
+      const ourDelta = tierDeltaArrow(r.tier, gt);
+      delta = `${serverDelta}S ${ourDelta}O`;
     }
 
     rows.push([

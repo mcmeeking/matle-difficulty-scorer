@@ -74,56 +74,58 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
+
 ## Benchmark Results
 
 ### Last updated: 2026-04-26
 
-| Date       | Server | Actual Results                | Actual Tier | Our Rating  | Accuracy | Δ        |
-| ---------- | ------ | ----------------------------- | ----------- | ----------- | -------- | -------- |
-| 2026-03-13 | Medium | %≤3: 83 · Fail: 0 · Avg: 3.00 | Medium (38) | Medium (38) | ✅ Match | —        |
-| 2026-03-14 | Hard   | %≤3: 46 · Fail: 4 · Avg: 3.72 | Hard (62)   | Medium (58) | ❌ Miss  | —        |
-| 2026-03-15 | Medium | %≤3: 72 · Fail: 2 · Avg: 3.06 | Medium (42) | Medium (36) | ✅ Match | —        |
-| 2026-03-16 | Hard   | %≤3: 58 · Fail: 6 · Avg: 3.47 | Medium (58) | Medium (45) | ✅ Match | ↑ Harder |
-| 2026-03-17 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.76 | Basic (31)  | Basic (31)  | ✅ Match | —        |
-| 2026-03-18 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.88 | Medium (36) | Medium (42) | ✅ Match | —        |
-| 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68 | Hard (61)   | Hard (59)   | ✅ Match | —        |
-| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21 | Medium (44) | Medium (33) | ✅ Match | —        |
-| 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52 | Medium (51) | Medium (51) | ✅ Match | ↑ Harder |
-| 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35 | Medium (48) | Medium (50) | ✅ Match | ↓ Easier |
-| 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51 | Medium (50) | Medium (37) | ✅ Match | —        |
-| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91 | Hard (72)   | Medium (57) | ❌ Miss  | ↓ Easier |
-| 2026-03-25 | Medium | %≤3: 83 · Fail: 3 · Avg: 2.83 | Medium (38) | Medium (39) | ✅ Match | —        |
-| 2026-03-26 | Hard   | %≤3: 59 · Fail: 4 · Avg: 3.30 | Medium (51) | Medium (58) | ✅ Match | ↑ Harder |
-| 2026-03-27 | Medium | %≤3: 64 · Fail: 2 · Avg: 3.28 | Medium (47) | Medium (42) | ✅ Match | —        |
-| 2026-03-28 | Medium | %≤3: 71 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (42) | ✅ Match | —        |
-| 2026-03-29 | Basic  | %≤3: 90 · Fail: 1 · Avg: 2.72 | Basic (32)  | Basic (32)  | ✅ Match | —        |
-| 2026-03-30 | Hard   | %≤3: 84 · Fail: 2 · Avg: 2.95 | Medium (39) | Medium (44) | ✅ Match | ↑ Harder |
-| 2026-03-31 | Medium | %≤3: 74 · Fail: 0 · Avg: 3.20 | Medium (43) | Medium (58) | ✅ Match | —        |
-| 2026-04-01 | Hard   | %≤3: 70 · Fail: 1 · Avg: 3.27 | Medium (46) | Medium (45) | ✅ Match | ↑ Harder |
-| 2026-04-02 | Hard   | %≤3: 51 · Fail: 4 · Avg: 3.48 | Medium (56) | Medium (52) | ✅ Match | ↑ Harder |
-| 2026-04-03 | Medium | %≤3: 70 · Fail: 2 · Avg: 3.05 | Medium (42) | Medium (45) | ✅ Match | —        |
-| 2026-04-04 | Medium | %≤3: 75 · Fail: 2 · Avg: 3.14 | Medium (44) | Medium (47) | ✅ Match | —        |
-| 2026-04-05 | Medium | %≤3: 56 · Fail: 1 · Avg: 3.41 | Medium (49) | Medium (58) | ✅ Match | —        |
-| 2026-04-06 | Basic  | %≤3: 97 · Fail: 0 · Avg: 2.19 | Basic (17)  | Basic (19)  | ✅ Match | —        |
-| 2026-04-07 | Hard   | %≤3: 60 · Fail: 4 · Avg: 3.32 | Medium (51) | Medium (43) | ✅ Match | ↑ Harder |
-| 2026-04-08 | Medium | %≤3: 82 · Fail: 1 · Avg: 2.91 | Medium (37) | Medium (37) | ✅ Match | —        |
-| 2026-04-09 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.71 | Basic (30)  | Basic (29)  | ✅ Match | —        |
-| 2026-04-10 | Medium | %≤3: 72 · Fail: 1 · Avg: 3.15 | Medium (43) | Medium (50) | ✅ Match | —        |
-| 2026-04-11 | Hard   | %≤3: 86 · Fail: 1 · Avg: 2.79 | Medium (34) | Medium (39) | ✅ Match | ↑ Harder |
-| 2026-04-12 | Medium | %≤3: 75 · Fail: 2 · Avg: 2.99 | Medium (40) | Medium (54) | ✅ Match | —        |
-| 2026-04-13 | Hard   | %≤3: 55 · Fail: 6 · Avg: 3.40 | Medium (57) | Medium (48) | ✅ Match | ↑ Harder |
-| 2026-04-14 | Medium | %≤3: 74 · Fail: 0 · Avg: 3.14 | Medium (41) | Medium (56) | ✅ Match | —        |
-| 2026-04-15 | Medium | %≤3: 73 · Fail: 2 · Avg: 3.16 | Medium (45) | Medium (45) | ✅ Match | —        |
-| 2026-04-16 | Hard   | %≤3: 63 · Fail: 5 · Avg: 3.32 | Medium (53) | Medium (52) | ✅ Match | ↑ Harder |
-| 2026-04-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.02 | Medium (40) | Medium (40) | ✅ Match | —        |
-| 2026-04-18 | Basic  | %≤3: 65 · Fail: 1 · Avg: 3.34 | Medium (48) | Medium (34) | ✅ Match | ↓ Easier |
-| 2026-04-19 | Hard   | %≤3: 63 · Fail: 3 · Avg: 3.13 | Medium (45) | Medium (57) | ✅ Match | ↑ Harder |
-| 2026-04-20 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.79 | Medium (34) | Medium (33) | ✅ Match | —        |
-| 2026-04-21 | Hard   | %≤3: 83 · Fail: 2 · Avg: 2.94 | Medium (39) | Medium (52) | ✅ Match | ↑ Harder |
-| 2026-04-22 | Medium | %≤3: 61 · Fail: 3 · Avg: 3.41 | Medium (52) | Medium (55) | ✅ Match | —        |
-| 2026-04-23 | Medium | %≤3: 85 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (49) | ✅ Match | —        |
-| 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (41) | ✅ Match | ↓ Easier |
-| 2026-04-25 | Hard   | %≤3: 75 · Fail: 5 · Avg: 3.00 | Medium (45) | Medium (53) | ✅ Match | ↑ Harder |
+| Date       | Server | Actual Results                | Actual Tier | Our Rating  | Accuracy | Δ     |
+| ---------- | ------ | ----------------------------- | ----------- | ----------- | -------- | ----- |
+| 2026-03-13 | Medium | %≤3: 83 · Fail: 0 · Avg: 3.00 | Medium (38) | Medium (38) | ✅ Match | -S -O |
+| 2026-03-14 | Hard   | %≤3: 46 · Fail: 4 · Avg: 3.72 | Hard (62)   | Medium (58) | ❌ Miss  | -S ↓O |
+| 2026-03-15 | Medium | %≤3: 72 · Fail: 2 · Avg: 3.06 | Medium (42) | Medium (36) | ✅ Match | -S -O |
+| 2026-03-16 | Hard   | %≤3: 58 · Fail: 6 · Avg: 3.47 | Medium (58) | Medium (45) | ✅ Match | ↑S -O |
+| 2026-03-17 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.76 | Basic (31)  | Basic (31)  | ✅ Match | -S -O |
+| 2026-03-18 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.88 | Medium (36) | Medium (42) | ✅ Match | -S -O |
+| 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68 | Hard (61)   | Hard (59)   | ✅ Match | -S -O |
+| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21 | Medium (44) | Medium (33) | ✅ Match | -S -O |
+| 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52 | Medium (51) | Medium (51) | ✅ Match | ↑S -O |
+| 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35 | Medium (48) | Medium (50) | ✅ Match | ↓S -O |
+| 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51 | Medium (50) | Medium (37) | ✅ Match | -S -O |
+| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91 | Hard (72)   | Medium (57) | ❌ Miss  | ↓S ↓O |
+| 2026-03-25 | Medium | %≤3: 83 · Fail: 3 · Avg: 2.83 | Medium (38) | Medium (39) | ✅ Match | -S -O |
+| 2026-03-26 | Hard   | %≤3: 59 · Fail: 4 · Avg: 3.30 | Medium (51) | Medium (58) | ✅ Match | ↑S -O |
+| 2026-03-27 | Medium | %≤3: 64 · Fail: 2 · Avg: 3.28 | Medium (47) | Medium (42) | ✅ Match | -S -O |
+| 2026-03-28 | Medium | %≤3: 71 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (42) | ✅ Match | -S -O |
+| 2026-03-29 | Basic  | %≤3: 90 · Fail: 1 · Avg: 2.72 | Basic (32)  | Basic (32)  | ✅ Match | -S -O |
+| 2026-03-30 | Hard   | %≤3: 84 · Fail: 2 · Avg: 2.95 | Medium (39) | Medium (44) | ✅ Match | ↑S -O |
+| 2026-03-31 | Medium | %≤3: 74 · Fail: 0 · Avg: 3.20 | Medium (43) | Medium (58) | ✅ Match | -S -O |
+| 2026-04-01 | Hard   | %≤3: 70 · Fail: 1 · Avg: 3.27 | Medium (46) | Medium (45) | ✅ Match | ↑S -O |
+| 2026-04-02 | Hard   | %≤3: 51 · Fail: 4 · Avg: 3.48 | Medium (56) | Medium (52) | ✅ Match | ↑S -O |
+| 2026-04-03 | Medium | %≤3: 70 · Fail: 2 · Avg: 3.05 | Medium (42) | Medium (45) | ✅ Match | -S -O |
+| 2026-04-04 | Medium | %≤3: 75 · Fail: 2 · Avg: 3.14 | Medium (44) | Medium (47) | ✅ Match | -S -O |
+| 2026-04-05 | Medium | %≤3: 56 · Fail: 1 · Avg: 3.41 | Medium (49) | Medium (58) | ✅ Match | -S -O |
+| 2026-04-06 | Basic  | %≤3: 97 · Fail: 0 · Avg: 2.19 | Basic (17)  | Basic (19)  | ✅ Match | -S -O |
+| 2026-04-07 | Hard   | %≤3: 60 · Fail: 4 · Avg: 3.32 | Medium (51) | Medium (43) | ✅ Match | ↑S -O |
+| 2026-04-08 | Medium | %≤3: 82 · Fail: 1 · Avg: 2.91 | Medium (37) | Medium (37) | ✅ Match | -S -O |
+| 2026-04-09 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.71 | Basic (30)  | Basic (29)  | ✅ Match | -S -O |
+| 2026-04-10 | Medium | %≤3: 72 · Fail: 1 · Avg: 3.15 | Medium (43) | Medium (50) | ✅ Match | -S -O |
+| 2026-04-11 | Hard   | %≤3: 86 · Fail: 1 · Avg: 2.79 | Medium (34) | Medium (39) | ✅ Match | ↑S -O |
+| 2026-04-12 | Medium | %≤3: 75 · Fail: 2 · Avg: 2.99 | Medium (40) | Medium (54) | ✅ Match | -S -O |
+| 2026-04-13 | Hard   | %≤3: 55 · Fail: 6 · Avg: 3.40 | Medium (57) | Medium (48) | ✅ Match | ↑S -O |
+| 2026-04-14 | Medium | %≤3: 74 · Fail: 0 · Avg: 3.14 | Medium (41) | Medium (56) | ✅ Match | -S -O |
+| 2026-04-15 | Medium | %≤3: 73 · Fail: 2 · Avg: 3.16 | Medium (45) | Medium (45) | ✅ Match | -S -O |
+| 2026-04-16 | Hard   | %≤3: 63 · Fail: 5 · Avg: 3.32 | Medium (53) | Medium (52) | ✅ Match | ↑S -O |
+| 2026-04-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.02 | Medium (40) | Medium (40) | ✅ Match | -S -O |
+| 2026-04-18 | Basic  | %≤3: 65 · Fail: 1 · Avg: 3.34 | Medium (48) | Medium (34) | ✅ Match | ↓S -O |
+| 2026-04-19 | Hard   | %≤3: 63 · Fail: 3 · Avg: 3.13 | Medium (45) | Medium (57) | ✅ Match | ↑S -O |
+| 2026-04-20 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.79 | Medium (34) | Medium (33) | ✅ Match | -S -O |
+| 2026-04-21 | Hard   | %≤3: 83 · Fail: 2 · Avg: 2.94 | Medium (39) | Medium (52) | ✅ Match | ↑S -O |
+| 2026-04-22 | Medium | %≤3: 61 · Fail: 3 · Avg: 3.41 | Medium (52) | Medium (55) | ✅ Match | -S -O |
+| 2026-04-23 | Medium | %≤3: 85 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (49) | ✅ Match | -S -O |
+| 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (41) | ✅ Match | ↓S -O |
+| 2026-04-25 | Hard   | %≤3: 75 · Fail: 5 · Avg: 3.00 | Medium (45) | Medium (53) | ✅ Match | ↑S -O |
 
 **Accuracy: 42/44 (95%)** across puzzles with community stats.
+
 <!-- BENCHMARK:END -->
