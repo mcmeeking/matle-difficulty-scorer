@@ -79,8 +79,8 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52 | Medium (51) | Medium (51) | ✅ Match | ↑ Harder |
 | 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35 | Medium (48) | Medium (50) | ✅ Match | ↓ Easier |
 | 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51 | Medium (50) | Medium (37) | ✅ Match | —        |
-| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91 | Hard (72)   | Medium (45) | ❌ Miss  | ↓ Easier |
-| 2026-03-25 | Medium | %≤3: 83 · Fail: 3 · Avg: 2.83 | Medium (38) | Medium (33) | ✅ Match | —        |
+| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91 | Hard (72)   | Medium (57) | ❌ Miss  | ↓ Easier |
+| 2026-03-25 | Medium | %≤3: 83 · Fail: 3 · Avg: 2.83 | Medium (38) | Medium (39) | ✅ Match | —        |
 | 2026-03-26 | Hard   | %≤3: 59 · Fail: 4 · Avg: 3.30 | Medium (51) | Medium (58) | ✅ Match | ↑ Harder |
 | 2026-03-27 | Medium | %≤3: 64 · Fail: 2 · Avg: 3.28 | Medium (47) | Medium (42) | ✅ Match | —        |
 | 2026-03-28 | Medium | %≤3: 71 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (42) | ✅ Match | —        |
@@ -90,8 +90,8 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-04-01 | Hard   | %≤3: 70 · Fail: 1 · Avg: 3.27 | Medium (46) | Medium (45) | ✅ Match | ↑ Harder |
 | 2026-04-02 | Hard   | %≤3: 51 · Fail: 4 · Avg: 3.48 | Medium (56) | Medium (52) | ✅ Match | ↑ Harder |
 | 2026-04-03 | Medium | %≤3: 70 · Fail: 2 · Avg: 3.05 | Medium (42) | Medium (45) | ✅ Match | —        |
-| 2026-04-04 | Medium | %≤3: 75 · Fail: 2 · Avg: 3.14 | Medium (44) | Medium (44) | ✅ Match | —        |
-| 2026-04-05 | Medium | %≤3: 56 · Fail: 1 · Avg: 3.41 | Medium (49) | Medium (55) | ✅ Match | —        |
+| 2026-04-04 | Medium | %≤3: 75 · Fail: 2 · Avg: 3.14 | Medium (44) | Medium (47) | ✅ Match | —        |
+| 2026-04-05 | Medium | %≤3: 56 · Fail: 1 · Avg: 3.41 | Medium (49) | Medium (58) | ✅ Match | —        |
 | 2026-04-06 | Basic  | %≤3: 97 · Fail: 0 · Avg: 2.19 | Basic (17)  | Basic (19)  | ✅ Match | —        |
 | 2026-04-07 | Hard   | %≤3: 60 · Fail: 4 · Avg: 3.32 | Medium (51) | Medium (43) | ✅ Match | ↑ Harder |
 | 2026-04-08 | Medium | %≤3: 82 · Fail: 1 · Avg: 2.91 | Medium (37) | Medium (37) | ✅ Match | —        |
@@ -101,16 +101,16 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-04-12 | Medium | %≤3: 75 · Fail: 2 · Avg: 2.99 | Medium (40) | Medium (54) | ✅ Match | —        |
 | 2026-04-13 | Hard   | %≤3: 55 · Fail: 6 · Avg: 3.40 | Medium (57) | Medium (48) | ✅ Match | ↑ Harder |
 | 2026-04-14 | Medium | %≤3: 74 · Fail: 0 · Avg: 3.14 | Medium (41) | Medium (56) | ✅ Match | —        |
-| 2026-04-15 | Medium | %≤3: 73 · Fail: 2 · Avg: 3.16 | Medium (45) | Medium (42) | ✅ Match | —        |
+| 2026-04-15 | Medium | %≤3: 73 · Fail: 2 · Avg: 3.16 | Medium (45) | Medium (45) | ✅ Match | —        |
 | 2026-04-16 | Hard   | %≤3: 63 · Fail: 5 · Avg: 3.32 | Medium (53) | Medium (52) | ✅ Match | ↑ Harder |
-| 2026-04-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.02 | Medium (40) | Medium (37) | ✅ Match | —        |
+| 2026-04-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.02 | Medium (40) | Medium (40) | ✅ Match | —        |
 | 2026-04-18 | Basic  | %≤3: 65 · Fail: 1 · Avg: 3.34 | Medium (48) | Medium (34) | ✅ Match | ↓ Easier |
 | 2026-04-19 | Hard   | %≤3: 63 · Fail: 3 · Avg: 3.13 | Medium (45) | Medium (57) | ✅ Match | ↑ Harder |
 | 2026-04-20 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.79 | Medium (34) | Medium (33) | ✅ Match | —        |
 | 2026-04-21 | Hard   | %≤3: 83 · Fail: 2 · Avg: 2.94 | Medium (39) | Medium (52) | ✅ Match | ↑ Harder |
 | 2026-04-22 | Medium | %≤3: 61 · Fail: 3 · Avg: 3.41 | Medium (52) | Medium (55) | ✅ Match | —        |
 | 2026-04-23 | Medium | %≤3: 85 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (49) | ✅ Match | —        |
-| 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (38) | ✅ Match | ↓ Easier |
+| 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (41) | ✅ Match | ↓ Easier |
 
 **Accuracy: 41/43 (95%)** across puzzles with community stats.
 
