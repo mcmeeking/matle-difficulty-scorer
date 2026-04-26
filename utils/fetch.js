@@ -2,7 +2,7 @@
  * Fetch the last N days of Matle puzzles + community stats
  * and save them to data/puzzles/ and data/stats/.
  *
- * Usage:  node fetch.js [days]   (default 2)
+ * Usage: npm run fetch -- [days]
  */
 
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
@@ -55,14 +55,12 @@ async function main() {
     const puzzlePath = join(PUZZLE_DIR, `${ds}.json`);
     const statsPath = join(STATS_DIR, `${ds}.json`);
 
-    // Skip dates we already have both files for
     if (existsSync(puzzlePath) && existsSync(statsPath)) {
       console.log(`  ${ds}  already exists, skipping`);
       skipped++;
       continue;
     }
 
-    // Fetch puzzle
     if (!existsSync(puzzlePath)) {
       const puzzle = await fetchJSON(PUZZLE_URL(ds));
       await sleep(DELAY_MS);
@@ -71,11 +69,10 @@ async function main() {
         console.log(`  ${ds}  puzzle ✓`);
       } else {
         console.log(`  ${ds}  puzzle not available`);
-        continue; // no point fetching stats without a puzzle
+        continue;
       }
     }
 
-    // Fetch stats
     if (!existsSync(statsPath)) {
       const stats = await fetchJSON(STATS_URL(ds));
       await sleep(DELAY_MS);

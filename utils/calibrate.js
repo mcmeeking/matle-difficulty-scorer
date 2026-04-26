@@ -11,7 +11,7 @@ import {
   DEFAULT_CALIBRATION,
   extractDifficultyFeatures,
   scoreDifficultyFeatures,
-} from "./difficulty.js";
+} from "../difficulty.js";
 
 const OUTPUT_PATH = "calibration-results.json";
 const SCALAR_SEARCH_SPACE = {

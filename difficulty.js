@@ -65,7 +65,7 @@ function parseBoardMap(boardStr) {
 }
 
 /** Convert the Matle board string to a FEN with the given side to move. */
-function toFen(boardStr, turn) {
+export function boardToFen(boardStr, turn) {
   const rows = boardStr.split("\n").filter((l) => l.trim());
   const fenRanks = [];
   for (const line of rows) {
@@ -87,6 +87,153 @@ function toFen(boardStr, turn) {
     fenRanks.push(fen);
   }
   return fenRanks.join("/") + ` ${turn} - - 0 1`;
+}
+
+export function inferCheckmatedSide(boardStr) {
+  for (const turn of ["w", "b"]) {
+    try {
+      const chess = new Chess();
+      chess.load(boardToFen(boardStr, turn), { skipValidation: true });
+      if (chess.isCheckmate()) {
+        return turn;
+      }
+    } catch {
+      /* try the other side */
+    }
+  }
+
+  return null;
+}
+
+export function fenToLichessAnalysisUrl(fen) {
+  return `https://lichess.org/analysis/${fen.trim().replaceAll(" ", "_")}`;
+}
+
+export function pgnToLichessAnalysisUrl(pgn) {
+  const encoded = encodeURIComponent(pgn.trim()).replaceAll("%20", "_");
+  return `https://lichess.org/analysis/pgn/${encoded}`;
+}
+
+function parseUciMove(uci) {
+  if (typeof uci !== "string" || (uci.length !== 4 && uci.length !== 5)) {
+    return null;
+  }
+
+  return {
+    from: uci.slice(0, 2),
+    to: uci.slice(2, 4),
+    promotion: uci[4],
+  };
+}
+
+function normalizePgn(pgn) {
+  return pgn.replace(/\s+/g, " ").trim();
+}
+
+function sanMovesToPgn(sanMoves) {
+  const parts = [];
+
+  for (let i = 0; i < sanMoves.length; i += 2) {
+    parts.push(`${Math.floor(i / 2) + 1}. ${sanMoves[i]}`);
+    if (sanMoves[i + 1]) {
+      parts.push(sanMoves[i + 1]);
+    }
+  }
+
+  parts.push("*");
+  return parts.join(" ");
+}
+
+export function mainlineToPgn(mainline) {
+  if (!Array.isArray(mainline) || mainline.length === 0) {
+    return { error: "Invalid puzzle: need non-empty Mainline" };
+  }
+
+  const chess = new Chess();
+  for (const uci of mainline) {
+    const move = parseUciMove(uci);
+    if (!move) {
+      return { error: `Invalid UCI move: ${uci}` };
+    }
+
+    const played = chess.move(move);
+    if (!played) {
+      return { error: `Illegal UCI move: ${uci}` };
+    }
+  }
+
+  return {
+    pgn: normalizePgn(sanMovesToPgn(chess.history())),
+    replayFen: chess.fen(),
+    moveCount: mainline.length,
+  };
+}
+
+export function puzzleToFen(puzzle) {
+  const boardStr = puzzle?.Board;
+  if (!boardStr) {
+    return { error: "Invalid puzzle: need Board" };
+  }
+
+  const turn = inferCheckmatedSide(boardStr);
+  if (!turn) {
+    return { error: "Position is not checkmate for either side" };
+  }
+
+  return {
+    fen: boardToFen(boardStr, turn),
+    turn,
+  };
+}
+
+export function puzzleToPgn(puzzle) {
+  const boardResult = puzzleToFen(puzzle);
+  if (boardResult.error) {
+    return boardResult;
+  }
+
+  const mainlineResult = mainlineToPgn(puzzle?.Mainline);
+  if (mainlineResult.error) {
+    return mainlineResult;
+  }
+
+  const [replayBoard, replayTurn] = mainlineResult.replayFen.split(" ");
+  const [targetBoard, targetTurn] = boardResult.fen.split(" ");
+  if (replayBoard !== targetBoard || replayTurn !== targetTurn) {
+    return {
+      error: "Mainline does not reconstruct the published puzzle position",
+    };
+  }
+
+  return {
+    pgn: mainlineResult.pgn,
+    moveCount: mainlineResult.moveCount,
+  };
+}
+
+export function puzzleToLichessAnalysis(puzzle) {
+  const fenResult = puzzleToFen(puzzle);
+  if (fenResult.error) {
+    return fenResult;
+  }
+
+  const pgnResult = puzzleToPgn(puzzle);
+  if (!pgnResult.error) {
+    return {
+      ...fenResult,
+      ...pgnResult,
+      url: pgnToLichessAnalysisUrl(pgnResult.pgn),
+      urlMode: "pgn",
+      fenUrl: fenToLichessAnalysisUrl(fenResult.fen),
+    };
+  }
+
+  return {
+    ...fenResult,
+    url: fenToLichessAnalysisUrl(fenResult.fen),
+    urlMode: "fen",
+    pgnError: pgnResult.error,
+  };
 }
 
 // ── Attack detection (manual – no engine dependency) ─────────────
@@ -236,19 +383,7 @@ export function extractDifficultyFeatures(puzzle) {
     const boardMap = parseBoardMap(boardStr);
 
     // ── Detect checkmate via chess.js ────────────────────────────
-    let matedColor = null;
-    for (const turn of ["w", "b"]) {
-      try {
-        const c = new Chess();
-        c.load(toFen(boardStr, turn), { skipValidation: true });
-        if (c.isCheckmate()) {
-          matedColor = turn;
-          break;
-        }
-      } catch {
-        /* try the other side */
-      }
-    }
+    const matedColor = inferCheckmatedSide(boardStr);
     if (!matedColor) {
       return { error: "Position is not checkmate for either side" };
     }

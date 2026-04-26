@@ -28,37 +28,50 @@ Heuristic difficulty scoring for [Matle.io](https://matle.io) chess puzzles.
 npm install
 
 # Fetch the latest puzzles (last 2 days available on S3)
-node fetch.js
+npm run fetch
 
 # Search for better weight and tier values from local data
-node calibrate.js
+npm run calibrate
 
 # Search and immediately apply the tuned values to live defaults
-node calibrate.js --apply
+npm run calibrate -- --apply
+
+# Print a puzzle FEN, move history, and matching Lichess analysis URL for a given date
+npm run notations -- 2026-04-24
 
 # Or search first and confirm interactively before applying
-node calibrate.js --prompt
+npm run calibrate -- --prompt
 
 # Run benchmark against all local puzzles & update this README
-node benchmark.js
+npm run benchmark
 ```
 
 ## Scripts
 
-| Script                 | Purpose                                             |
-| ---------------------- | --------------------------------------------------- |
-| `node fetch.js [days]` | Fetch puzzles + stats → `data/` (default: 2 days)   |
-| `node calibrate.js`    | Tune score weights + tier cutoffs, save local JSON  |
-| `node benchmark.js`    | Score all local puzzles, print table, update README |
+| Script                        | Purpose                                             |
+| ----------------------------- | --------------------------------------------------- |
+| `npm run fetch -- [days]`     | Fetch puzzles + stats → `data/` (default: 2 days)   |
+| `npm run calibrate`           | Tune score weights + tier cutoffs, save local JSON  |
+| `npm run notations -- <date>` | Print a puzzle FEN, PGN, and Lichess analysis URL   |
+| `npm run benchmark`           | Score all local puzzles, print table, update README |
 
-`node calibrate.js` writes `calibration-results.json` with the baseline metrics,
+`npm run calibrate` writes `calibration-results.json` with the baseline metrics,
 the best locally tuned calibration it found, and the miss list before/after.
 Add `--apply` to write those tuned values into `difficulty.js`, or `--prompt`
 to ask before applying them.
 
+For code use, `difficulty.js` also exports `puzzleToFen()`, `puzzleToPgn()`,
+and `puzzleToLichessAnalysis()` for turning a Matle puzzle payload into a valid
+FEN, a reconstructed mainline PGN, and a ready-to-open Lichess analysis link.
+
+Most of the operational scripts now live under `utils/`, so the main project
+entry point for the scoring logic itself remains `difficulty.js`.
+
 ## Automation
 
-A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark, and commit updates.
+A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
+append the latest puzzle's move-aware Lichess analysis link to the run summary,
+and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
 ## Benchmark Results
