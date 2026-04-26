@@ -33,7 +33,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -82,7 +84,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -131,7 +135,10 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop", "two-kings"],
+      "achievements": [
+        "bishop",
+        "two-kings"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 2,
@@ -180,7 +187,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -229,7 +238,9 @@
         "n": 1,
         "p": 1
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 2,
@@ -278,7 +289,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": -2,
@@ -327,7 +340,10 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["pawn", "two-kings"],
+      "achievements": [
+        "pawn",
+        "two-kings"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 12,
@@ -376,7 +392,9 @@
         "n": 1,
         "p": 0
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": -4,
@@ -425,7 +443,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 10,
@@ -474,7 +494,11 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop", "pin", "discovered"],
+      "achievements": [
+        "bishop",
+        "pin",
+        "discovered"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -523,7 +547,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 10,
@@ -572,7 +598,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -621,7 +649,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 10,
@@ -670,7 +700,10 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["rook", "two-kings"],
+      "achievements": [
+        "rook",
+        "two-kings"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -719,7 +752,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -768,7 +803,9 @@
         "n": 0,
         "p": 3
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -817,7 +854,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -866,7 +905,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -915,7 +956,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -964,7 +1007,9 @@
         "n": 1,
         "p": 0
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -1013,7 +1058,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1062,7 +1109,9 @@
         "n": 1,
         "p": 3
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 0,
@@ -1111,7 +1160,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -1160,7 +1211,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1209,7 +1262,9 @@
         "n": 1,
         "p": 2
       },
-      "achievements": ["knight"],
+      "achievements": [
+        "knight"
+      ],
       "compoundDiscount": 4,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": -2,
@@ -1258,7 +1313,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -1307,7 +1364,9 @@
         "n": 0,
         "p": 2
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -1356,7 +1415,10 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["bishop", "discovered"],
+      "achievements": [
+        "bishop",
+        "discovered"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": -2,
@@ -1405,7 +1467,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["double-check"],
+      "achievements": [
+        "double-check"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1454,7 +1518,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 10,
@@ -1503,7 +1569,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -1552,7 +1620,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 4,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1601,7 +1671,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 6,
@@ -1650,7 +1722,9 @@
         "n": 1,
         "p": 0
       },
-      "achievements": ["rook"],
+      "achievements": [
+        "rook"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1699,7 +1773,10 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["pawn", "two-kings"],
+      "achievements": [
+        "pawn",
+        "two-kings"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 2,
@@ -1748,7 +1825,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1797,7 +1876,9 @@
         "n": 1,
         "p": 1
       },
-      "achievements": ["double-check"],
+      "achievements": [
+        "double-check"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": -4,
@@ -1846,7 +1927,11 @@
         "n": 0,
         "p": 3
       },
-      "achievements": ["pawn", "pin", "two-kings"],
+      "achievements": [
+        "pawn",
+        "pin",
+        "two-kings"
+      ],
       "compoundDiscount": 2,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1895,7 +1980,10 @@
         "n": 1,
         "p": 2
       },
-      "achievements": ["knight", "pin"],
+      "achievements": [
+        "knight",
+        "pin"
+      ],
       "compoundDiscount": 6,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -1944,7 +2032,10 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["rook", "two-kings"],
+      "achievements": [
+        "rook",
+        "two-kings"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 8,
@@ -1993,7 +2084,9 @@
         "n": 1,
         "p": 2
       },
-      "achievements": ["pawn"],
+      "achievements": [
+        "pawn"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 2,
@@ -2042,7 +2135,9 @@
         "n": 0,
         "p": 0
       },
-      "achievements": ["bishop"],
+      "achievements": [
+        "bishop"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -2091,7 +2186,9 @@
         "n": 0,
         "p": 1
       },
-      "achievements": ["queen"],
+      "achievements": [
+        "queen"
+      ],
       "compoundDiscount": 0,
       "bothKingsContrib": 0,
       "hiddenPieceContrib": 4,
@@ -2103,6 +2200,58 @@
       "pctSolved3": 74,
       "failPct": 1,
       "avgGuesses": "3.13",
+      "total": "(pct)"
+    }
+  },
+  {
+    "date": "2026-04-25",
+    "serverDiff": "Hard",
+    "score": 53,
+    "tier": "Medium",
+    "details": {
+      "totalPieces": 21,
+      "avgHiddenDist": 1,
+      "mateNetAttackers": 6,
+      "sparseAttackProduct": 6.6,
+      "excessMateNetAttackers": 4,
+      "hiddenEmpties": 2,
+      "kingZoneHiddenSquares": 4,
+      "kingZoneHiddenPieces": 2,
+      "kingZoneHiddenEmpties": 2,
+      "matedKingHidden": 1,
+      "hiddenKingCagePressure": 0,
+      "bothKingsHidden": 1,
+      "promotedHidden": 0,
+      "easyGuesses": 1,
+      "startingHome": 0,
+      "castledKings": 0,
+      "pawnsNearHome": 1,
+      "hiddenCheckers": 0,
+      "defenderBlockers": 0,
+      "kingDist": 4,
+      "hiddenPieceCounts": {
+        "k": 2,
+        "q": 0,
+        "r": 0,
+        "b": 0,
+        "n": 0,
+        "p": 1
+      },
+      "achievements": [
+        "knight",
+        "two-kings"
+      ],
+      "compoundDiscount": 0,
+      "bothKingsContrib": 0,
+      "hiddenPieceContrib": 4,
+      "achievementContrib": 0,
+      "additiveContrib": -7.4,
+      "rawScore": 52.8
+    },
+    "stats": {
+      "pctSolved3": 75,
+      "failPct": 5,
+      "avgGuesses": "3.00",
       "total": "(pct)"
     }
   }

@@ -61,7 +61,6 @@ to ask before applying them.
 A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark, and commit updates.
 
 <!-- BENCHMARK:START -->
-
 ## Benchmark Results
 
 ### Last updated: 2026-04-26
@@ -111,7 +110,7 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-04-22 | Medium | %≤3: 61 · Fail: 3 · Avg: 3.41 | Medium (52) | Medium (55) | ✅ Match | —        |
 | 2026-04-23 | Medium | %≤3: 85 · Fail: 1 · Avg: 2.96 | Medium (38) | Medium (49) | ✅ Match | —        |
 | 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (41) | ✅ Match | ↓ Easier |
+| 2026-04-25 | Hard   | %≤3: 75 · Fail: 5 · Avg: 3.00 | Medium (45) | Medium (53) | ✅ Match | ↑ Harder |
 
-**Accuracy: 41/43 (95%)** across puzzles with community stats.
-
+**Accuracy: 42/44 (95%)** across puzzles with community stats.
 <!-- BENCHMARK:END -->
