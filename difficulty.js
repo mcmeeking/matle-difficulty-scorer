@@ -167,6 +167,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   kingZoneHiddenWeight: -1,
   kingZonePieceWeight: 1,
   kingZoneEmptyWeight: -2,
+  hiddenKingCageWeight: 3,
   excessAttackerWeight: -2,
   hiddenPieceWeights: {
     k: 2,
@@ -267,6 +268,7 @@ export function extractDifficultyFeatures(puzzle) {
 
     // ── Feature extraction ───────────────────────────────────────
     const attackerColor = matedColor === "w" ? "b" : "w";
+    const hiddenSet = new Set(hidden);
     const hiddenPieceCounts = { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 };
     const easyGuessSquares = new Set();
     let startingHome = 0;
@@ -337,9 +339,10 @@ export function extractDifficultyFeatures(puzzle) {
     const kingHome = matedColor === "w" ? "e1" : "e8";
     const kingDist = chebyshev(kingSq, kingHome);
     const avgHiddenDist = distSum / hidden.length;
+    const kingZoneHiddenPieces = kingZoneHiddenSquares - kingZoneHiddenEmpties;
+    const matedKingHidden = hiddenSet.has(kingSq) ? 1 : 0;
 
     // ── Both kings hidden ────────────────────────────────────────
-    const hiddenSet = new Set(hidden);
     let wKingSq = null,
       bKingSq = null;
     for (const sq of ALL_SQUARES) {
@@ -404,6 +407,15 @@ export function extractDifficultyFeatures(puzzle) {
       }
     }
 
+    const hiddenKingCagePressure =
+      matedKingHidden &&
+      !bothKingsHidden &&
+      mateNetAttackers <= 2 &&
+      easyGuessSquares.size <= 1
+        ? Math.max(0, kingZoneHiddenSquares - 2) *
+          Math.max(0, kingZoneHiddenPieces - 1)
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -413,7 +425,9 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
-      kingZoneHiddenPieces: kingZoneHiddenSquares - kingZoneHiddenEmpties,
+      kingZoneHiddenPieces,
+      matedKingHidden,
+      hiddenKingCagePressure,
       bothKingsHidden,
       promotedHidden,
       easyGuesses: easyGuessSquares.size,
@@ -465,6 +479,7 @@ export function scoreDifficultyFeatures(
     features.kingZoneHiddenSquares * tuned.kingZoneHiddenWeight +
     features.kingZoneHiddenPieces * tuned.kingZonePieceWeight +
     features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
+    features.hiddenKingCagePressure * tuned.hiddenKingCageWeight +
     features.excessMateNetAttackers * tuned.excessAttackerWeight +
     hiddenPieceContrib +
     achievementContrib;
@@ -509,6 +524,9 @@ export function scoreDifficultyFeatures(
       kingZoneHiddenSquares: features.kingZoneHiddenSquares,
       kingZoneHiddenPieces: features.kingZoneHiddenPieces,
       kingZoneHiddenEmpties: features.kingZoneHiddenEmpties,
+      matedKingHidden: features.matedKingHidden,
+      hiddenKingCagePressure:
+        Math.round(features.hiddenKingCagePressure * 100) / 100,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
