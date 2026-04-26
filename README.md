@@ -89,16 +89,28 @@ On the current local dataset (43 puzzles):
 
 The reasonableness bracket roughly **triples** the strength of the log-scaled
 signal. It is still weaker on its own than the existing rule-based heuristic,
-but now plausible as one feature among many — folding it into
-`extractDifficultyFeatures` and re-running `calibrate.js` is the natural next
-step if we want to pursue the idea further.
+but plausible as one feature among many.
+
+#### Folded into the live scorer
+
+`extractDifficultyFeatures` now computes `possibleMatesCount` and
+`possibleMatesLog = ln(1 + count)` for every puzzle, and `scoreDifficultyFeatures`
+multiplies the log term by `possibleMatesLogWeight` (also exposed in
+`calibrate.js`'s search space).
+
+On the current 43-puzzle dataset the existing rule heuristic already reaches
+**41/43 (95 %) tier accuracy** with MAE 5.72, so there is little headroom to
+demonstrate further gains. A joint sweep with the calibrator picks
+`possibleMatesLogWeight = 0`, i.e. the new feature is currently neutral — the
+signal it carries appears to be largely captured by the existing rules. The
+default is therefore set to `0`; the hook is in place to revisit as the dataset
+grows or as new tier boundaries reopen headroom.
 
 ## Automation
 
 A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark, and commit updates.
 
 <!-- BENCHMARK:START -->
-
 ## Benchmark Results
 
 ### Last updated: 2026-04-26
@@ -150,5 +162,4 @@ A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
 | 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13 | Medium (42) | Medium (41) | ✅ Match | ↓ Easier |
 
 **Accuracy: 41/43 (95%)** across puzzles with community stats.
-
 <!-- BENCHMARK:END -->

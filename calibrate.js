@@ -36,6 +36,7 @@ const SCALAR_SEARCH_SPACE = {
   kingZoneEmptyWeight: [-6, -5, -4, -3, -2, -1, 0, 1],
   hiddenKingCageWeight: [0, 1, 2, 3, 4, 5, 6, 8],
   excessAttackerWeight: [-8, -6, -4, -2, 0, 2],
+  possibleMatesLogWeight: [-4, -2, 0, 2, 4, 6, 8, 10, 12],
 };
 const MAP_WEIGHT_CANDIDATES = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10];
 const HIDDEN_PIECE_TYPES = ["k", "q", "r", "b", "n", "p"];

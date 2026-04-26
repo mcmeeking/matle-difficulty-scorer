@@ -1,4 +1,5 @@
 import { Chess } from "chess.js";
+import { countPossibleMates } from "./possibleMates.js";
 
 // ── All 64 squares (manual list – no Chess.SQUARES dependency) ───
 const FILES = "abcdefgh";
@@ -169,6 +170,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   kingZoneEmptyWeight: -2,
   hiddenKingCageWeight: 3,
   excessAttackerWeight: -2,
+  possibleMatesLogWeight: 0,
   hiddenPieceWeights: {
     k: 2,
     q: 4,
@@ -416,6 +418,20 @@ export function extractDifficultyFeatures(puzzle) {
           Math.max(0, kingZoneHiddenPieces - 1)
         : 0;
 
+    // "All possible mates" signal: how many reasonable arrangements at the
+    // 5 hidden squares still produce a mate? More alternatives ⇒ harder
+    // puzzle (the player has more legitimate guesses to weed through).
+    // We use log(1+count) because the raw count is heavily skewed and the
+    // log-scaled signal correlates much better with actual difficulty.
+    const possibleMatesResult = countPossibleMates(puzzle, {
+      reasonable: true,
+    });
+    const possibleMatesCount =
+      possibleMatesResult && !possibleMatesResult.error
+        ? possibleMatesResult.count
+        : 0;
+    const possibleMatesLog = Math.log(1 + possibleMatesCount);
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -438,6 +454,8 @@ export function extractDifficultyFeatures(puzzle) {
       defenderBlockers,
       kingDist,
       hiddenPieceCounts,
+      possibleMatesCount,
+      possibleMatesLog,
       achievements: Array.isArray(puzzle.achievements)
         ? [...new Set(puzzle.achievements)]
         : [],
@@ -481,6 +499,7 @@ export function scoreDifficultyFeatures(
     features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
     features.hiddenKingCagePressure * tuned.hiddenKingCageWeight +
     features.excessMateNetAttackers * tuned.excessAttackerWeight +
+    (features.possibleMatesLog ?? 0) * (tuned.possibleMatesLogWeight ?? 0) +
     hiddenPieceContrib +
     achievementContrib;
 
@@ -537,6 +556,11 @@ export function scoreDifficultyFeatures(
       defenderBlockers: features.defenderBlockers,
       kingDist: features.kingDist,
       hiddenPieceCounts: features.hiddenPieceCounts,
+      possibleMatesCount: features.possibleMatesCount,
+      possibleMatesLog:
+        features.possibleMatesLog === undefined
+          ? undefined
+          : Math.round(features.possibleMatesLog * 100) / 100,
       achievements: features.achievements,
       compoundDiscount,
       bothKingsContrib,
