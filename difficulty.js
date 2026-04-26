@@ -142,13 +142,75 @@ function attacks(piece, fromSq, targetSq, boardMap) {
 }
 
 // ── Shared tier thresholds ────────────────────────────────────────
-export const TIER_BASIC_MAX = 33; // Basic:  score < 33  (0–32)
-export const TIER_HARD_MIN = 61; // Hard:   score >= 61 (61–100)
+// CALIBRATION:START
+export const DEFAULT_CALIBRATION = Object.freeze({
+  basicMax: 33,
+  hardMin: 59,
+  pieceWeight: 1.2,
+  hiddenDistWeight: 9,
+  attackerWeight: 4,
+  emptyWeight: 1,
+  bothKingsBase: 0,
+  bothKingsEmptyPenalty: 2,
+  promotedWeight: 8,
+  easyGuessDiscount: 2,
+  baseOffset: 12,
+  hiddenCheckerWeight: 2,
+  defenderBlockerWeight: -6,
+  kingDistWeight: -1,
+  startingHomeWeight: -2,
+  castledKingWeight: 2,
+  pawnNearHomeWeight: 0,
+  sparseAttackerWeight: 1,
+  kingZoneHiddenWeight: -1,
+  kingZonePieceWeight: 1,
+  kingZoneEmptyWeight: -2,
+  excessAttackerWeight: -2,
+  hiddenPieceWeights: {
+    k: 2,
+    q: 4,
+    r: 4,
+    b: -2,
+    n: -2,
+    p: 0,
+  },
+  achievementWeights: {
+    bishop: 2,
+    "double-check": 10,
+    knight: 10,
+    pawn: -8,
+    pin: 8,
+    queen: 2,
+    rook: -4,
+    "two-kings": -10,
+    discovered: -2,
+  },
+});
+// CALIBRATION:END
+
+export const TIER_BASIC_MAX = DEFAULT_CALIBRATION.basicMax; // Basic:  score < 33  (0–32)
+export const TIER_HARD_MIN = DEFAULT_CALIBRATION.hardMin; // Hard:   score >= 61 (61–100)
 // Medium: 33–60
 
-export function tierFromScore(score) {
-  if (score < TIER_BASIC_MAX) return "Basic";
-  if (score >= TIER_HARD_MIN) return "Hard";
+function resolveCalibration(calibration) {
+  return {
+    ...DEFAULT_CALIBRATION,
+    ...(calibration ?? {}),
+    hiddenPieceWeights: {
+      ...DEFAULT_CALIBRATION.hiddenPieceWeights,
+      ...(calibration?.hiddenPieceWeights ?? {}),
+    },
+    achievementWeights: {
+      ...DEFAULT_CALIBRATION.achievementWeights,
+      ...(calibration?.achievementWeights ?? {}),
+    },
+  };
+}
+
+export function tierFromScore(score, calibration = DEFAULT_CALIBRATION) {
+  const tuned = resolveCalibration(calibration);
+  if (score < tuned.basicMax) return "Basic";
+  if (score >= tuned.hardMin) return "Hard";
   return "Medium";
 }
 
@@ -158,9 +220,9 @@ export function tierFromScore(score) {
  * Calculate a 0-100 difficulty score for a Matle puzzle.
  *
  * @param {{Board: string, HiddenSquares: string[]}} puzzle
- * @returns {{score: number, tier: string, details: object} | {error: string}}
+ * @returns {object | {error: string}}
  */
-export function calculateDifficulty(puzzle) {
+export function extractDifficultyFeatures(puzzle) {
   try {
     const { Board: boardStr, HiddenSquares: hidden } = puzzle;
 
@@ -203,35 +265,57 @@ export function calculateDifficulty(puzzle) {
 
     // ── Feature extraction ───────────────────────────────────────
     const attackerColor = matedColor === "w" ? "b" : "w";
+    const hiddenPieceCounts = { k: 0, q: 0, r: 0, b: 0, n: 0, p: 0 };
+    const easyGuessSquares = new Set();
     let startingHome = 0;
     let castledKings = 0;
     let pawnsNearHome = 0;
     let defenderBlockers = 0;
     let hiddenEmpties = 0;
     let hiddenCheckers = 0;
+    let kingZoneHiddenSquares = 0;
+    let kingZoneHiddenEmpties = 0;
     let distSum = 0;
 
     for (const sq of hidden) {
       const pc = boardMap[sq];
-      distSum += chebyshev(sq, kingSq);
+      const kingDistance = chebyshev(sq, kingSq);
+      distSum += kingDistance;
+
+      if (kingDistance <= 1) {
+        kingZoneHiddenSquares++;
+      }
 
       if (!pc) {
         hiddenEmpties++;
+        if (kingDistance <= 1) {
+          kingZoneHiddenEmpties++;
+        }
         continue;
       }
 
+      hiddenPieceCounts[pc.type] = (hiddenPieceCounts[pc.type] || 0) + 1;
+
       // Piece on its starting square?
       const home = STARTING[sq];
-      if (home && home.type === pc.type && home.color === pc.color)
+      if (home && home.type === pc.type && home.color === pc.color) {
         startingHome++;
+        easyGuessSquares.add(sq);
+      }
 
       // King on castled square (g1/g8/c1/c8) – trivially guessable
-      if (pc.type === "k" && CASTLED_KING.has(sq)) castledKings++;
+      if (pc.type === "k" && CASTLED_KING.has(sq)) {
+        castledKings++;
+        easyGuessSquares.add(sq);
+      }
 
       // Pawn within 1 rank of its home rank – very common, easy to guess
       if (pc.type === "p") {
         const [, rank] = fr(sq);
-        if (Math.abs(rank - pawnHomeRank(pc.color)) <= 1) pawnsNearHome++;
+        if (Math.abs(rank - pawnHomeRank(pc.color)) <= 1) {
+          pawnsNearHome++;
+          easyGuessSquares.add(sq);
+        }
       }
 
       // Same-colour (defender) piece adjacent to mated king?
@@ -318,45 +402,143 @@ export function calculateDifficulty(puzzle) {
       }
     }
 
-    // ── Score ────────────────────────────────────────────────────
-    // Compound ease: a single "easy guess" doesn't help much (4 unknowns
-    // remain), but 2+ easy guesses compound — each narrows the field.
-    const easyGuesses = startingHome + castledKings + pawnsNearHome;
-    const compoundDiscount = easyGuesses >= 2 ? (easyGuesses - 1) * 10 : 0;
-
-    // Both kings hidden is offset when empties reduce unknowns.
-    const bothKingsContrib = bothKingsHidden
-      ? Math.max(0, 4 - hiddenEmpties * 2)
-      : 0;
-
-    const raw =
-      (32 - totalPieces) * 1.5 +
-      (2 - avgHiddenDist) * 12 +
-      mateNetAttackers * 3 +
-      hiddenEmpties * -2 +
-      bothKingsContrib +
-      promotedHidden * 8 -
-      compoundDiscount +
-      14;
-
-    const score = Math.round(Math.max(0, Math.min(100, raw)));
-    const tier = tierFromScore(score);
-
     return {
-      score,
-      tier,
-      details: {
-        totalPieces,
-        avgHiddenDist: Math.round(avgHiddenDist * 100) / 100,
-        mateNetAttackers,
-        hiddenEmpties,
-        bothKingsHidden,
-        promotedHidden,
-        easyGuesses,
-        compoundDiscount,
-      },
+      totalPieces,
+      avgHiddenDist,
+      mateNetAttackers,
+      sparseAttackProduct: ((32 - totalPieces) * mateNetAttackers) / 10,
+      excessMateNetAttackers: Math.max(0, mateNetAttackers - 2),
+      hiddenEmpties,
+      kingZoneHiddenSquares,
+      kingZoneHiddenEmpties,
+      kingZoneHiddenPieces: kingZoneHiddenSquares - kingZoneHiddenEmpties,
+      bothKingsHidden,
+      promotedHidden,
+      easyGuesses: easyGuessSquares.size,
+      startingHome,
+      castledKings,
+      pawnsNearHome,
+      hiddenCheckers,
+      defenderBlockers,
+      kingDist,
+      hiddenPieceCounts,
+      achievements: Array.isArray(puzzle.achievements)
+        ? [...new Set(puzzle.achievements)]
+        : [],
     };
   } catch (err) {
     return { error: `Unexpected: ${err.message}` };
   }
+}
+
+export function scoreDifficultyFeatures(
+  features,
+  calibration = DEFAULT_CALIBRATION,
+) {
+  const tuned = resolveCalibration(calibration);
+  const compoundDiscount =
+    features.easyGuesses >= 2
+      ? (features.easyGuesses - 1) * tuned.easyGuessDiscount
+      : 0;
+
+  const hiddenPieceContrib = Object.entries(
+    features.hiddenPieceCounts ?? {},
+  ).reduce(
+    (sum, [type, count]) =>
+      sum + count * (tuned.hiddenPieceWeights?.[type] ?? 0),
+    0,
+  );
+  const achievementContrib = (features.achievements ?? []).reduce(
+    (sum, achievement) => sum + (tuned.achievementWeights?.[achievement] ?? 0),
+    0,
+  );
+  const additiveContrib =
+    features.hiddenCheckers * tuned.hiddenCheckerWeight +
+    features.defenderBlockers * tuned.defenderBlockerWeight +
+    features.kingDist * tuned.kingDistWeight +
+    features.startingHome * tuned.startingHomeWeight +
+    features.castledKings * tuned.castledKingWeight +
+    features.pawnsNearHome * tuned.pawnNearHomeWeight +
+    features.sparseAttackProduct * tuned.sparseAttackerWeight +
+    features.kingZoneHiddenSquares * tuned.kingZoneHiddenWeight +
+    features.kingZoneHiddenPieces * tuned.kingZonePieceWeight +
+    features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
+    features.excessMateNetAttackers * tuned.excessAttackerWeight +
+    hiddenPieceContrib +
+    achievementContrib;
+
+  // ── Score ────────────────────────────────────────────────────
+  // Compound ease: a single "easy guess" doesn't help much (4 unknowns
+  // remain), but 2+ easy guesses compound — each narrows the field.
+
+  // Both kings hidden is offset when empties reduce unknowns.
+  const bothKingsContrib = features.bothKingsHidden
+    ? Math.max(
+        0,
+        tuned.bothKingsBase -
+          features.hiddenEmpties * tuned.bothKingsEmptyPenalty,
+      )
+    : 0;
+
+  const raw =
+    (32 - features.totalPieces) * tuned.pieceWeight +
+    (2 - features.avgHiddenDist) * tuned.hiddenDistWeight +
+    features.mateNetAttackers * tuned.attackerWeight +
+    features.hiddenEmpties * tuned.emptyWeight +
+    bothKingsContrib +
+    features.promotedHidden * tuned.promotedWeight -
+    compoundDiscount +
+    tuned.baseOffset +
+    additiveContrib;
+
+  const score = Math.round(Math.max(0, Math.min(100, raw)));
+  const tier = tierFromScore(score, tuned);
+
+  return {
+    score,
+    tier,
+    details: {
+      totalPieces: features.totalPieces,
+      avgHiddenDist: Math.round(features.avgHiddenDist * 100) / 100,
+      mateNetAttackers: features.mateNetAttackers,
+      sparseAttackProduct: Math.round(features.sparseAttackProduct * 100) / 100,
+      excessMateNetAttackers: features.excessMateNetAttackers,
+      hiddenEmpties: features.hiddenEmpties,
+      kingZoneHiddenSquares: features.kingZoneHiddenSquares,
+      kingZoneHiddenPieces: features.kingZoneHiddenPieces,
+      kingZoneHiddenEmpties: features.kingZoneHiddenEmpties,
+      bothKingsHidden: features.bothKingsHidden,
+      promotedHidden: features.promotedHidden,
+      easyGuesses: features.easyGuesses,
+      startingHome: features.startingHome,
+      castledKings: features.castledKings,
+      pawnsNearHome: features.pawnsNearHome,
+      hiddenCheckers: features.hiddenCheckers,
+      defenderBlockers: features.defenderBlockers,
+      kingDist: features.kingDist,
+      hiddenPieceCounts: features.hiddenPieceCounts,
+      achievements: features.achievements,
+      compoundDiscount,
+      bothKingsContrib,
+      hiddenPieceContrib,
+      achievementContrib,
+      additiveContrib: Math.round(additiveContrib * 100) / 100,
+      rawScore: Math.round(raw * 100) / 100,
+    },
+  };
+}
+
+/**
+ * Calculate a 0-100 difficulty score for a Matle puzzle.
+ *
+ * @param {{Board: string, HiddenSquares: string[]}} puzzle
+ * @param {object} [calibration]
+ * @returns {{score: number, tier: string, details: object} | {error: string}}
+ */
+export function calculateDifficulty(puzzle, calibration = DEFAULT_CALIBRATION) {
+  const features = extractDifficultyFeatures(puzzle);
+  if (features.error) {
+    return features;
+  }
+  return scoreDifficultyFeatures(features, calibration);
 }

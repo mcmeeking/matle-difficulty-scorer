@@ -3,6 +3,7 @@
   "scripts": {
     "fetch": "node fetch.js",
     "benchmark": "node benchmark.js",
+    "calibrate": "node calibrate.js",
     "update": "node fetch.js && node benchmark.js"
   },
   "dependencies": {

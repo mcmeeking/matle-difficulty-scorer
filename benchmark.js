@@ -7,12 +7,13 @@
  * Usage:  node benchmark.js
  */
 
-import { calculateDifficulty, tierFromScore } from "./difficulty.js";
+import { calculateDifficulty } from "./difficulty.js";
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const PUZZLE_DIR = "data/puzzles";
-const STATS_DIR = "data/stats";
+export const PUZZLE_DIR = "data/puzzles";
+export const STATS_DIR = "data/stats";
 
 /** Measure display width, counting emoji as 2 columns wide. */
 function displayWidth(str) {
@@ -30,7 +31,7 @@ function displayWidth(str) {
 }
 
 // ── Stats extraction ─────────────────────────────────────────────
-function extractStats(raw) {
+export function extractStats(raw) {
   if (!raw) return {};
 
   const pcts = raw.percentages;
@@ -60,7 +61,9 @@ function extractStats(raw) {
 }
 
 // ── Tier derivation from community stats ─────────────────────────
-const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
+export const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
+export const ACTUAL_TIER_BASIC_MAX = 33;
+export const ACTUAL_TIER_HARD_MIN = 61;
 
 /**
  * Derive an objective difficulty score (0-100) from community stats.
@@ -74,7 +77,7 @@ const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
  *   avg=3.0, fail=2%  →  ~52 (typical medium)
  *   avg=4.0, fail=10% →  ~87 (clearly hard)
  */
-function actualDifficultyScore(s) {
+export function actualDifficultyScore(s) {
   if (!s.total) return null;
   const avg = parseFloat(s.avgGuesses);
   const fail = parseFloat(s.failPct);
@@ -83,14 +86,17 @@ function actualDifficultyScore(s) {
   return Math.round(Math.max(0, Math.min(100, (avg - 1.5) * 25 + fail * 1.5)));
 }
 
-function actualTier(s) {
+export function actualTier(s) {
   const score = actualDifficultyScore(s);
   if (score === null) return null;
-  return tierFromScore(score);
+  if (score < ACTUAL_TIER_BASIC_MAX) return "Basic";
+  if (score >= ACTUAL_TIER_HARD_MIN) return "Hard";
+  return "Medium";
 }
 
 // ── Load local files ─────────────────────────────────────────────
-function loadLocalData() {
+export function loadLocalData(options = {}) {
+  const { calibration, includePuzzle = false } = options;
   if (!existsSync(PUZZLE_DIR)) return [];
 
   const files = readdirSync(PUZZLE_DIR)
@@ -107,18 +113,24 @@ function loadLocalData() {
         ? JSON.parse(readFileSync(statsPath, "utf8"))
         : null;
 
-      const diff = calculateDifficulty(puzzle);
+      const diff = calculateDifficulty(puzzle, calibration);
       if (diff.error) {
         console.warn(`  ${date}: ${diff.error}`);
         continue;
       }
 
-      results.push({
+      const entry = {
         date,
         serverDiff: puzzle.Difficulty ?? "?",
         ...diff,
         stats: extractStats(stats),
-      });
+      };
+
+      if (includePuzzle) {
+        entry.puzzle = puzzle;
+      }
+
+      results.push(entry);
     } catch (err) {
       console.warn(`  ${date}: failed to parse – ${err.message}`);
     }
@@ -127,7 +139,7 @@ function loadLocalData() {
 }
 
 // ── Markdown table generation ────────────────────────────────────
-function buildTable(results) {
+export function buildTable(results) {
   const cols = [
     "Date",
     "Server",
@@ -219,7 +231,7 @@ function buildTable(results) {
 const START_MARKER = "<!-- BENCHMARK:START -->";
 const END_MARKER = "<!-- BENCHMARK:END -->";
 
-function updateReadme(tableMarkdown) {
+export function updateReadme(tableMarkdown) {
   const readmePath = "README.md";
   let content = existsSync(readmePath) ? readFileSync(readmePath, "utf8") : "";
 
@@ -243,7 +255,7 @@ function escapeRegex(s) {
 }
 
 // ── Main ─────────────────────────────────────────────────────────
-function main() {
+export function main() {
   const results = loadLocalData();
   if (!results.length) {
     console.log("No local puzzles found in data/puzzles/. Run: node fetch.js");
@@ -259,4 +271,9 @@ function main() {
   updateReadme(table);
 }
 
-main();
+const isMain =
+  process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isMain) {
+  main();
+}
