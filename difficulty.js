@@ -304,6 +304,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   baseOffset: 12,
   hiddenCheckerWeight: 2,
   defenderBlockerWeight: -6,
+  ambiguousRoamingBlockerWeight: 4,
   kingDistWeight: -1,
   startingHomeWeight: -2,
   castledKingWeight: 2,
@@ -408,6 +409,7 @@ export function extractDifficultyFeatures(puzzle) {
     let castledKings = 0;
     let pawnsNearHome = 0;
     let defenderBlockers = 0;
+    let guessableDefenderBlockers = 0;
     let hiddenEmpties = 0;
     let hiddenCheckers = 0;
     let kingZoneHiddenSquares = 0;
@@ -456,8 +458,13 @@ export function extractDifficultyFeatures(puzzle) {
       }
 
       // Same-colour (defender) piece adjacent to mated king?
-      if (pc.color === matedColor && chebyshev(sq, kingSq) === 1)
+      if (pc.color === matedColor && chebyshev(sq, kingSq) === 1) {
         defenderBlockers++;
+        const home = STARTING[sq];
+        if (home && home.type === pc.type && home.color === pc.color) {
+          guessableDefenderBlockers++;
+        }
+      }
 
       // Opponent piece that checks the mated king?
       if (pc.color === attackerColor && attacks(pc, sq, kingSq, boardMap))
@@ -474,6 +481,8 @@ export function extractDifficultyFeatures(puzzle) {
     const avgHiddenDist = distSum / hidden.length;
     const kingZoneHiddenPieces = kingZoneHiddenSquares - kingZoneHiddenEmpties;
     const matedKingHidden = hiddenSet.has(kingSq) ? 1 : 0;
+    const roamingDefenderBlockers =
+      defenderBlockers - guessableDefenderBlockers;
 
     // ── Both kings hidden ────────────────────────────────────────
     let wKingSq = null,
@@ -548,6 +557,8 @@ export function extractDifficultyFeatures(puzzle) {
         ? Math.max(0, kingZoneHiddenSquares - 2) *
           Math.max(0, kingZoneHiddenPieces - 1)
         : 0;
+    const ambiguousRoamingBlockers =
+      hiddenKingCagePressure >= 4 ? roamingDefenderBlockers : 0;
 
     return {
       totalPieces,
@@ -569,6 +580,9 @@ export function extractDifficultyFeatures(puzzle) {
       pawnsNearHome,
       hiddenCheckers,
       defenderBlockers,
+      guessableDefenderBlockers,
+      roamingDefenderBlockers,
+      ambiguousRoamingBlockers,
       kingDist,
       hiddenPieceCounts,
       achievements: Array.isArray(puzzle.achievements)
@@ -604,6 +618,7 @@ export function scoreDifficultyFeatures(
   const additiveContrib =
     features.hiddenCheckers * tuned.hiddenCheckerWeight +
     features.defenderBlockers * tuned.defenderBlockerWeight +
+    features.ambiguousRoamingBlockers * tuned.ambiguousRoamingBlockerWeight +
     features.kingDist * tuned.kingDistWeight +
     features.startingHome * tuned.startingHomeWeight +
     features.castledKings * tuned.castledKingWeight +
@@ -668,6 +683,9 @@ export function scoreDifficultyFeatures(
       pawnsNearHome: features.pawnsNearHome,
       hiddenCheckers: features.hiddenCheckers,
       defenderBlockers: features.defenderBlockers,
+      guessableDefenderBlockers: features.guessableDefenderBlockers,
+      roamingDefenderBlockers: features.roamingDefenderBlockers,
+      ambiguousRoamingBlockers: features.ambiguousRoamingBlockers,
       kingDist: features.kingDist,
       hiddenPieceCounts: features.hiddenPieceCounts,
       achievements: features.achievements,

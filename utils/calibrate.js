@@ -26,6 +26,7 @@ const SCALAR_SEARCH_SPACE = {
   baseOffset: [0, 4, 8, 12, 14, 16, 18, 20],
   hiddenCheckerWeight: [-8, -6, -4, -2, 0, 2, 4, 6, 8],
   defenderBlockerWeight: [-8, -6, -4, -2, 0, 2, 4, 6, 8],
+  ambiguousRoamingBlockerWeight: [0, 2, 4, 6, 8],
   kingDistWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4],
   startingHomeWeight: [-8, -6, -4, -2, 0, 2],
   castledKingWeight: [-8, -6, -4, -2, 0, 2],
