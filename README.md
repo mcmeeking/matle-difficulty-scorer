@@ -74,9 +74,10 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
+
 ## Benchmark Results
 
-### Last updated: 2026-05-01
+### Last updated: 2026-05-02
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
@@ -89,9 +90,9 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68  | Hard (61)   | Hard (59)   | ✅ Match | -S -O |
 | 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21  | Medium (44) | Medium (33) | ✅ Match | -S -O |
 | 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52  | Medium (51) | Medium (51) | ✅ Match | ↑S -O |
-| 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35  | Medium (48) | Medium (50) | ✅ Match | ↓S -O |
+| 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35  | Medium (48) | Medium (56) | ✅ Match | ↓S -O |
 | 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51  | Medium (50) | Medium (37) | ✅ Match | -S -O |
-| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91  | Hard (72)   | Hard (65)   | ✅ Match | ↓S -O |
+| 2026-03-24 | Medium | %≤3: 34 · Fail: 8 · Avg: 3.91  | Hard (72)   | Hard (73)   | ✅ Match | ↓S -O |
 | 2026-03-25 | Medium | %≤3: 83 · Fail: 3 · Avg: 2.83  | Medium (38) | Medium (39) | ✅ Match | -S -O |
 | 2026-03-26 | Hard   | %≤3: 59 · Fail: 4 · Avg: 3.30  | Medium (51) | Medium (58) | ✅ Match | ↑S -O |
 | 2026-03-27 | Medium | %≤3: 64 · Fail: 2 · Avg: 3.28  | Medium (47) | Medium (42) | ✅ Match | -S -O |
@@ -107,7 +108,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-06 | Basic  | %≤3: 97 · Fail: 0 · Avg: 2.19  | Basic (17)  | Basic (19)  | ✅ Match | -S -O |
 | 2026-04-07 | Hard   | %≤3: 60 · Fail: 4 · Avg: 3.32  | Medium (51) | Medium (43) | ✅ Match | ↑S -O |
 | 2026-04-08 | Medium | %≤3: 82 · Fail: 1 · Avg: 2.91  | Medium (37) | Medium (37) | ✅ Match | -S -O |
-| 2026-04-09 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.71  | Basic (30)  | Basic (29)  | ✅ Match | -S -O |
+| 2026-04-09 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.71  | Basic (30)  | Basic (23)  | ✅ Match | -S -O |
 | 2026-04-10 | Medium | %≤3: 72 · Fail: 1 · Avg: 3.15  | Medium (43) | Medium (50) | ✅ Match | -S -O |
 | 2026-04-11 | Hard   | %≤3: 86 · Fail: 1 · Avg: 2.79  | Medium (34) | Medium (39) | ✅ Match | ↑S -O |
 | 2026-04-12 | Medium | %≤3: 75 · Fail: 2 · Avg: 2.99  | Medium (40) | Medium (54) | ✅ Match | -S -O |
@@ -125,10 +126,11 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-24 | Basic  | %≤3: 74 · Fail: 1 · Avg: 3.13  | Medium (42) | Medium (41) | ✅ Match | ↓S -O |
 | 2026-04-25 | Hard   | %≤3: 75 · Fail: 5 · Avg: 3.00  | Medium (45) | Medium (53) | ✅ Match | ↑S -O |
 | 2026-04-26 | Medium | %≤3: 80 · Fail: 2 · Avg: 2.84  | Medium (37) | Medium (48) | ✅ Match | -S -O |
-| 2026-04-27 | Medium | %≤3: 34 · Fail: 14 · Avg: 4.04 | Hard (85)   | Hard (60)   | ✅ Match | ↓S -O |
+| 2026-04-27 | Medium | %≤3: 34 · Fail: 14 · Avg: 4.04 | Hard (85)   | Hard (84)   | ✅ Match | ↓S -O |
 | 2026-04-28 | Medium | %≤3: 62 · Fail: 2 · Avg: 3.24  | Medium (47) | Medium (56) | ✅ Match | -S -O |
-| 2026-04-29 | Hard   | %≤3: 18 · Fail: 13 · Avg: 4.33 | Hard (90)   | Medium (50) | ❌ Miss  | -S ↓O |
-| 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Medium (42) | ❌ Miss  | -S ↑O |
+| 2026-04-29 | Hard   | %≤3: 18 · Fail: 13 · Avg: 4.33 | Hard (90)   | Hard (88)   | ✅ Match | -S -O |
+| 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Basic (30)  | ✅ Match | -S -O |
 
-**Accuracy: 46/49 (94%)** across puzzles with community stats.
+**Accuracy: 48/49 (98%)** across puzzles with community stats.
+
 <!-- BENCHMARK:END -->

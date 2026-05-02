@@ -36,6 +36,9 @@ const SCALAR_SEARCH_SPACE = {
   kingZonePieceWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
   kingZoneEmptyWeight: [-6, -5, -4, -3, -2, -1, 0, 1],
   hiddenKingCageWeight: [0, 1, 2, 3, 4, 5, 6, 8],
+  ambiguousPawnPromotionWeight: [0, 4, 8, 12, 16, 20, 24, 26, 28],
+  sparsePeripheralRevealWeight: [-8, -6, -4, -2, 0],
+  crowdedAnomalyWeight: [0, 2, 4, 6, 8],
   excessAttackerWeight: [-8, -6, -4, -2, 0, 2],
 };
 const MAP_WEIGHT_CANDIDATES = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10];

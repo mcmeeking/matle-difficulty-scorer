@@ -304,7 +304,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   baseOffset: 12,
   hiddenCheckerWeight: 2,
   defenderBlockerWeight: -6,
-  ambiguousRoamingBlockerWeight: 4,
+  ambiguousRoamingBlockerWeight: 8,
   kingDistWeight: -1,
   startingHomeWeight: -2,
   castledKingWeight: 2,
@@ -314,6 +314,9 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   kingZonePieceWeight: 1,
   kingZoneEmptyWeight: -2,
   hiddenKingCageWeight: 3,
+  ambiguousPawnPromotionWeight: 26,
+  sparsePeripheralRevealWeight: -4,
+  crowdedAnomalyWeight: 4,
   excessAttackerWeight: -2,
   hiddenPieceWeights: {
     k: 2,
@@ -332,7 +335,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
     queen: 2,
     rook: -4,
     "two-kings": -10,
-    discovered: -2,
+    discovered: 4,
   },
 });
 // CALIBRATION:END
@@ -414,6 +417,7 @@ export function extractDifficultyFeatures(puzzle) {
     let hiddenCheckers = 0;
     let kingZoneHiddenSquares = 0;
     let kingZoneHiddenEmpties = 0;
+    let peripheralHiddenSquares = 0;
     let distSum = 0;
 
     for (const sq of hidden) {
@@ -423,6 +427,8 @@ export function extractDifficultyFeatures(puzzle) {
 
       if (kingDistance <= 1) {
         kingZoneHiddenSquares++;
+      } else {
+        peripheralHiddenSquares++;
       }
 
       if (!pc) {
@@ -557,8 +563,28 @@ export function extractDifficultyFeatures(puzzle) {
         ? Math.max(0, kingZoneHiddenSquares - 2) *
           Math.max(0, kingZoneHiddenPieces - 1)
         : 0;
+    const ambiguousPawnPromotion =
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("pawn") &&
+      matedKingHidden &&
+      !bothKingsHidden &&
+      easyGuessSquares.size === 0 &&
+      defenderBlockers === 0 &&
+      (hiddenPieceCounts.q ?? 0) >= 1
+        ? 1
+        : 0;
+    const sparsePeripheralReveal =
+      matedKingHidden &&
+      totalPieces <= 16 &&
+      avgHiddenDist >= 2 &&
+      kingZoneHiddenSquares <= 2
+        ? peripheralHiddenSquares
+        : 0;
     const ambiguousRoamingBlockers =
       hiddenKingCagePressure >= 4 ? roamingDefenderBlockers : 0;
+    const crowdedAnomalyLoad =
+      (ambiguousRoamingBlockers + ambiguousPawnPromotion) *
+      Math.max(0, totalPieces - 16);
 
     return {
       totalPieces,
@@ -572,6 +598,9 @@ export function extractDifficultyFeatures(puzzle) {
       kingZoneHiddenPieces,
       matedKingHidden,
       hiddenKingCagePressure,
+      ambiguousPawnPromotion,
+      sparsePeripheralReveal,
+      crowdedAnomalyLoad,
       bothKingsHidden,
       promotedHidden,
       easyGuesses: easyGuessSquares.size,
@@ -628,6 +657,9 @@ export function scoreDifficultyFeatures(
     features.kingZoneHiddenPieces * tuned.kingZonePieceWeight +
     features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
     features.hiddenKingCagePressure * tuned.hiddenKingCageWeight +
+    features.ambiguousPawnPromotion * tuned.ambiguousPawnPromotionWeight +
+    features.sparsePeripheralReveal * tuned.sparsePeripheralRevealWeight +
+    features.crowdedAnomalyLoad * tuned.crowdedAnomalyWeight +
     features.excessMateNetAttackers * tuned.excessAttackerWeight +
     hiddenPieceContrib +
     achievementContrib;
@@ -675,6 +707,9 @@ export function scoreDifficultyFeatures(
       matedKingHidden: features.matedKingHidden,
       hiddenKingCagePressure:
         Math.round(features.hiddenKingCagePressure * 100) / 100,
+      ambiguousPawnPromotion: features.ambiguousPawnPromotion,
+      sparsePeripheralReveal: features.sparsePeripheralReveal,
+      crowdedAnomalyLoad: features.crowdedAnomalyLoad,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
