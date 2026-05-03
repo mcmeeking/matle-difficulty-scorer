@@ -4,10 +4,10 @@
  * Reads all local puzzle/stats files from data/, scores them,
  * prints a Markdown table, saves results JSON, and updates README.md.
  *
- * Usage:  node benchmark.js
+ * Usage:  npm run benchmark
  */
 
-import { calculateDifficulty } from "./difficulty.js";
+import { calculateDifficulty } from "../difficulty.js";
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,14 +23,13 @@ function displayWidth(str) {
     m;
   let last = 0;
   while ((m = emojiRe.exec(str)) !== null) {
-    width += m.index - last + 2; // chars before emoji + 2 for the emoji
+    width += m.index - last + 2;
     last = m.index + m[0].length;
   }
   width += str.length - last;
   return width;
 }
 
-// ── Stats extraction ─────────────────────────────────────────────
 export function extractStats(raw) {
   if (!raw) return {};
 
@@ -43,9 +42,9 @@ export function extractStats(raw) {
     for (let i = 0; i < pcts.length; i++) {
       const p = pcts[i];
       totalPct += p;
-      if (i <= 2) solved3 += p; // indices 0-2 = 1-3 guesses
-      if (i === 5) fails += p; // index 5 = failed to solve
-      guessSum += (i < 5 ? i + 1 : 6) * p; // 1-5 guesses, fails count as 6
+      if (i <= 2) solved3 += p;
+      if (i === 5) fails += p;
+      guessSum += (i < 5 ? i + 1 : 6) * p;
     }
     if (totalPct > 0) {
       return {
@@ -60,29 +59,20 @@ export function extractStats(raw) {
   return {};
 }
 
-// ── Tier derivation from community stats ─────────────────────────
 export const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
 export const ACTUAL_TIER_BASIC_MAX = 33;
 export const ACTUAL_TIER_HARD_MIN = 61;
 
-/**
- * Derive an objective difficulty score (0-100) from community stats.
- *
- * Uses a continuous composite of avg guesses and fail rate,
- * avoiding hand-picked thresholds that could inadvertently
- * mirror the server labels.
- *
- * Anchors:
- *   avg=2.0, fail=0%  →  ~20 (trivially easy)
- *   avg=3.0, fail=2%  →  ~52 (typical medium)
- *   avg=4.0, fail=10% →  ~87 (clearly hard)
- */
+function tierDeltaArrow(rating, actual) {
+  if (!rating || !actual) return "-";
+  if (rating === actual) return "-";
+  return TIER_ORDER[rating] > TIER_ORDER[actual] ? "↑" : "↓";
+}
+
 export function actualDifficultyScore(s) {
   if (!s.total) return null;
   const avg = parseFloat(s.avgGuesses);
   const fail = parseFloat(s.failPct);
-  // avg guesses range roughly 1.5–4.5; scale to 0-100
-  // fail rate range roughly 0–15; each % adds difficulty
   return Math.round(Math.max(0, Math.min(100, (avg - 1.5) * 25 + fail * 1.5)));
 }
 
@@ -94,7 +84,6 @@ export function actualTier(s) {
   return "Medium";
 }
 
-// ── Load local files ─────────────────────────────────────────────
 export function loadLocalData(options = {}) {
   const { calibration, includePuzzle = false } = options;
   if (!existsSync(PUZZLE_DIR)) return [];
@@ -138,7 +127,6 @@ export function loadLocalData(options = {}) {
   return results;
 }
 
-// ── Markdown table generation ────────────────────────────────────
 export function buildTable(results) {
   const cols = [
     "Date",
@@ -153,7 +141,6 @@ export function buildTable(results) {
   let matches = 0,
     total = 0;
 
-  // Build row data first so we can measure column widths
   const rows = [];
   for (const r of results) {
     const s = r.stats;
@@ -169,7 +156,7 @@ export function buildTable(results) {
     let accuracy, delta;
     if (!gt) {
       accuracy = "-";
-      delta = "-";
+      delta = "-S -O";
     } else {
       total++;
       if (r.tier === gt) {
@@ -178,13 +165,9 @@ export function buildTable(results) {
       } else {
         accuracy = "❌ Miss";
       }
-      // Delta: how the server rating compares to the actual tier
-      if (r.serverDiff === gt) {
-        delta = "—";
-      } else {
-        delta =
-          TIER_ORDER[r.serverDiff] > TIER_ORDER[gt] ? "↑ Harder" : "↓ Easier";
-      }
+      const serverDelta = tierDeltaArrow(r.serverDiff, gt);
+      const ourDelta = tierDeltaArrow(r.tier, gt);
+      delta = `${serverDelta}S ${ourDelta}O`;
     }
 
     rows.push([
@@ -198,7 +181,6 @@ export function buildTable(results) {
     ]);
   }
 
-  // Compute column widths (emoji chars count as 2 columns wide)
   const widths = cols.map((h, i) => {
     const cellMax = rows.reduce(
       (mx, row) => Math.max(mx, displayWidth(row[i])),
@@ -227,7 +209,6 @@ export function buildTable(results) {
   return lines.join("\n");
 }
 
-// ── Update README.md ─────────────────────────────────────────────
 const START_MARKER = "<!-- BENCHMARK:START -->";
 const END_MARKER = "<!-- BENCHMARK:END -->";
 
@@ -254,11 +235,10 @@ function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ── Main ─────────────────────────────────────────────────────────
 export function main() {
   const results = loadLocalData();
   if (!results.length) {
-    console.log("No local puzzles found in data/puzzles/. Run: node fetch.js");
+    console.log("No local puzzles found in data/puzzles/. Run: npm run fetch");
     process.exit(0);
   }
 

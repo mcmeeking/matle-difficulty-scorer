@@ -1,10 +1,12 @@
 {
   "type": "module",
   "scripts": {
-    "fetch": "node fetch.js",
-    "benchmark": "node benchmark.js",
-    "calibrate": "node calibrate.js",
-    "update": "node fetch.js && node benchmark.js"
+    "fetch": "node utils/fetch.js",
+    "benchmark": "node utils/benchmark.js",
+    "notations": "node utils/notations.js",
+    "calibrate": "node utils/calibrate.js",
+    "daily-summary": "node utils/summary.js",
+    "update": "npm run fetch && npm run benchmark"
   },
   "dependencies": {
     "chess.js": "^1.4.0"

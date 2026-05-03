@@ -19,7 +19,7 @@ import {
   actualDifficultyScore,
   actualTier,
   loadLocalData,
-} from "./benchmark.js";
+} from "./utils/benchmark.js";
 import { countPossibleMates } from "./possibleMates.js";
 
 function parseArgs(argv) {
