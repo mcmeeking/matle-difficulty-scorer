@@ -76,7 +76,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 <!-- BENCHMARK:START -->
 ## Benchmark Results
 
-### Last updated: 2026-05-03
+### Last updated: 2026-05-04
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
@@ -131,6 +131,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Basic (30)  | ✅ Match | -S -O |
 | 2026-05-01 | Hard   | %≤3: 49 · Fail: 4 · Avg: 3.65  | Medium (60) | Medium (42) | ✅ Match | ↑S -O |
 | 2026-05-02 | Hard   | %≤3: 61 · Fail: 2 · Avg: 3.31  | Medium (48) | Medium (44) | ✅ Match | ↑S -O |
+| 2026-05-03 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.06  | Medium (42) | Medium (33) | ✅ Match | -S -O |
 
-**Accuracy: 50/51 (98%)** across puzzles with community stats.
+**Accuracy: 51/52 (98%)** across puzzles with community stats.
 <!-- BENCHMARK:END -->
