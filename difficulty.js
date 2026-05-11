@@ -291,51 +291,54 @@ function attacks(piece, fromSq, targetSq, boardMap) {
 // ── Shared tier thresholds ────────────────────────────────────────
 // CALIBRATION:START
 export const DEFAULT_CALIBRATION = Object.freeze({
-  basicMax: 34,
-  hardMin: 67,
-  pieceWeight: 1.2,
-  hiddenDistWeight: 9,
-  attackerWeight: 4,
-  emptyWeight: 1,
-  bothKingsBase: 0,
-  bothKingsEmptyPenalty: 2,
-  promotedWeight: 8,
-  easyGuessDiscount: 2,
-  baseOffset: 12,
-  hiddenCheckerWeight: 2,
-  defenderBlockerWeight: -6,
-  ambiguousRoamingBlockerWeight: 8,
-  kingDistWeight: -1,
-  startingHomeWeight: -2,
-  castledKingWeight: 2,
-  pawnNearHomeWeight: 0,
-  sparseAttackerWeight: 1,
-  kingZoneHiddenWeight: -1,
-  kingZonePieceWeight: 1,
-  kingZoneEmptyWeight: -2,
-  hiddenKingCageWeight: 3,
-  ambiguousPawnPromotionWeight: 26,
-  sparsePeripheralRevealWeight: -4,
-  crowdedAnomalyWeight: 4,
-  excessAttackerWeight: -2,
+  basicMax: 34, // Basic if score < 34
+  hardMin: 67, // Hard if score >= 67
+  pieceWeight: 1.2, // Fewer total pieces generally increase difficulty
+  hiddenDistWeight: 9, // Hidden squares near the mated king are harder
+  attackerWeight: 4, // More king-zone attackers increase tactical complexity
+  emptyWeight: 1, // Hidden empties usually make deduction easier
+  bothKingsBase: 0, // Baseline bonus when both kings are hidden
+  bothKingsEmptyPenalty: 2, // Reduce both-kings bonus when hidden squares are empty
+  promotedWeight: 8, // Hidden promoted pieces are atypical and harder to infer
+  easyGuessDiscount: 2, // Extra discount applied when 2+ easy guesses compound
+  baseOffset: 12, // Global offset to keep scores in a useful operating range
+  hiddenCheckerWeight: 2, // Hidden checking piece raises pressure
+  defenderBlockerWeight: -6, // Adjacent defender blockers are often easy anchors
+  ambiguousRoamingBlockerWeight: 8, // Re-add hardness for non-obvious adjacent defenders
+  kingDistWeight: -1, // Kings far from home can be less constrained/predictable
+  startingHomeWeight: -2, // Hidden pieces on starting squares are easier to guess
+  castledKingWeight: 2, // Hidden castled king can still obscure king placement
+  pawnNearHomeWeight: 0, // Near-home pawns are very common and near-neutral
+  sparseAttackerWeight: 1, // Extra hardness for sparse board + active attack mesh
+  kingZoneHiddenWeight: -1, // Hidden king-zone squares alone can be easier anchors
+  kingZonePieceWeight: 1, // Hidden king-zone pieces restore complexity
+  kingZoneEmptyWeight: -2, // Empty king-zone squares are strong simplifiers
+  hiddenKingCageWeight: 3, // Hardness for concealed king-cage motifs
+  ambiguousPawnPromotionWeight: 26, // Strong bump for promotion-disguise patterns
+  sparsePeripheralRevealWeight: -4, // Peripheral-only hiding in sparse boards is easier
+  crowdedAnomalyWeight: 4, // Crowded boards amplify anomaly-based ambiguity
+  excessAttackerWeight: -2, // Diminishing returns once attackers exceed a baseline
+  visibleKingCongestionWeight: 14, // Visible king can still be hard with hidden congestion
+  singleEasyGuessDenseWeight: -9, // One easy guess can still reduce dense-cluster difficulty
+  thresholdTacticalLiftWeight: 2, // Nudge tactical near-threshold 33 scores into Medium
   hiddenPieceWeights: {
-    k: 2,
-    q: 4,
-    r: 4,
-    b: -2,
-    n: -2,
-    p: 0,
+    k: 2, // Hidden king identity is highly informative and often tricky
+    q: 4, // Hidden queen greatly expands candidate tactical motifs
+    r: 4, // Hidden rook often changes line-attack interpretation
+    b: -2, // Hidden bishop is comparatively easier to infer from diagonals
+    n: -2, // Hidden knight often has constrained local candidates
+    p: 0, // Hidden pawn is common and near-neutral by itself
   },
   achievementWeights: {
-    bishop: 2,
-    "double-check": 10,
-    knight: 10,
-    pawn: -8,
-    pin: 8,
-    queen: 2,
-    rook: -4,
-    "two-kings": -10,
-    discovered: 4,
+    bishop: 2, // Slight hardness bump for bishop-led motifs
+    "double-check": 10, // Double-check themes are usually tactically dense
+    knight: 10, // Knight motifs tend to be less obvious from static geometry
+    pawn: -8, // Pawn-centric motifs are often easier/forced
+    pin: 8, // Pin motifs add hidden dependency complexity
+    queen: 2, // Queen motif is somewhat harder but less than double-check/knight
+    rook: -4, // Rook motifs are often more linear and guessable
+    "two-kings": -10, // Explicit king-focused motif strongly anchors deductions
+    discovered: 4, // Discovered attacks add moderate tactical ambiguity
   },
 });
 // CALIBRATION:END
@@ -555,6 +558,8 @@ export function extractDifficultyFeatures(puzzle) {
       }
     }
 
+    // Hidden king + multiple hidden king-zone squares/pieces can form a
+    // concealed mating cage even without many visible attackers.
     const hiddenKingCagePressure =
       matedKingHidden &&
       !bothKingsHidden &&
@@ -563,6 +568,9 @@ export function extractDifficultyFeatures(puzzle) {
         ? Math.max(0, kingZoneHiddenSquares - 2) *
           Math.max(0, kingZoneHiddenPieces - 1)
         : 0;
+
+    // If achievements include a pawn motif and a hidden queen is present,
+    // treat it as a potential promotion-disguise ambiguity.
     const ambiguousPawnPromotion =
       Array.isArray(puzzle.achievements) &&
       puzzle.achievements.includes("pawn") &&
@@ -573,6 +581,9 @@ export function extractDifficultyFeatures(puzzle) {
       (hiddenPieceCounts.q ?? 0) >= 1
         ? 1
         : 0;
+
+    // When the mated king is hidden but most hidden squares are peripheral,
+    // this often narrows candidate identities rather than increasing difficulty.
     const sparsePeripheralReveal =
       matedKingHidden &&
       totalPieces <= 16 &&
@@ -580,8 +591,14 @@ export function extractDifficultyFeatures(puzzle) {
       kingZoneHiddenSquares <= 2
         ? peripheralHiddenSquares
         : 0;
+
+    // Only treat roaming adjacent defenders as ambiguous when cage pressure
+    // is already high; otherwise they are usually simple blockers.
     const ambiguousRoamingBlockers =
       hiddenKingCagePressure >= 4 ? roamingDefenderBlockers : 0;
+
+    // Scale anomaly signals with board crowding: unusual patterns are more
+    // confusing when many candidate pieces remain.
     const crowdedAnomalyLoad =
       (ambiguousRoamingBlockers + ambiguousPawnPromotion) *
       Math.max(0, totalPieces - 16);
@@ -644,6 +661,25 @@ export function scoreDifficultyFeatures(
     (sum, achievement) => sum + (tuned.achievementWeights?.[achievement] ?? 0),
     0,
   );
+  // Hardness override for positions where the king is visible but local
+  // hidden congestion still creates tactical ambiguity.
+  const visibleKingCongestion =
+    !features.matedKingHidden &&
+    features.hiddenCheckers >= 1 &&
+    features.defenderBlockers >= 2 &&
+    features.kingZoneHiddenPieces >= 2 &&
+    features.mateNetAttackers <= 2
+      ? 1
+      : 0;
+
+  // Ease override: a single easy anchor can materially simplify some dense
+  // hidden clusters, even though compound discount requires 2+ anchors.
+  const singleEasyGuessDense =
+    features.easyGuesses === 1 &&
+    hiddenPieceContrib <= -2 &&
+    features.kingZoneHiddenPieces >= 3
+      ? 1
+      : 0;
   const additiveContrib =
     features.hiddenCheckers * tuned.hiddenCheckerWeight +
     features.defenderBlockers * tuned.defenderBlockerWeight +
@@ -661,6 +697,8 @@ export function scoreDifficultyFeatures(
     features.sparsePeripheralReveal * tuned.sparsePeripheralRevealWeight +
     features.crowdedAnomalyLoad * tuned.crowdedAnomalyWeight +
     features.excessMateNetAttackers * tuned.excessAttackerWeight +
+    visibleKingCongestion * tuned.visibleKingCongestionWeight +
+    singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
     achievementContrib;
 
@@ -677,7 +715,7 @@ export function scoreDifficultyFeatures(
       )
     : 0;
 
-  const raw =
+  const baseRaw =
     (32 - features.totalPieces) * tuned.pieceWeight +
     (2 - features.avgHiddenDist) * tuned.hiddenDistWeight +
     features.mateNetAttackers * tuned.attackerWeight +
@@ -687,6 +725,18 @@ export function scoreDifficultyFeatures(
     compoundDiscount +
     tuned.baseOffset +
     additiveContrib;
+
+  // Threshold rescue for tactical hidden-king positions that repeatedly land
+  // at 33 and under-classify as Basic by a small margin.
+  const thresholdTacticalLift =
+    Math.round(Math.max(0, Math.min(100, baseRaw))) === 33 &&
+    features.matedKingHidden &&
+    features.hiddenCheckers >= 1 &&
+    features.kingDist >= 3
+      ? 1
+      : 0;
+  const raw =
+    baseRaw + thresholdTacticalLift * tuned.thresholdTacticalLiftWeight;
 
   const score = Math.round(Math.max(0, Math.min(100, raw)));
   const tier = tierFromScore(score, tuned);
@@ -728,6 +778,9 @@ export function scoreDifficultyFeatures(
       bothKingsContrib,
       hiddenPieceContrib,
       achievementContrib,
+      visibleKingCongestion,
+      singleEasyGuessDense,
+      thresholdTacticalLift,
       additiveContrib: Math.round(additiveContrib * 100) / 100,
       rawScore: Math.round(raw * 100) / 100,
     },

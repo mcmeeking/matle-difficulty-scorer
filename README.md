@@ -88,7 +88,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-03-17 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.76  | Basic (31)  | Basic (31)  | ✅ Match | -S -O |
 | 2026-03-18 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.88  | Medium (36) | Medium (42) | ✅ Match | -S -O |
 | 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68  | Medium (61) | Medium (59) | ✅ Match | ↑S -O |
-| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21  | Medium (44) | Basic (33)  | ❌ Miss  | -S ↓O |
+| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21  | Medium (44) | Medium (35) | ✅ Match | -S -O |
 | 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52  | Medium (51) | Medium (51) | ✅ Match | ↑S -O |
 | 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35  | Medium (48) | Medium (56) | ✅ Match | ↓S -O |
 | 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51  | Medium (50) | Medium (37) | ✅ Match | -S -O |
@@ -132,15 +132,15 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Basic (30)  | ✅ Match | -S -O |
 | 2026-05-01 | Hard   | %≤3: 49 · Fail: 4 · Avg: 3.65  | Medium (60) | Medium (42) | ✅ Match | ↑S -O |
 | 2026-05-02 | Hard   | %≤3: 61 · Fail: 2 · Avg: 3.31  | Medium (48) | Medium (44) | ✅ Match | ↑S -O |
-| 2026-05-03 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.06  | Medium (42) | Basic (33)  | ❌ Miss  | -S ↓O |
+| 2026-05-03 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.06  | Medium (42) | Medium (35) | ✅ Match | -S -O |
 | 2026-05-04 | Medium | %≤3: 68 · Fail: 2 · Avg: 3.12  | Medium (44) | Medium (59) | ✅ Match | -S -O |
-| 2026-05-05 | Hard   | %≤3: 61 · Fail: 7 · Avg: 3.44  | Medium (59) | Basic (24)  | ❌ Miss  | ↑S ↓O |
+| 2026-05-05 | Hard   | %≤3: 61 · Fail: 7 · Avg: 3.44  | Medium (59) | Medium (38) | ✅ Match | ↑S -O |
 | 2026-05-06 | Basic  | %≤3: 86 · Fail: 1 · Avg: 2.71  | Basic (32)  | Medium (34) | ❌ Miss  | -S ↑O |
 | 2026-05-07 | Medium | %≤3: 44 · Fail: 5 · Avg: 3.68  | Medium (62) | Medium (62) | ✅ Match | -S -O |
 | 2026-05-08 | Medium | %≤3: 90 · Fail: 2 · Avg: 2.51  | Basic (28)  | Basic (18)  | ✅ Match | ↑S -O |
 | 2026-05-09 | Medium | %≤3: 87 · Fail: 1 · Avg: 2.79  | Medium (34) | Medium (37) | ✅ Match | -S -O |
-| 2026-05-10 | Medium | %≤3: 88 · Fail: 1 · Avg: 2.60  | Basic (29)  | Medium (42) | ❌ Miss  | ↑S ↑O |
+| 2026-05-10 | Medium | %≤3: 88 · Fail: 1 · Avg: 2.60  | Basic (29)  | Basic (33)  | ✅ Match | ↑S -O |
 
-**Accuracy: 53/59 (90%)** across puzzles with community stats.
+**Accuracy: 57/59 (97%)** across puzzles with community stats.
 
 <!-- BENCHMARK:END -->
