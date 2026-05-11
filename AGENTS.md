@@ -52,9 +52,10 @@ npm run daily-summary
   section unless you are also changing the benchmark generator.
 - `benchmark-results.json` and `calibration-results.json` are local/generated
   outputs and should stay ignored.
-- The benchmark's community-ground-truth thresholds are intentionally fixed in
-  `utils/benchmark.js` (`Basic < 33`, `Hard >= 61`) so benchmark comparisons do
-  not drift when live scorer thresholds change.
+- The benchmark's community-ground-truth thresholds are intentionally sourced
+  from `difficulty.js` (`TIER_BASIC_MAX`, `TIER_HARD_MIN`) and consumed in
+  `utils/benchmark.js` so benchmark comparisons stay aligned with live tier
+  boundaries.
 - `utils/calibrate.js --apply` edits `difficulty.js` directly by replacing the
   calibration block bounded by `// CALIBRATION:START` and `// CALIBRATION:END`.
   Preserve those markers.

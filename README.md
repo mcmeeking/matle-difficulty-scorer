@@ -20,7 +20,7 @@ Heuristic difficulty scoring for [Matle.io](https://matle.io) chess puzzles.
 | Hidden empty squares               | Easier (fewer pieces to guess)       |
 | Multiple easy-to-guess squares     | Easier (compound elimination effect) |
 
-**Tiers:** Basic (0–32) · Medium (33–60) · Hard (61–100)
+**Tiers:** Basic (0–33) · Medium (34–66) · Hard (67–100)
 
 ## Usage
 
@@ -74,6 +74,7 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
+
 ## Benchmark Results
 
 ### Last updated: 2026-05-11
@@ -81,13 +82,13 @@ and commit updates. Local benchmark JSON output is now ignored.
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
 | 2026-03-13 | Medium | %≤3: 83 · Fail: 0 · Avg: 3.00  | Medium (38) | Medium (38) | ✅ Match | -S -O |
-| 2026-03-14 | Hard   | %≤3: 46 · Fail: 4 · Avg: 3.72  | Hard (62)   | Medium (58) | ❌ Miss  | -S ↓O |
+| 2026-03-14 | Hard   | %≤3: 46 · Fail: 4 · Avg: 3.72  | Medium (62) | Medium (58) | ✅ Match | ↑S -O |
 | 2026-03-15 | Medium | %≤3: 72 · Fail: 2 · Avg: 3.06  | Medium (42) | Medium (36) | ✅ Match | -S -O |
 | 2026-03-16 | Hard   | %≤3: 58 · Fail: 6 · Avg: 3.47  | Medium (58) | Medium (45) | ✅ Match | ↑S -O |
 | 2026-03-17 | Basic  | %≤3: 90 · Fail: 0 · Avg: 2.76  | Basic (31)  | Basic (31)  | ✅ Match | -S -O |
 | 2026-03-18 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.88  | Medium (36) | Medium (42) | ✅ Match | -S -O |
-| 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68  | Hard (61)   | Hard (59)   | ✅ Match | -S -O |
-| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21  | Medium (44) | Medium (33) | ✅ Match | -S -O |
+| 2026-03-19 | Hard   | %≤3: 42 · Fail: 4 · Avg: 3.68  | Medium (61) | Medium (59) | ✅ Match | ↑S -O |
+| 2026-03-20 | Medium | %≤3: 65 · Fail: 1 · Avg: 3.21  | Medium (44) | Basic (33)  | ❌ Miss  | -S ↓O |
 | 2026-03-21 | Hard   | %≤3: 49 · Fail: 0 · Avg: 3.52  | Medium (51) | Medium (51) | ✅ Match | ↑S -O |
 | 2026-03-22 | Basic  | %≤3: 62 · Fail: 1 · Avg: 3.35  | Medium (48) | Medium (56) | ✅ Match | ↓S -O |
 | 2026-03-23 | Medium | %≤3: 48 · Fail: 0 · Avg: 3.51  | Medium (50) | Medium (37) | ✅ Match | -S -O |
@@ -118,7 +119,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.02  | Medium (40) | Medium (40) | ✅ Match | -S -O |
 | 2026-04-18 | Basic  | %≤3: 65 · Fail: 1 · Avg: 3.34  | Medium (48) | Medium (34) | ✅ Match | ↓S -O |
 | 2026-04-19 | Hard   | %≤3: 63 · Fail: 3 · Avg: 3.13  | Medium (45) | Medium (57) | ✅ Match | ↑S -O |
-| 2026-04-20 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.79  | Medium (34) | Medium (33) | ✅ Match | -S -O |
+| 2026-04-20 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.79  | Medium (34) | Basic (33)  | ❌ Miss  | -S ↓O |
 | 2026-04-21 | Hard   | %≤3: 83 · Fail: 2 · Avg: 2.94  | Medium (39) | Medium (52) | ✅ Match | ↑S -O |
 | 2026-04-22 | Medium | %≤3: 61 · Fail: 3 · Avg: 3.41  | Medium (52) | Medium (55) | ✅ Match | -S -O |
 | 2026-04-23 | Medium | %≤3: 85 · Fail: 1 · Avg: 2.96  | Medium (38) | Medium (49) | ✅ Match | -S -O |
@@ -131,14 +132,15 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Basic (30)  | ✅ Match | -S -O |
 | 2026-05-01 | Hard   | %≤3: 49 · Fail: 4 · Avg: 3.65  | Medium (60) | Medium (42) | ✅ Match | ↑S -O |
 | 2026-05-02 | Hard   | %≤3: 61 · Fail: 2 · Avg: 3.31  | Medium (48) | Medium (44) | ✅ Match | ↑S -O |
-| 2026-05-03 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.06  | Medium (42) | Medium (33) | ✅ Match | -S -O |
-| 2026-05-04 | Medium | %≤3: 68 · Fail: 2 · Avg: 3.12  | Medium (44) | Hard (59)   | ❌ Miss  | -S ↑O |
+| 2026-05-03 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.06  | Medium (42) | Basic (33)  | ❌ Miss  | -S ↓O |
+| 2026-05-04 | Medium | %≤3: 68 · Fail: 2 · Avg: 3.12  | Medium (44) | Medium (59) | ✅ Match | -S -O |
 | 2026-05-05 | Hard   | %≤3: 61 · Fail: 7 · Avg: 3.44  | Medium (59) | Basic (24)  | ❌ Miss  | ↑S ↓O |
 | 2026-05-06 | Basic  | %≤3: 86 · Fail: 1 · Avg: 2.71  | Basic (32)  | Medium (34) | ❌ Miss  | -S ↑O |
-| 2026-05-07 | Medium | %≤3: 44 · Fail: 5 · Avg: 3.68  | Hard (62)   | Hard (62)   | ✅ Match | ↓S -O |
+| 2026-05-07 | Medium | %≤3: 44 · Fail: 5 · Avg: 3.68  | Medium (62) | Medium (62) | ✅ Match | -S -O |
 | 2026-05-08 | Medium | %≤3: 90 · Fail: 2 · Avg: 2.51  | Basic (28)  | Basic (18)  | ✅ Match | ↑S -O |
 | 2026-05-09 | Medium | %≤3: 87 · Fail: 1 · Avg: 2.79  | Medium (34) | Medium (37) | ✅ Match | -S -O |
 | 2026-05-10 | Medium | %≤3: 88 · Fail: 1 · Avg: 2.60  | Basic (29)  | Medium (42) | ❌ Miss  | ↑S ↑O |
 
-**Accuracy: 54/59 (92%)** across puzzles with community stats.
+**Accuracy: 53/59 (90%)** across puzzles with community stats.
+
 <!-- BENCHMARK:END -->

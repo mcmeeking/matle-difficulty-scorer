@@ -291,8 +291,8 @@ function attacks(piece, fromSq, targetSq, boardMap) {
 // ── Shared tier thresholds ────────────────────────────────────────
 // CALIBRATION:START
 export const DEFAULT_CALIBRATION = Object.freeze({
-  basicMax: 33,
-  hardMin: 59,
+  basicMax: 34,
+  hardMin: 67,
   pieceWeight: 1.2,
   hiddenDistWeight: 9,
   attackerWeight: 4,
@@ -340,9 +340,9 @@ export const DEFAULT_CALIBRATION = Object.freeze({
 });
 // CALIBRATION:END
 
-export const TIER_BASIC_MAX = DEFAULT_CALIBRATION.basicMax; // Basic:  score < 33  (0–32)
-export const TIER_HARD_MIN = DEFAULT_CALIBRATION.hardMin; // Hard:   score >= 61 (61–100)
-// Medium: 33–60
+export const TIER_BASIC_MAX = DEFAULT_CALIBRATION.basicMax; // Basic:  score < 34  (0–33)
+export const TIER_HARD_MIN = DEFAULT_CALIBRATION.hardMin; // Hard:   score >= 67 (67–100)
+// Medium: 34–66
 
 function resolveCalibration(calibration) {
   return {

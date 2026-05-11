@@ -7,7 +7,11 @@
  * Usage:  npm run benchmark
  */
 
-import { calculateDifficulty } from "../difficulty.js";
+import {
+  calculateDifficulty,
+  TIER_BASIC_MAX,
+  TIER_HARD_MIN,
+} from "../difficulty.js";
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -60,8 +64,8 @@ export function extractStats(raw) {
 }
 
 export const TIER_ORDER = { Basic: 0, Medium: 1, Hard: 2 };
-export const ACTUAL_TIER_BASIC_MAX = 33;
-export const ACTUAL_TIER_HARD_MIN = 61;
+export const ACTUAL_TIER_BASIC_MAX = TIER_BASIC_MAX;
+export const ACTUAL_TIER_HARD_MIN = TIER_HARD_MIN;
 
 function tierDeltaArrow(rating, actual) {
   if (!rating || !actual) return "-";
