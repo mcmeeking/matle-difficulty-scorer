@@ -74,10 +74,9 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
-
 ## Benchmark Results
 
-### Last updated: 2026-05-11
+### Last updated: 2026-05-12
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
@@ -140,7 +139,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-05-08 | Medium | %≤3: 90 · Fail: 2 · Avg: 2.51  | Basic (28)  | Basic (18)  | ✅ Match | ↑S -O |
 | 2026-05-09 | Medium | %≤3: 87 · Fail: 1 · Avg: 2.79  | Medium (34) | Medium (37) | ✅ Match | -S -O |
 | 2026-05-10 | Medium | %≤3: 88 · Fail: 1 · Avg: 2.60  | Basic (29)  | Basic (33)  | ✅ Match | ↑S -O |
+| 2026-05-11 | Hard   | %≤3: 35 · Fail: 11 · Avg: 3.94 | Hard (78)   | Medium (40) | ❌ Miss  | -S ↓O |
 
-**Accuracy: 57/59 (97%)** across puzzles with community stats.
-
+**Accuracy: 57/60 (95%)** across puzzles with community stats.
 <!-- BENCHMARK:END -->
