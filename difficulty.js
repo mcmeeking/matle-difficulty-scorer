@@ -315,12 +315,19 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   kingZoneEmptyWeight: -2, // Empty king-zone squares are strong simplifiers
   hiddenKingCageWeight: 3, // Hardness for concealed king-cage motifs
   ambiguousPawnPromotionWeight: 26, // Strong bump for promotion-disguise patterns
+  deceptivePawnAnchorClusterWeight: 27, // Hardness bump for misleading pawn-anchor clusters
+  anchoredKnightSimplificationWeight: -15, // Ease bump for low-pressure knight motifs with strong anchors
   sparsePeripheralRevealWeight: -4, // Peripheral-only hiding in sparse boards is easier
   crowdedAnomalyWeight: 4, // Crowded boards amplify anomaly-based ambiguity
   excessAttackerWeight: -2, // Diminishing returns once attackers exceed a baseline
   visibleKingCongestionWeight: 14, // Visible king can still be hard with hidden congestion
   singleEasyGuessDenseWeight: -9, // One easy guess can still reduce dense-cluster difficulty
   thresholdTacticalLiftWeight: 2, // Nudge tactical near-threshold 33 scores into Medium
+  heavyHiddenAchievementDamp: 0.5, // Damp negative achievement effect when heavy hidden material is present
+  sparseEndgameEaseWeight: -10, // Sparse boards with no hidden queen are easier than attacker count suggests
+  pawnlessSparseEndgameWeight: -8, // Pawnless sparse endgames are even more reducible to clean mechanics
+  dispersedAttackComplexityWeight: 6, // Visible king but hidden attackers spread far adds deduction load
+  concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
     q: 4, // Hidden queen greatly expands candidate tactical motifs
@@ -582,6 +589,36 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Some pawn-themed positions expose multiple easy anchors, but the local
+    // hidden king-zone cluster and hidden queen still make them genuinely hard.
+    const deceptivePawnAnchorCluster =
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("pawn") &&
+      matedKingHidden &&
+      easyGuessSquares.size >= 2 &&
+      defenderBlockers >= 2 &&
+      kingZoneHiddenPieces >= 4 &&
+      (hiddenPieceCounts.q ?? 0) >= 1
+        ? 1
+        : 0;
+
+    // Some knight-themed puzzles look tactical but are materially simplified
+    // by multiple stable anchors and a low-attacker mating net.
+    const anchoredKnightSimplification =
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("knight") &&
+      matedKingHidden &&
+      easyGuessSquares.size >= 2 &&
+      castledKings >= 1 &&
+      startingHome >= 1 &&
+      defenderBlockers >= 1 &&
+      hiddenCheckers >= 1 &&
+      mateNetAttackers <= 2 &&
+      (hiddenPieceCounts.q ?? 0) >= 1 &&
+      (hiddenPieceCounts.n ?? 0) >= 1
+        ? 1
+        : 0;
+
     // When the mated king is hidden but most hidden squares are peripheral,
     // this often narrows candidate identities rather than increasing difficulty.
     const sparsePeripheralReveal =
@@ -603,12 +640,54 @@ export function extractDifficultyFeatures(puzzle) {
       (ambiguousRoamingBlockers + ambiguousPawnPromotion) *
       Math.max(0, totalPieces - 16);
 
+    // Hidden heavy material (≥2 of queens/rooks combined) keeps the position
+    // tactically dense regardless of motif label, so achievement discounts
+    // for "easy" themes should not fully apply.
+    const heavyHiddenMaterial =
+      (hiddenPieceCounts.q ?? 0) + (hiddenPieceCounts.r ?? 0) >= 2 ? 1 : 0;
+
+    // Sparse endgame-style boards with no hidden queen tend to be reducible
+    // by the visible attack mesh, even when several attackers are present.
+    const sparseEndgameEase =
+      totalPieces <= 15 &&
+      mateNetAttackers >= 4 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
+    // Pawnless sparse endgames lack the dynamic pawn structure that drives
+    // hidden material ambiguity; they reduce to clean king-and-piece mechanics.
+    const pawnlessSparseEndgame =
+      sparseEndgameEase && (hiddenPieceCounts.p ?? 0) === 0 ? 1 : 0;
+
+    // King visible but hidden attackers dispersed far from king: deduction
+    // has less spatial anchor than when hidden pieces cluster near the king.
+    const dispersedAttackComplexity =
+      !matedKingHidden && avgHiddenDist >= 2.2 && mateNetAttackers >= 5 ? 1 : 0;
+
+    // Concealed king with a heavy, locally-dense attacker swarm: both kings
+    // hidden plus 5+ attackers in a 3+ piece king zone with hidden major
+    // material creates many candidate mating geometries.
+    const concealedKingHeavyAttack =
+      matedKingHidden &&
+      bothKingsHidden &&
+      mateNetAttackers >= 5 &&
+      (hiddenPieceCounts.q ?? 0) + (hiddenPieceCounts.r ?? 0) >= 2 &&
+      kingZoneHiddenPieces >= 3
+        ? 1
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
       mateNetAttackers,
       sparseAttackProduct: ((32 - totalPieces) * mateNetAttackers) / 10,
       excessMateNetAttackers: Math.max(0, mateNetAttackers - 2),
+      heavyHiddenMaterial,
+      sparseEndgameEase,
+      pawnlessSparseEndgame,
+      dispersedAttackComplexity,
+      concealedKingHeavyAttack,
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
@@ -616,6 +695,8 @@ export function extractDifficultyFeatures(puzzle) {
       matedKingHidden,
       hiddenKingCagePressure,
       ambiguousPawnPromotion,
+      deceptivePawnAnchorCluster,
+      anchoredKnightSimplification,
       sparsePeripheralReveal,
       crowdedAnomalyLoad,
       bothKingsHidden,
@@ -657,10 +738,16 @@ export function scoreDifficultyFeatures(
       sum + count * (tuned.hiddenPieceWeights?.[type] ?? 0),
     0,
   );
-  const achievementContrib = (features.achievements ?? []).reduce(
+  const rawAchievementContrib = (features.achievements ?? []).reduce(
     (sum, achievement) => sum + (tuned.achievementWeights?.[achievement] ?? 0),
     0,
   );
+  // When heavy hidden material (Q/R) is present, dampen negative achievement
+  // discounts: motif-driven "easy" tags often misclassify these positions.
+  const achievementContrib =
+    features.heavyHiddenMaterial && rawAchievementContrib < 0
+      ? rawAchievementContrib * tuned.heavyHiddenAchievementDamp
+      : rawAchievementContrib;
   // Hardness override for positions where the king is visible but local
   // hidden congestion still creates tactical ambiguity.
   const visibleKingCongestion =
@@ -680,6 +767,13 @@ export function scoreDifficultyFeatures(
     features.kingZoneHiddenPieces >= 3
       ? 1
       : 0;
+  // Excess-attacker discount should not apply when both kings are hidden and
+  // the mated king is unknown: extra attackers expand candidate mate squares
+  // rather than anchoring deductions.
+  const effectiveExcessAttackers =
+    features.matedKingHidden && features.bothKingsHidden
+      ? 0
+      : features.excessMateNetAttackers;
   const additiveContrib =
     features.hiddenCheckers * tuned.hiddenCheckerWeight +
     features.defenderBlockers * tuned.defenderBlockerWeight +
@@ -694,9 +788,17 @@ export function scoreDifficultyFeatures(
     features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
     features.hiddenKingCagePressure * tuned.hiddenKingCageWeight +
     features.ambiguousPawnPromotion * tuned.ambiguousPawnPromotionWeight +
+    features.deceptivePawnAnchorCluster *
+      tuned.deceptivePawnAnchorClusterWeight +
+    features.anchoredKnightSimplification *
+      tuned.anchoredKnightSimplificationWeight +
     features.sparsePeripheralReveal * tuned.sparsePeripheralRevealWeight +
     features.crowdedAnomalyLoad * tuned.crowdedAnomalyWeight +
-    features.excessMateNetAttackers * tuned.excessAttackerWeight +
+    effectiveExcessAttackers * tuned.excessAttackerWeight +
+    features.sparseEndgameEase * tuned.sparseEndgameEaseWeight +
+    features.pawnlessSparseEndgame * tuned.pawnlessSparseEndgameWeight +
+    features.dispersedAttackComplexity * tuned.dispersedAttackComplexityWeight +
+    features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
@@ -758,8 +860,15 @@ export function scoreDifficultyFeatures(
       hiddenKingCagePressure:
         Math.round(features.hiddenKingCagePressure * 100) / 100,
       ambiguousPawnPromotion: features.ambiguousPawnPromotion,
+      deceptivePawnAnchorCluster: features.deceptivePawnAnchorCluster,
+      anchoredKnightSimplification: features.anchoredKnightSimplification,
       sparsePeripheralReveal: features.sparsePeripheralReveal,
       crowdedAnomalyLoad: features.crowdedAnomalyLoad,
+      heavyHiddenMaterial: features.heavyHiddenMaterial,
+      sparseEndgameEase: features.sparseEndgameEase,
+      pawnlessSparseEndgame: features.pawnlessSparseEndgame,
+      dispersedAttackComplexity: features.dispersedAttackComplexity,
+      concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
