@@ -328,6 +328,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   pawnlessSparseEndgameWeight: -8, // Pawnless sparse endgames are even more reducible to clean mechanics
   dispersedAttackComplexityWeight: 6, // Visible king but hidden attackers spread far adds deduction load
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
+  smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
     q: 4, // Hidden queen greatly expands candidate tactical motifs
@@ -554,12 +555,23 @@ export function extractDifficultyFeatures(puzzle) {
       }
     }
     let mateNetAttackers = 0;
+    let infiltratingMajorSupport = 0;
     for (const sq of ALL_SQUARES) {
       const p = boardMap[sq];
       if (!p || p.color !== attackerColor) continue;
       for (const target of kingZone) {
         if (attacks(p, sq, target, boardMap)) {
           mateNetAttackers++;
+          // Hidden attacker queen/rook sitting on a square that normally
+          // belongs to a defender piece is a "smothered-support" motif:
+          // the geometry of the mating net hinges on a piece you wouldn't
+          // expect to find there.
+          if (hiddenSet.has(sq) && (p.type === "q" || p.type === "r")) {
+            const home = STARTING[sq];
+            if (home && home.color === matedColor) {
+              infiltratingMajorSupport++;
+            }
+          }
           break;
         }
       }
@@ -676,7 +688,16 @@ export function extractDifficultyFeatures(puzzle) {
       kingZoneHiddenPieces >= 3
         ? 1
         : 0;
-
+    // Smothered-support motif: a hidden attacker major sits deep in defender
+    // territory on a small mating net (visible checker) in a dense board.
+    // The mate geometry hinges on a piece intuition wouldn't expect there.
+    const smotheredSupportMajor =
+      infiltratingMajorSupport > 0 &&
+      totalPieces >= 22 &&
+      mateNetAttackers <= 3 &&
+      hiddenCheckers === 0
+        ? infiltratingMajorSupport
+        : 0;
     return {
       totalPieces,
       avgHiddenDist,
@@ -688,6 +709,7 @@ export function extractDifficultyFeatures(puzzle) {
       pawnlessSparseEndgame,
       dispersedAttackComplexity,
       concealedKingHeavyAttack,
+      smotheredSupportMajor,
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
@@ -799,6 +821,7 @@ export function scoreDifficultyFeatures(
     features.pawnlessSparseEndgame * tuned.pawnlessSparseEndgameWeight +
     features.dispersedAttackComplexity * tuned.dispersedAttackComplexityWeight +
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
+    features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
@@ -869,6 +892,7 @@ export function scoreDifficultyFeatures(
       pawnlessSparseEndgame: features.pawnlessSparseEndgame,
       dispersedAttackComplexity: features.dispersedAttackComplexity,
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
+      smotheredSupportMajor: features.smotheredSupportMajor,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
