@@ -129,6 +129,11 @@ function ensurePuzzles(results) {
 export function findNewNonCloseMisses(results, priorReadme) {
   const priorMisses = parseReadmeMissDates(priorReadme);
   const priorDates = parseReadmeDates(priorReadme);
+  // Oldest date that was visible in the prior committed README. Any current
+  // miss with an older date was already off the windowed table, so we have no
+  // basis to call it a "new" regression — skip it to avoid false positives
+  // when the table windows out historical rows.
+  const priorOldest = priorDates.size ? [...priorDates].sort()[0] : null;
 
   const regressions = [];
   for (const r of results) {
@@ -136,12 +141,10 @@ export function findNewNonCloseMisses(results, priorReadme) {
     if (!gt) continue; // no community stats yet
     if (r.tier === gt) continue; // matches
 
-    // Skip if this date was already a miss in the prior committed state.
-    // If the date is new, we still want to flag it.
+    // Already a known miss in the previously committed table → not new.
     if (priorMisses.has(r.date)) continue;
-    if (priorDates.has(r.date) && !priorMisses.has(r.date)) {
-      // Was a match before, now a miss → regression.
-    }
+    // Date predates the prior README's window → can't tell if this is new.
+    if (priorOldest && r.date < priorOldest) continue;
 
     const distance = tierBoundaryDistance(r.score, gt);
     if (distance == null || distance <= CLOSENESS_TOLERANCE) continue;

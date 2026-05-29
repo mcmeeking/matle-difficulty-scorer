@@ -131,7 +131,10 @@ export function loadLocalData(options = {}) {
   return results;
 }
 
-export function buildTable(results) {
+export const TABLE_WINDOW_DAYS = 30;
+
+export function buildTable(results, options = {}) {
+  const { windowDays = TABLE_WINDOW_DAYS } = options;
   const cols = [
     "Date",
     "Server",
@@ -142,10 +145,10 @@ export function buildTable(results) {
     "Δ",
   ];
 
-  let matches = 0,
-    total = 0;
+  let overallMatches = 0,
+    overallTotal = 0;
 
-  const rows = [];
+  const allRows = [];
   for (const r of results) {
     const s = r.stats;
     const actual = s.total
@@ -157,15 +160,20 @@ export function buildTable(results) {
     const actualTierStr = gt ? `${gt} (${actualScore})` : "-";
     const ourRating = `${r.tier} (${r.score})`;
 
-    let accuracy, delta;
+    let accuracy,
+      delta,
+      scored = false,
+      matched = false;
     if (!gt) {
       accuracy = "-";
       delta = "-S -O";
     } else {
-      total++;
+      scored = true;
+      overallTotal++;
       if (r.tier === gt) {
         accuracy = "✅ Match";
-        matches++;
+        overallMatches++;
+        matched = true;
       } else {
         accuracy = "❌ Miss";
       }
@@ -174,20 +182,37 @@ export function buildTable(results) {
       delta = `${serverDelta}S ${ourDelta}O`;
     }
 
-    rows.push([
-      r.date,
-      r.serverDiff,
-      actual,
-      actualTierStr,
-      ourRating,
-      accuracy,
-      delta,
-    ]);
+    allRows.push({
+      cells: [
+        r.date,
+        r.serverDiff,
+        actual,
+        actualTierStr,
+        ourRating,
+        accuracy,
+        delta,
+      ],
+      scored,
+      matched,
+    });
+  }
+
+  const visibleRows =
+    windowDays && allRows.length > windowDays
+      ? allRows.slice(-windowDays)
+      : allRows;
+
+  let windowMatches = 0,
+    windowTotal = 0;
+  for (const row of visibleRows) {
+    if (!row.scored) continue;
+    windowTotal++;
+    if (row.matched) windowMatches++;
   }
 
   const widths = cols.map((h, i) => {
-    const cellMax = rows.reduce(
-      (mx, row) => Math.max(mx, displayWidth(row[i])),
+    const cellMax = visibleRows.reduce(
+      (mx, row) => Math.max(mx, displayWidth(row.cells[i])),
       0,
     );
     return Math.max(h.length, cellMax);
@@ -200,14 +225,28 @@ export function buildTable(results) {
   const lines = [];
   lines.push(fmtRow(cols));
   lines.push("| " + widths.map((w) => "-".repeat(w)).join(" | ") + " |");
-  for (const row of rows) lines.push(fmtRow(row));
+  for (const row of visibleRows) lines.push(fmtRow(row.cells));
 
-  if (total > 0) {
-    const pct = ((matches / total) * 100).toFixed(0);
-    lines.push(
-      "",
-      `**Accuracy: ${matches}/${total} (${pct}%)** across puzzles with community stats.`,
-    );
+  if (overallTotal > 0) {
+    const overallPct = ((overallMatches / overallTotal) * 100).toFixed(0);
+    lines.push("");
+    if (windowDays && allRows.length > windowDays && windowTotal > 0) {
+      const windowPct = ((windowMatches / windowTotal) * 100).toFixed(0);
+      lines.push(
+        `**Past ${windowDays} days accuracy: ${windowMatches}/${windowTotal} (${windowPct}%)**`,
+      );
+      lines.push(
+        `**Overall accuracy: ${overallMatches}/${overallTotal} (${overallPct}%)** across all puzzles with community stats.`,
+      );
+      lines.push("");
+      lines.push(
+        `_Showing the last ${visibleRows.length} of ${allRows.length} puzzles. See git history for older results._`,
+      );
+    } else {
+      lines.push(
+        `**Accuracy: ${overallMatches}/${overallTotal} (${overallPct}%)** across puzzles with community stats.`,
+      );
+    }
   }
 
   return lines.join("\n");
