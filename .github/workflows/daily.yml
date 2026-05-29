@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   fetch-and-benchmark:
@@ -29,6 +30,23 @@ jobs:
 
       - name: Write daily run summary
         run: npm run daily-summary
+
+      - name: Check for benchmark regressions
+        id: regression
+        run: npm run regression-check
+
+      - name: Open issue for non-close regression
+        if: steps.regression.outputs.has_regression == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: ${{ steps.regression.outputs.issue_title }}
+          ISSUE_BODY_PATH: ${{ steps.regression.outputs.issue_body_path }}
+        run: |
+          gh issue create \
+            --title "$ISSUE_TITLE" \
+            --body-file "$ISSUE_BODY_PATH" \
+            --label "benchmark-regression" \
+            --assignee "Copilot"
 
       - name: Commit changes
         run: |

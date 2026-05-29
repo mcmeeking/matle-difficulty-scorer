@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import {
   actualDifficultyScore,
   actualTier,
+  buildTable,
   loadLocalData,
 } from "./benchmark.js";
 import { puzzleToLichessAnalysis } from "../difficulty.js";
@@ -40,6 +41,11 @@ export function buildDailySummary(result) {
   return lines.join("\n") + "\n";
 }
 
+export function buildBenchmarkSection(results) {
+  const table = buildTable(results);
+  return ["## Benchmark", "", table, ""].join("\n") + "\n";
+}
+
 export function main() {
   const results = loadLocalData({ includePuzzle: true });
   if (!results.length) {
@@ -48,7 +54,8 @@ export function main() {
   }
 
   const latest = results.at(-1);
-  const summary = buildDailySummary(latest);
+  const summary =
+    buildDailySummary(latest) + "\n" + buildBenchmarkSection(results);
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
 
   if (summaryPath) {

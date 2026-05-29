@@ -22,9 +22,14 @@ published board state and community stats.
   tuned defaults back into `difficulty.js`.
 - `utils/notations.js`: prints a puzzle FEN, reconstructed PGN, and Lichess
   analysis URL for a given date.
-- `utils/summary.js`: generates the GitHub Actions daily run summary.
+- `utils/summary.js`: generates the GitHub Actions daily run summary
+  (includes the latest puzzle and the full benchmark table).
+- `utils/regression-check.js`: detects new "non-close" benchmark misses by
+  diffing the current run against the previously committed `README.md`. Used by
+  the daily workflow to open an issue assigned to Copilot when a regression is
+  introduced.
 - `.github/workflows/daily.yml`: daily automation for fetch, benchmark, summary,
-  and commit.
+  regression check, optional issue creation, and commit.
 - `README.md`: human-facing usage docs plus the generated benchmark section.
 
 ## Common Commands
@@ -41,6 +46,7 @@ npm run calibrate -- --prompt
 npm run calibrate -- --apply
 npm run notations -- 2026-04-24
 npm run daily-summary
+npm run regression-check
 ```
 
 ## Repo-Specific Guidance

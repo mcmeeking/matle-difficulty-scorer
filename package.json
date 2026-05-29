@@ -6,6 +6,7 @@
     "notations": "node utils/notations.js",
     "calibrate": "node utils/calibrate.js",
     "daily-summary": "node utils/summary.js",
+    "regression-check": "node utils/regression-check.js",
     "update": "npm run fetch && npm run benchmark"
   },
   "dependencies": {
