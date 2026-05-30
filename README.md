@@ -74,14 +74,12 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
-
 ## Benchmark Results
 
-### Last updated: 2026-05-29
+### Last updated: 2026-05-30
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
-| 2026-04-29 | Hard   | %≤3: 18 · Fail: 13 · Avg: 4.33 | Hard (90)   | Hard (88)   | ✅ Match | -S -O |
 | 2026-04-30 | Basic  | %≤3: 93 · Fail: 1 · Avg: 2.49  | Basic (26)  | Basic (30)  | ✅ Match | -S -O |
 | 2026-05-01 | Hard   | %≤3: 49 · Fail: 4 · Avg: 3.65  | Medium (60) | Medium (36) | ✅ Match | ↑S -O |
 | 2026-05-02 | Hard   | %≤3: 61 · Fail: 2 · Avg: 3.31  | Medium (48) | Medium (38) | ✅ Match | ↑S -O |
@@ -111,10 +109,10 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-05-26 | Medium | %≤3: 88 · Fail: 1 · Avg: 3.00  | Medium (39) | Medium (56) | ✅ Match | -S -O |
 | 2026-05-27 | Hard   | %≤3: 75 · Fail: 2 · Avg: 3.03  | Medium (41) | Medium (47) | ✅ Match | ↑S -O |
 | 2026-05-28 | Medium | %≤3: 45 · Fail: 9 · Avg: 3.71  | Hard (69)   | Hard (69)   | ✅ Match | ↓S -O |
+| 2026-05-29 | Medium | %≤3: 70 · Fail: 3 · Avg: 3.20  | Medium (47) | Medium (37) | ✅ Match | -S -O |
 
 **Past 30 days accuracy: 29/30 (97%)**
-**Overall accuracy: 75/77 (97%)** across all puzzles with community stats.
+**Overall accuracy: 76/78 (97%)** across all puzzles with community stats.
 
-_Showing the last 30 of 77 puzzles. See git history for older results._
-
+_Showing the last 30 of 78 puzzles. See git history for older results._
 <!-- BENCHMARK:END -->
