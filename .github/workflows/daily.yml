@@ -45,8 +45,7 @@ jobs:
           gh issue create \
             --title "$ISSUE_TITLE" \
             --body-file "$ISSUE_BODY_PATH" \
-            --label "benchmark-regression" \
-            --assignee "Copilot"
+            --label "benchmark-regression"
 
       - name: Commit changes
         run: |
