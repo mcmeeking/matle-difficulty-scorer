@@ -1,0 +1,53 @@
+{
+  "HiddenSquares": [
+    "d7",
+    "g5",
+    "c6",
+    "e8",
+    "e7"
+  ],
+  "Difficulty": "Hard",
+  "Board": ". r . . k b . r\np . . . . p p p\n. . B . . . . .\n. . . . p . B .\n. . P p . . . .\nn P . . . . . .\nP . . . . P . P\n. . . R . R K .",
+  "Mainline": [
+    "e2e4",
+    "c7c5",
+    "g1f3",
+    "b8c6",
+    "c2c3",
+    "d7d5",
+    "e4d5",
+    "d8d5",
+    "d2d4",
+    "g8f6",
+    "b2b3",
+    "c8g4",
+    "f1c4",
+    "d5e4",
+    "d1e2",
+    "g4f3",
+    "g2f3",
+    "e4e2",
+    "c4e2",
+    "c5d4",
+    "c1g5",
+    "f6d5",
+    "c3c4",
+    "d5b4",
+    "e2d1",
+    "c6e5",
+    "e1g1",
+    "e5f3",
+    "d1f3",
+    "b4c2",
+    "b1a3",
+    "c2a3",
+    "a1d1",
+    "e7e5",
+    "f3b7",
+    "a8b8",
+    "b7c6"
+  ],
+  "achievements": [
+    "bishop"
+  ]
+}
