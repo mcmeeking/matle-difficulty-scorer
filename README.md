@@ -83,7 +83,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-06-10 | Medium | %≤3: 75 · Fail: 1 · Avg: 3.02 | Medium (40) | Medium (55) | ✅ Match | -S -O |
 | 2026-06-11 | Hard   | %≤3: 45 · Fail: 2 · Avg: 3.60 | Medium (56) | Medium (63) | ✅ Match | ↑S -O |
 | 2026-06-12 | Basic  | %≤3: 70 · Fail: 1 · Avg: 3.12 | Medium (42) | Hard (100)  | ❌ Miss  | ↓S ↑O |
-| 2026-06-13 | Medium | %≤3: 89 · Fail: 1 · Avg: 2.77 | Basic (33)  | Medium (53) | ❌ Miss  | ↑S ↑O |
+| 2026-06-13 | Medium | %≤3: 89 · Fail: 1 · Avg: 2.77 | Basic (33)  | Basic (33)  | ✅ Match | ↑S -O |
 | 2026-06-14 | Hard   | %≤3: 41 · Fail: 2 · Avg: 3.68 | Medium (58) | Medium (35) | ✅ Match | ↑S -O |
 | 2026-06-15 | Basic  | %≤3: 55 · Fail: 1 · Avg: 3.45 | Medium (50) | Basic (19)  | ❌ Miss  | ↓S ↓O |
 | 2026-06-16 | Hard   | %≤3: 89 · Fail: 1 · Avg: 2.83 | Medium (35) | Medium (46) | ✅ Match | ↑S -O |
@@ -99,7 +99,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-06-26 | Medium | %≤3: 54 · Fail: 3 · Avg: 3.49 | Medium (54) | Medium (51) | ✅ Match | -S -O |
 | 2026-06-27 | Basic  | %≤3: 57 · Fail: 3 · Avg: 3.58 | Medium (57) | Medium (44) | ✅ Match | ↓S -O |
 | 2026-06-28 | Medium | %≤3: 63 · Fail: 1 · Avg: 3.22 | Medium (45) | Medium (54) | ✅ Match | -S -O |
-| 2026-06-29 | Medium | %≤3: 63 · Fail: 2 · Avg: 3.32 | Medium (48) | Medium (34) | ✅ Match | -S -O |
+| 2026-06-29 | Medium | %≤3: 63 · Fail: 2 · Avg: 3.32 | Medium (48) | Medium (49) | ✅ Match | -S -O |
 | 2026-06-30 | Hard   | %≤3: 62 · Fail: 2 · Avg: 3.38 | Medium (50) | Medium (52) | ✅ Match | ↑S -O |
 | 2026-07-01 | Hard   | %≤3: 28 · Fail: 5 · Avg: 4.02 | Hard (70)   | Medium (50) | ❌ Miss  | -S ↓O |
 | 2026-07-02 | Medium | %≤3: 43 · Fail: 6 · Avg: 3.80 | Hard (67)   | Medium (65) | ❌ Miss  | ↓S ↓O |
@@ -111,7 +111,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-07-08 | Medium | %≤3: 44 · Fail: 1 · Avg: 3.57 | Medium (53) | Basic (31)  | ❌ Miss  | -S ↓O |
 | 2026-07-09 | Medium | %≤3: 84 · Fail: 0 · Avg: 2.70 | Basic (30)  | Medium (40) | ❌ Miss  | ↑S ↑O |
 
-**Past 30 days accuracy: 18/30 (60%)**
+**Past 30 days accuracy: 19/30 (63%)**
 **Overall accuracy: 104/119 (87%)** across all puzzles with community stats.
 
 _Showing the last 30 of 119 puzzles. See git history for older results._

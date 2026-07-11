@@ -331,6 +331,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
+  homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
     q: 4, // Hidden queen greatly expands candidate tactical motifs
@@ -579,6 +580,24 @@ export function extractDifficultyFeatures(puzzle) {
       }
     }
 
+    // A *visible* attacker queen that already controls one of the mated
+    // king's escape squares does most of the caging work in plain sight,
+    // so the surrounding mate geometry is far easier to reconstruct.
+    let visibleQueenCagesKing = false;
+    for (const sq of ALL_SQUARES) {
+      const p = boardMap[sq];
+      if (!p || p.color !== attackerColor || p.type !== "q") continue;
+      if (hiddenSet.has(sq)) continue; // visible queen only
+      for (const target of kingZone) {
+        if (target === kingSq) continue; // an escape square, not the king
+        if (attacks(p, sq, target, boardMap)) {
+          visibleQueenCagesKing = true;
+          break;
+        }
+      }
+      if (visibleQueenCagesKing) break;
+    }
+
     // Hidden king + multiple hidden king-zone squares/pieces can form a
     // concealed mating cage even without many visible attackers.
     const hiddenKingCagePressure =
@@ -729,6 +748,22 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Home-square caged king: the mated king is hidden but sits on its own
+    // starting square (its location — the linchpin of the deduction — is the
+    // first square anyone guesses), and a *visible* attacker queen already
+    // controls an escape square, so only the checking piece is concealed.
+    // These "the queen does the obvious work, king never left home" mates are
+    // recognizable opening-attack patterns the community solves easily, even
+    // though the hidden checker and cage signals make them look harder.
+    const homeCagedKingMate =
+      matedKingHidden &&
+      kingDist === 0 &&
+      hiddenCheckers >= 1 &&
+      mateNetAttackers <= 2 &&
+      visibleQueenCagesKing
+        ? 1
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -742,6 +777,8 @@ export function extractDifficultyFeatures(puzzle) {
       concealedKingHeavyAttack,
       smotheredSupportMajor,
       hiddenQueenMate,
+      hiddenBishopMate,
+      homeCagedKingMate,
       hiddenBishopMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
@@ -857,6 +894,8 @@ export function scoreDifficultyFeatures(
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
+    features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
+    features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
@@ -929,6 +968,8 @@ export function scoreDifficultyFeatures(
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
+      hiddenBishopMate: features.hiddenBishopMate,
+      homeCagedKingMate: features.homeCagedKingMate,
       hiddenBishopMate: features.hiddenBishopMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
