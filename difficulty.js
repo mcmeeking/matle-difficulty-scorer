@@ -786,6 +786,8 @@ export function extractDifficultyFeatures(puzzle) {
       easyGuessSquares.size >= 2 &&
       (hiddenPieceCounts.r ?? 0) >= 1 &&
       (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
 
     // Hidden king variant: concealed queen checker plus hidden bishop pair in
     // a tight king zone can look deceptively simple due to blocker anchors.
