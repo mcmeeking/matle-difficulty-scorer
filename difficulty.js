@@ -317,6 +317,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   ambiguousPawnPromotionWeight: 26, // Strong bump for promotion-disguise patterns
   deceptivePawnAnchorClusterWeight: 27, // Hardness bump for misleading pawn-anchor clusters
   anchoredKnightSimplificationWeight: -15, // Ease bump for low-pressure knight motifs with strong anchors
+  knightOnlyKingShellEaseWeight: -8, // Ease bump for knight-only hidden shells around a concealed king with low attacker pressure
   sparsePeripheralRevealWeight: -4, // Peripheral-only hiding in sparse boards is easier
   crowdedAnomalyWeight: 4, // Crowded boards amplify anomaly-based ambiguity
   excessAttackerWeight: -2, // Diminishing returns once attackers exceed a baseline
@@ -632,6 +633,26 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Knight-only hidden king shell with low attacker pressure is often easier
+    // than generic knight motifs: candidate identities are tightly constrained.
+    const knightOnlyKingShellEase =
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("knight") &&
+      matedKingHidden &&
+      hiddenCheckers === 1 &&
+      mateNetAttackers <= 2 &&
+      easyGuessSquares.size === 0 &&
+      hiddenEmpties === 1 &&
+      defenderBlockers <= 1 &&
+      (hiddenPieceCounts.k ?? 0) === 1 &&
+      (hiddenPieceCounts.n ?? 0) >= 3 &&
+      (hiddenPieceCounts.q ?? 0) === 0 &&
+      (hiddenPieceCounts.r ?? 0) === 0 &&
+      (hiddenPieceCounts.b ?? 0) === 0 &&
+      (hiddenPieceCounts.p ?? 0) === 0
+        ? 1
+        : 0;
+
     // When the mated king is hidden but most hidden squares are peripheral,
     // this often narrows candidate identities rather than increasing difficulty.
     const sparsePeripheralReveal =
@@ -735,6 +756,7 @@ export function extractDifficultyFeatures(puzzle) {
       ambiguousPawnPromotion,
       deceptivePawnAnchorCluster,
       anchoredKnightSimplification,
+      knightOnlyKingShellEase,
       sparsePeripheralReveal,
       crowdedAnomalyLoad,
       bothKingsHidden,
@@ -830,6 +852,7 @@ export function scoreDifficultyFeatures(
       tuned.deceptivePawnAnchorClusterWeight +
     features.anchoredKnightSimplification *
       tuned.anchoredKnightSimplificationWeight +
+    features.knightOnlyKingShellEase * tuned.knightOnlyKingShellEaseWeight +
     features.sparsePeripheralReveal * tuned.sparsePeripheralRevealWeight +
     features.crowdedAnomalyLoad * tuned.crowdedAnomalyWeight +
     effectiveExcessAttackers * tuned.excessAttackerWeight +
@@ -902,6 +925,7 @@ export function scoreDifficultyFeatures(
       ambiguousPawnPromotion: features.ambiguousPawnPromotion,
       deceptivePawnAnchorCluster: features.deceptivePawnAnchorCluster,
       anchoredKnightSimplification: features.anchoredKnightSimplification,
+      knightOnlyKingShellEase: features.knightOnlyKingShellEase,
       sparsePeripheralReveal: features.sparsePeripheralReveal,
       crowdedAnomalyLoad: features.crowdedAnomalyLoad,
       heavyHiddenMaterial: features.heavyHiddenMaterial,
