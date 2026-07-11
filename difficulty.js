@@ -332,6 +332,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
+  overDeterminedBishopMateWeight: -20, // Clean hidden-bishop diagonal mate with a redundant attacker mesh is easier than its dense attack count implies
   hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
@@ -811,6 +812,23 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Over-determined hidden-bishop mate: a single concealed bishop delivers a
+    // clean diagonal check against a hidden king, with no hidden heavy material
+    // and a heavily redundant attacker mesh (6+ king-zone attackers). The
+    // redundant attackers leave essentially one mating idea, and the bishop's
+    // long diagonal is easy to spot, so these solve more easily than the dense
+    // attacker count suggests.
+    const overDeterminedBishopMate =
+      matedKingHidden &&
+      hiddenBishopCheckers >= 1 &&
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("bishop") &&
+      (hiddenPieceCounts.q ?? 0) === 0 &&
+      (hiddenPieceCounts.r ?? 0) === 0 &&
+      mateNetAttackers >= 6
+        ? 1
+        : 0;
+
     // Home-square caged king: the mated king is hidden but sits on its own
     // starting square (its location — the linchpin of the deduction — is the
     // first square anyone guesses), and a *visible* attacker queen already
@@ -857,6 +875,7 @@ export function extractDifficultyFeatures(puzzle) {
       concealedKingHeavyAttack,
       smotheredSupportMajor,
       hiddenQueenMate,
+      overDeterminedBishopMate,
       hiddenQueenBishopCageMate,
       hiddenBishopMate,
       visibleKingHiddenBishopMate,
@@ -977,6 +996,7 @@ export function scoreDifficultyFeatures(
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
+    features.overDeterminedBishopMate * tuned.overDeterminedBishopMateWeight +
     features.hiddenQueenBishopCageMate * tuned.hiddenQueenBishopCageMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     features.visibleKingHiddenBishopMate *
@@ -1056,6 +1076,7 @@ export function scoreDifficultyFeatures(
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
+      overDeterminedBishopMate: features.overDeterminedBishopMate,
       hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
       hiddenBishopMate: features.hiddenBishopMate,
       visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
