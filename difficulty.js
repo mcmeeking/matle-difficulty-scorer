@@ -332,6 +332,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
+  hiddenRookCageMateWeight: 18, // Sparse hidden-king cage where concealed rook support and hidden checkers keep mate geometry non-obvious
   overDeterminedBishopMateWeight: -20, // Clean hidden-bishop diagonal mate with a redundant attacker mesh is easier than its dense attack count implies
   hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
@@ -778,6 +779,21 @@ export function extractDifficultyFeatures(puzzle) {
       mateNetAttackers >= 3
         ? 1
         : 0;
+    // Sparse endgames can look easy from anchor squares, but remain hard when a
+    // hidden rook supports a concealed king-cage mate with hidden checking pressure.
+    const hiddenRookCageMate =
+      matedKingHidden &&
+      !bothKingsHidden &&
+      sparseEndgameEase &&
+      hiddenCheckers >= 1 &&
+      kingZoneHiddenSquares >= 3 &&
+      kingZoneHiddenPieces >= 3 &&
+      easyGuessSquares.size >= 2 &&
+      (hiddenPieceCounts.r ?? 0) >= 1 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     // Hidden king variant: concealed queen checker plus hidden bishop pair in
     // a tight king zone can look deceptively simple due to blocker anchors.
     const hiddenQueenBishopCageMate =
@@ -875,6 +891,7 @@ export function extractDifficultyFeatures(puzzle) {
       concealedKingHeavyAttack,
       smotheredSupportMajor,
       hiddenQueenMate,
+      hiddenRookCageMate,
       overDeterminedBishopMate,
       hiddenQueenBishopCageMate,
       hiddenBishopMate,
@@ -996,6 +1013,7 @@ export function scoreDifficultyFeatures(
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
+    features.hiddenRookCageMate * tuned.hiddenRookCageMateWeight +
     features.overDeterminedBishopMate * tuned.overDeterminedBishopMateWeight +
     features.hiddenQueenBishopCageMate * tuned.hiddenQueenBishopCageMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
@@ -1076,6 +1094,7 @@ export function scoreDifficultyFeatures(
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
+      hiddenRookCageMate: features.hiddenRookCageMate,
       overDeterminedBishopMate: features.overDeterminedBishopMate,
       hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
       hiddenBishopMate: features.hiddenBishopMate,
