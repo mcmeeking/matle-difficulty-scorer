@@ -326,6 +326,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   heavyHiddenAchievementDamp: 0.5, // Damp negative achievement effect when heavy hidden material is present
   sparseEndgameEaseWeight: -10, // Sparse boards with no hidden queen are easier than attacker count suggests
   pawnlessSparseEndgameWeight: -8, // Pawnless sparse endgames are even more reducible to clean mechanics
+  sparseHiddenBishopMateEaseWeight: -14, // Ultra-sparse hidden-bishop mates with both kings hidden are usually direct geometry, not broad tactical ambiguity
   dispersedAttackComplexityWeight: 6, // Visible king but hidden attackers spread far adds deduction load
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
@@ -692,6 +693,23 @@ export function extractDifficultyFeatures(puzzle) {
     const pawnlessSparseEndgame =
       sparseEndgameEase && (hiddenPieceCounts.p ?? 0) === 0 ? 1 : 0;
 
+    // Ultra-sparse hidden-bishop mates (both kings hidden, one concealed checker,
+    // no hidden heavy/knight/pawn material) usually collapse to direct mating
+    // geometry and are easier than baseline sparse-attacker terms imply.
+    const sparseHiddenBishopMateEase =
+      totalPieces <= 6 &&
+      matedKingHidden &&
+      bothKingsHidden &&
+      hiddenCheckers >= 1 &&
+      (hiddenPieceCounts.b ?? 0) >= 1 &&
+      (hiddenPieceCounts.q ?? 0) === 0 &&
+      (hiddenPieceCounts.r ?? 0) === 0 &&
+      (hiddenPieceCounts.n ?? 0) === 0 &&
+      (hiddenPieceCounts.p ?? 0) === 0 &&
+      mateNetAttackers <= 3
+        ? 1
+        : 0;
+
     // King visible but hidden attackers dispersed far from king: deduction
     // has less spatial anchor than when hidden pieces cluster near the king.
     const dispersedAttackComplexity =
@@ -757,6 +775,7 @@ export function extractDifficultyFeatures(puzzle) {
       heavyHiddenMaterial,
       sparseEndgameEase,
       pawnlessSparseEndgame,
+      sparseHiddenBishopMateEase,
       dispersedAttackComplexity,
       concealedKingHeavyAttack,
       smotheredSupportMajor,
@@ -871,6 +890,7 @@ export function scoreDifficultyFeatures(
     effectiveExcessAttackers * tuned.excessAttackerWeight +
     features.sparseEndgameEase * tuned.sparseEndgameEaseWeight +
     features.pawnlessSparseEndgame * tuned.pawnlessSparseEndgameWeight +
+    features.sparseHiddenBishopMateEase * tuned.sparseHiddenBishopMateEaseWeight +
     features.dispersedAttackComplexity * tuned.dispersedAttackComplexityWeight +
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
@@ -944,6 +964,7 @@ export function scoreDifficultyFeatures(
       heavyHiddenMaterial: features.heavyHiddenMaterial,
       sparseEndgameEase: features.sparseEndgameEase,
       pawnlessSparseEndgame: features.pawnlessSparseEndgame,
+      sparseHiddenBishopMateEase: features.sparseHiddenBishopMateEase,
       dispersedAttackComplexity: features.dispersedAttackComplexity,
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       smotheredSupportMajor: features.smotheredSupportMajor,
