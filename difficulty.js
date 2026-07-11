@@ -333,6 +333,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
   overDeterminedBishopMateWeight: -20, // Clean hidden-bishop diagonal mate with a redundant attacker mesh is easier than its dense attack count implies
+  hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
@@ -775,6 +776,21 @@ export function extractDifficultyFeatures(puzzle) {
       mateNetAttackers >= 3
         ? 1
         : 0;
+    // Hidden king + bishop motif + hidden queen can still be difficult even
+    // when adjacent defenders look guessable: the concealed bishop checker
+    // obscures the local mating geometry.
+    const hiddenBishopMate =
+      matedKingHidden &&
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("bishop") &&
+      (hiddenPieceCounts.q ?? 0) >= 1 &&
+      (hiddenPieceCounts.b ?? 0) >= 2 &&
+      hiddenCheckers >= 1 &&
+      mateNetAttackers <= 2 &&
+      defenderBlockers >= 2 &&
+      guessableDefenderBlockers === defenderBlockers
+        ? 1
+        : 0;
 
     // Over-determined hidden-bishop mate: a single concealed bishop delivers a
     // clean diagonal check against a hidden king, with no hidden heavy material
@@ -824,6 +840,7 @@ export function extractDifficultyFeatures(puzzle) {
       smotheredSupportMajor,
       hiddenQueenMate,
       overDeterminedBishopMate,
+      hiddenBishopMate,
       homeCagedKingMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
@@ -942,6 +959,7 @@ export function scoreDifficultyFeatures(
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
     features.overDeterminedBishopMate * tuned.overDeterminedBishopMateWeight +
+    features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
@@ -1018,6 +1036,7 @@ export function scoreDifficultyFeatures(
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
       overDeterminedBishopMate: features.overDeterminedBishopMate,
+      hiddenBishopMate: features.hiddenBishopMate,
       homeCagedKingMate: features.homeCagedKingMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
