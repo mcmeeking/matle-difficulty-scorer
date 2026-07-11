@@ -85,7 +85,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-06-12 | Basic  | %≤3: 70 · Fail: 1 · Avg: 3.12 | Medium (42) | Hard (100)  | ❌ Miss  | ↓S ↑O |
 | 2026-06-13 | Medium | %≤3: 89 · Fail: 1 · Avg: 2.77 | Basic (33)  | Basic (33)  | ✅ Match | ↑S -O |
 | 2026-06-14 | Hard   | %≤3: 41 · Fail: 2 · Avg: 3.68 | Medium (58) | Medium (35) | ✅ Match | ↑S -O |
-| 2026-06-15 | Basic  | %≤3: 55 · Fail: 1 · Avg: 3.45 | Medium (50) | Basic (19)  | ❌ Miss  | ↓S ↓O |
+| 2026-06-15 | Basic  | %≤3: 55 · Fail: 1 · Avg: 3.45 | Medium (50) | Medium (35) | ✅ Match | ↓S -O |
 | 2026-06-16 | Hard   | %≤3: 89 · Fail: 1 · Avg: 2.83 | Medium (35) | Medium (46) | ✅ Match | ↑S -O |
 | 2026-06-17 | Medium | %≤3: 57 · Fail: 2 · Avg: 3.49 | Medium (53) | Medium (55) | ✅ Match | -S -O |
 | 2026-06-18 | Medium | %≤3: 51 · Fail: 1 · Avg: 3.52 | Medium (52) | Medium (46) | ✅ Match | -S -O |

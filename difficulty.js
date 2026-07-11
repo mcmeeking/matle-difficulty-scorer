@@ -334,6 +334,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
   hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
+  visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
   homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
@@ -432,6 +433,7 @@ export function extractDifficultyFeatures(puzzle) {
     let guessableDefenderBlockers = 0;
     let hiddenEmpties = 0;
     let hiddenCheckers = 0;
+    let hiddenBishopCheckers = 0;
     let kingZoneHiddenSquares = 0;
     let kingZoneHiddenEmpties = 0;
     let peripheralHiddenSquares = 0;
@@ -490,8 +492,10 @@ export function extractDifficultyFeatures(puzzle) {
       }
 
       // Opponent piece that checks the mated king?
-      if (pc.color === attackerColor && attacks(pc, sq, kingSq, boardMap))
+      if (pc.color === attackerColor && attacks(pc, sq, kingSq, boardMap)) {
         hiddenCheckers++;
+        if (pc.type === "b") hiddenBishopCheckers++;
+      }
     }
 
     let totalPieces = 0;
@@ -823,6 +827,22 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Visible king mated by a concealed bishop slipping past adjacent defenders.
+    // Defender pieces flanking the king normally discount difficulty, but when a
+    // hidden bishop delivers the checkmate along an open diagonal those defenders
+    // are irrelevant: the source of the mate is concealed and the apparent
+    // defensive cover is a false anchor that makes the position look easier than
+    // it plays. Requires the bishop itself to be the hidden checker so the rule
+    // stays scoped to genuinely disguised diagonal mates.
+    const visibleKingHiddenBishopMate =
+      !matedKingHidden &&
+      hiddenBishopCheckers >= 1 &&
+      defenderBlockers >= 2 &&
+      mateNetAttackers >= 3 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -839,6 +859,7 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenQueenMate,
       hiddenQueenBishopCageMate,
       hiddenBishopMate,
+      visibleKingHiddenBishopMate,
       homeCagedKingMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
@@ -958,6 +979,8 @@ export function scoreDifficultyFeatures(
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
     features.hiddenQueenBishopCageMate * tuned.hiddenQueenBishopCageMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
+    features.visibleKingHiddenBishopMate *
+      tuned.visibleKingHiddenBishopMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
@@ -1035,6 +1058,7 @@ export function scoreDifficultyFeatures(
       hiddenQueenMate: features.hiddenQueenMate,
       hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
       hiddenBishopMate: features.hiddenBishopMate,
+      visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
       homeCagedKingMate: features.homeCagedKingMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
