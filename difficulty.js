@@ -292,34 +292,34 @@ function attacks(piece, fromSq, targetSq, boardMap) {
 // CALIBRATION:START
 export const DEFAULT_CALIBRATION = Object.freeze({
   basicMax: 34, // Basic if score < 34
-  hardMin: 67, // Hard if score >= 67
+  hardMin: 65, // Hard if score >= 65
   pieceWeight: 1.2, // Fewer total pieces generally increase difficulty
   hiddenDistWeight: 9, // Hidden squares near the mated king are harder
   attackerWeight: 4, // More king-zone attackers increase tactical complexity
   emptyWeight: 1, // Hidden empties usually make deduction easier
   bothKingsBase: 0, // Baseline bonus when both kings are hidden
-  bothKingsEmptyPenalty: 2, // Reduce both-kings bonus when hidden squares are empty
+  bothKingsEmptyPenalty: 1, // Reduce both-kings bonus when hidden squares are empty
   promotedWeight: 8, // Hidden promoted pieces are atypical and harder to infer
   easyGuessDiscount: 2, // Extra discount applied when 2+ easy guesses compound
   baseOffset: 12, // Global offset to keep scores in a useful operating range
   hiddenCheckerWeight: 2, // Hidden checking piece raises pressure
-  defenderBlockerWeight: -6, // Adjacent defender blockers are often easy anchors
-  ambiguousRoamingBlockerWeight: 8, // Re-add hardness for non-obvious adjacent defenders
+  defenderBlockerWeight: -4, // Adjacent defender blockers are often easy anchors
+  ambiguousRoamingBlockerWeight: 6, // Re-add hardness for non-obvious adjacent defenders
   kingDistWeight: -1, // Kings far from home can be less constrained/predictable
   startingHomeWeight: -2, // Hidden pieces on starting squares are easier to guess
   castledKingWeight: 2, // Hidden castled king can still obscure king placement
   pawnNearHomeWeight: 0, // Near-home pawns are very common and near-neutral
   sparseAttackerWeight: 1, // Extra hardness for sparse board + active attack mesh
-  kingZoneHiddenWeight: -1, // Hidden king-zone squares alone can be easier anchors
+  kingZoneHiddenWeight: -2, // Hidden king-zone squares alone can be easier anchors
   kingZonePieceWeight: 1, // Hidden king-zone pieces restore complexity
-  kingZoneEmptyWeight: -2, // Empty king-zone squares are strong simplifiers
+  kingZoneEmptyWeight: -3, // Empty king-zone squares are strong simplifiers
   hiddenKingCageWeight: 3, // Hardness for concealed king-cage motifs
-  ambiguousPawnPromotionWeight: 26, // Strong bump for promotion-disguise patterns
+  ambiguousPawnPromotionWeight: 28, // Strong bump for promotion-disguise patterns
   deceptivePawnAnchorClusterWeight: 27, // Hardness bump for misleading pawn-anchor clusters
   anchoredKnightSimplificationWeight: -15, // Ease bump for low-pressure knight motifs with strong anchors
   knightOnlyKingShellEaseWeight: -8, // Ease bump for knight-only hidden shells around a concealed king with low attacker pressure
   sparsePeripheralRevealWeight: -4, // Peripheral-only hiding in sparse boards is easier
-  crowdedAnomalyWeight: 4, // Crowded boards amplify anomaly-based ambiguity
+  crowdedAnomalyWeight: 0, // Neutralize crowded-anomaly amplification; it overfit a few dense cases
   excessAttackerWeight: -2, // Diminishing returns once attackers exceed a baseline
   visibleKingCongestionWeight: 14, // Visible king can still be hard with hidden congestion
   singleEasyGuessDenseWeight: -9, // One easy guess can still reduce dense-cluster difficulty
@@ -350,9 +350,9 @@ export const DEFAULT_CALIBRATION = Object.freeze({
     bishop: 2, // Slight hardness bump for bishop-led motifs
     "double-check": 10, // Double-check themes are usually tactically dense
     knight: 10, // Knight motifs tend to be less obvious from static geometry
-    pawn: -8, // Pawn-centric motifs are often easier/forced
+    pawn: -4, // Pawn-centric motifs are often easier/forced
     pin: 8, // Pin motifs add hidden dependency complexity
-    queen: 2, // Queen motif is somewhat harder but less than double-check/knight
+    queen: 4, // Queen motif is often harder than the baseline geometry alone suggests
     rook: -4, // Rook motifs are often more linear and guessable
     "two-kings": -10, // Explicit king-focused motif strongly anchors deductions
     discovered: 4, // Discovered attacks add moderate tactical ambiguity
