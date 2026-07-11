@@ -779,7 +779,6 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenQueenMate,
       hiddenBishopMate,
       homeCagedKingMate,
-      hiddenBishopMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
@@ -895,7 +894,6 @@ export function scoreDifficultyFeatures(
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
-    features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
@@ -970,7 +968,6 @@ export function scoreDifficultyFeatures(
       hiddenQueenMate: features.hiddenQueenMate,
       hiddenBishopMate: features.hiddenBishopMate,
       homeCagedKingMate: features.homeCagedKingMate,
-      hiddenBishopMate: features.hiddenBishopMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
