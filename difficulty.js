@@ -598,6 +598,7 @@ export function extractDifficultyFeatures(puzzle) {
       !bothKingsHidden &&
       easyGuessSquares.size === 0 &&
       defenderBlockers === 0 &&
+      kingZoneHiddenPieces >= 3 &&
       (hiddenPieceCounts.q ?? 0) >= 1
         ? 1
         : 0;
