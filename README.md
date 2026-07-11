@@ -85,13 +85,13 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-06-12 | Basic  | %≤3: 70 · Fail: 1 · Avg: 3.12 | Medium (42) | Hard (100)  | ❌ Miss  | ↓S ↑O |
 | 2026-06-13 | Medium | %≤3: 89 · Fail: 1 · Avg: 2.77 | Basic (33)  | Basic (33)  | ✅ Match | ↑S -O |
 | 2026-06-14 | Hard   | %≤3: 41 · Fail: 2 · Avg: 3.68 | Medium (58) | Medium (35) | ✅ Match | ↑S -O |
-| 2026-06-15 | Basic  | %≤3: 55 · Fail: 1 · Avg: 3.45 | Medium (50) | Basic (19)  | ❌ Miss  | ↓S ↓O |
+| 2026-06-15 | Basic  | %≤3: 55 · Fail: 1 · Avg: 3.45 | Medium (50) | Medium (35) | ✅ Match | ↓S -O |
 | 2026-06-16 | Hard   | %≤3: 89 · Fail: 1 · Avg: 2.83 | Medium (35) | Medium (46) | ✅ Match | ↑S -O |
 | 2026-06-17 | Medium | %≤3: 57 · Fail: 2 · Avg: 3.49 | Medium (53) | Medium (55) | ✅ Match | -S -O |
 | 2026-06-18 | Medium | %≤3: 51 · Fail: 1 · Avg: 3.52 | Medium (52) | Medium (46) | ✅ Match | -S -O |
 | 2026-06-19 | Medium | %≤3: 81 · Fail: 1 · Avg: 2.93 | Medium (37) | Medium (54) | ✅ Match | -S -O |
 | 2026-06-20 | Medium | %≤3: 64 · Fail: 1 · Avg: 3.34 | Medium (48) | Medium (42) | ✅ Match | -S -O |
-| 2026-06-21 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.73 | Basic (32)  | Medium (50) | ❌ Miss  | ↑S ↑O |
+| 2026-06-21 | Medium | %≤3: 86 · Fail: 1 · Avg: 2.73 | Basic (32)  | Basic (30)  | ✅ Match | ↑S -O |
 | 2026-06-22 | Basic  | %≤3: 89 · Fail: 1 · Avg: 2.72 | Basic (32)  | Basic (24)  | ✅ Match | -S -O |
 | 2026-06-23 | Hard   | %≤3: 80 · Fail: 0 · Avg: 2.92 | Medium (36) | Medium (54) | ✅ Match | ↑S -O |
 | 2026-06-24 | Hard   | %≤3: 89 · Fail: 0 · Avg: 2.51 | Basic (25)  | Medium (37) | ❌ Miss  | ↑S ↑O |
@@ -111,8 +111,8 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-07-08 | Medium | %≤3: 44 · Fail: 1 · Avg: 3.57 | Medium (53) | Basic (31)  | ❌ Miss  | -S ↓O |
 | 2026-07-09 | Medium | %≤3: 84 · Fail: 0 · Avg: 2.70 | Basic (30)  | Basic (32)  | ✅ Match | ↑S -O |
 
-**Past 30 days accuracy: 23/30 (77%)**
-**Overall accuracy: 109/119 (92%)** across all puzzles with community stats.
+**Past 30 days accuracy: 24/30 (80%)**
+**Overall accuracy: 110/119 (92%)** across all puzzles with community stats.
 
 _Showing the last 30 of 119 puzzles. See git history for older results._
 <!-- BENCHMARK:END -->
