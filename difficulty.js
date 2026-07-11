@@ -330,6 +330,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
+  hiddenRookCageMateWeight: 18, // Sparse hidden-king cage where concealed rook support and hidden checkers keep mate geometry non-obvious
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
     q: 4, // Hidden queen greatly expands candidate tactical motifs
@@ -712,6 +713,20 @@ export function extractDifficultyFeatures(puzzle) {
       mateNetAttackers >= 3
         ? 1
         : 0;
+    // Sparse endgames can look easy from anchor squares, but remain hard when a
+    // hidden rook supports a concealed king-cage mate with hidden checking pressure.
+    const hiddenRookCageMate =
+      matedKingHidden &&
+      !bothKingsHidden &&
+      sparseEndgameEase &&
+      hiddenCheckers >= 1 &&
+      kingZoneHiddenSquares >= 3 &&
+      kingZoneHiddenPieces >= 3 &&
+      easyGuessSquares.size >= 2 &&
+      (hiddenPieceCounts.r ?? 0) >= 1 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
 
     return {
       totalPieces,
@@ -726,6 +741,7 @@ export function extractDifficultyFeatures(puzzle) {
       concealedKingHeavyAttack,
       smotheredSupportMajor,
       hiddenQueenMate,
+      hiddenRookCageMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
@@ -839,6 +855,7 @@ export function scoreDifficultyFeatures(
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
+    features.hiddenRookCageMate * tuned.hiddenRookCageMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
     hiddenPieceContrib +
@@ -911,6 +928,7 @@ export function scoreDifficultyFeatures(
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
+      hiddenRookCageMate: features.hiddenRookCageMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
