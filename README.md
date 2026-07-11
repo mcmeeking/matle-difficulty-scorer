@@ -109,7 +109,7 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-07-06 | Medium | %≤3: 80 · Fail: 1 · Avg: 3.04 | Medium (40) | Medium (39) | ✅ Match | -S -O |
 | 2026-07-07 | Hard   | %≤3: 40 · Fail: 7 · Avg: 3.84 | Hard (69)   | Medium (38) | ❌ Miss  | -S ↓O |
 | 2026-07-08 | Medium | %≤3: 44 · Fail: 1 · Avg: 3.57 | Medium (53) | Basic (31)  | ❌ Miss  | -S ↓O |
-| 2026-07-09 | Medium | %≤3: 84 · Fail: 0 · Avg: 2.70 | Basic (30)  | Medium (40) | ❌ Miss  | ↑S ↑O |
+| 2026-07-09 | Medium | %≤3: 84 · Fail: 0 · Avg: 2.70 | Basic (30)  | Basic (32)  | ✅ Match | ↑S -O |
 
 **Past 30 days accuracy: 18/30 (60%)**
 **Overall accuracy: 104/119 (87%)** across all puzzles with community stats.
