@@ -337,6 +337,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
+  marchedKingKnightMateWeight: -30, // Concealed-knight king-hunt mate: a king marched deep into enemy territory and mated by a hidden knight (no hidden queen) is a forced, recognizable pattern the community solves easily despite a dense attacker net
   homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
@@ -436,6 +437,7 @@ export function extractDifficultyFeatures(puzzle) {
     let hiddenEmpties = 0;
     let hiddenCheckers = 0;
     let hiddenBishopCheckers = 0;
+    let hiddenKnightCheckers = 0;
     let kingZoneHiddenSquares = 0;
     let kingZoneHiddenEmpties = 0;
     let peripheralHiddenSquares = 0;
@@ -497,6 +499,7 @@ export function extractDifficultyFeatures(puzzle) {
       if (pc.color === attackerColor && attacks(pc, sq, kingSq, boardMap)) {
         hiddenCheckers++;
         if (pc.type === "b") hiddenBishopCheckers++;
+        if (pc.type === "n") hiddenKnightCheckers++;
       }
     }
 
@@ -877,6 +880,21 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Concealed-knight king-hunt mate: the mated king has been marched deep into
+    // enemy territory (far from home) and is mated by a hidden knight, with both
+    // kings hidden and no hidden queen. These king hunts are forced, recognizable
+    // sequences, so the community solves them easily even though the dense
+    // attacker net and concealed checker make the static picture look harder.
+    const marchedKingKnightMate =
+      matedKingHidden &&
+      bothKingsHidden &&
+      hiddenKnightCheckers >= 1 &&
+      kingDist >= 4 &&
+      mateNetAttackers >= 5 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -896,6 +914,7 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenQueenBishopCageMate,
       hiddenBishopMate,
       visibleKingHiddenBishopMate,
+      marchedKingKnightMate,
       homeCagedKingMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
@@ -916,6 +935,7 @@ export function extractDifficultyFeatures(puzzle) {
       castledKings,
       pawnsNearHome,
       hiddenCheckers,
+      hiddenKnightCheckers,
       defenderBlockers,
       guessableDefenderBlockers,
       roamingDefenderBlockers,
@@ -1019,6 +1039,7 @@ export function scoreDifficultyFeatures(
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
     features.visibleKingHiddenBishopMate *
       tuned.visibleKingHiddenBishopMateWeight +
+    features.marchedKingKnightMate * tuned.marchedKingKnightMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
@@ -1099,6 +1120,7 @@ export function scoreDifficultyFeatures(
       hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
       hiddenBishopMate: features.hiddenBishopMate,
       visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
+      marchedKingKnightMate: features.marchedKingKnightMate,
       homeCagedKingMate: features.homeCagedKingMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
@@ -1107,6 +1129,7 @@ export function scoreDifficultyFeatures(
       castledKings: features.castledKings,
       pawnsNearHome: features.pawnsNearHome,
       hiddenCheckers: features.hiddenCheckers,
+      hiddenKnightCheckers: features.hiddenKnightCheckers,
       defenderBlockers: features.defenderBlockers,
       guessableDefenderBlockers: features.guessableDefenderBlockers,
       roamingDefenderBlockers: features.roamingDefenderBlockers,
