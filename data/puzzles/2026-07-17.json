@@ -1,0 +1,41 @@
+{
+  "HiddenSquares": [
+    "d5",
+    "b6",
+    "c6",
+    "e8",
+    "e5"
+  ],
+  "Difficulty": "Medium",
+  "Board": "r . . . k . n r\np . . p . p . p\nb p p . . . . .\n. . b K P . . .\n. . . . P . p q\n. . N . . p P .\nP P P . . . . P\nR . B Q . B . R",
+  "Mainline": [
+    "e2e4",
+    "e7e5",
+    "f2f4",
+    "e5f4",
+    "g1f3",
+    "g7g5",
+    "d2d4",
+    "b8c6",
+    "b1c3",
+    "g5g4",
+    "f3e5",
+    "c6e5",
+    "d4e5",
+    "d8h4",
+    "e1e2",
+    "f4f3",
+    "e2d3",
+    "b7b6",
+    "g2g3",
+    "c8a6",
+    "d3d4",
+    "f8c5",
+    "d4d5",
+    "c7c6"
+  ],
+  "achievements": [
+    "pawn",
+    "two-kings"
+  ]
+}
