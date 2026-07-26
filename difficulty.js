@@ -338,6 +338,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
   marchedKingKnightMateWeight: -30, // Concealed-knight king-hunt mate: a king marched deep into enemy territory and mated by a hidden knight (no hidden queen) is a forced, recognizable pattern the community solves easily despite a dense attacker net
+  marchedKingPawnMateWeight: -20, // King-march endgame where a visible pawn delivers checkmate: the pawn's visible position anchors the mating geometry, making the hidden king placements readily deducible in this classic forced king-chase pattern
   scatteredHiddenKingMateWeight: 34, // Hidden displaced king mated by a visible piece with dispersed hidden material (loose hidden rook, no hidden queen): no local anchor cluster to guess from, so the community finds it far harder than the sparse attacker count implies
   homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
@@ -896,6 +897,24 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // King-march endgame where a visible pawn delivers checkmate: both kings
+    // are hidden after a long king march, but the mating pawn is visible
+    // (hiddenCheckers === 0), anchoring the mating geometry. The "two-kings"
+    // march and the pawn checker together create a classic forced king-chase
+    // pattern the community recognises quickly, so the hidden king placements
+    // are readily deducible despite both kings being concealed.
+    const marchedKingPawnMate =
+      matedKingHidden &&
+      bothKingsHidden &&
+      hiddenCheckers === 0 &&
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("pawn") &&
+      puzzle.achievements.includes("two-kings") &&
+      kingDist >= 4 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     // Scattered hidden-king mate: the mated king is hidden and displaced from
     // its home square, but the mate is delivered by a *visible* piece
     // (no hidden checker) and the hidden squares are dispersed far across the
@@ -935,6 +954,7 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenBishopMate,
       visibleKingHiddenBishopMate,
       marchedKingKnightMate,
+      marchedKingPawnMate,
       scatteredHiddenKingMate,
       homeCagedKingMate,
       hiddenEmpties,
@@ -1061,6 +1081,7 @@ export function scoreDifficultyFeatures(
     features.visibleKingHiddenBishopMate *
       tuned.visibleKingHiddenBishopMateWeight +
     features.marchedKingKnightMate * tuned.marchedKingKnightMateWeight +
+    features.marchedKingPawnMate * tuned.marchedKingPawnMateWeight +
     features.scatteredHiddenKingMate * tuned.scatteredHiddenKingMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
@@ -1143,6 +1164,7 @@ export function scoreDifficultyFeatures(
       hiddenBishopMate: features.hiddenBishopMate,
       visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
       marchedKingKnightMate: features.marchedKingKnightMate,
+      marchedKingPawnMate: features.marchedKingPawnMate,
       scatteredHiddenKingMate: features.scatteredHiddenKingMate,
       homeCagedKingMate: features.homeCagedKingMate,
       bothKingsHidden: features.bothKingsHidden,
