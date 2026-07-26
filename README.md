@@ -111,8 +111,8 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-07-24 | Hard   | %≤3: 87 · Fail: 2 · Avg: 2.53  | Basic (29)  | Medium (34) | ❌ Miss  | ↑S ↑O |
 | 2026-07-25 | Medium | %≤3: 69 · Fail: 1 · Avg: 3.32  | Medium (47) | Medium (54) | ✅ Match | -S -O |
 
-**Past 30 days accuracy: 25/30 (83%)**
-**Overall accuracy: 128/135 (95%)** across all puzzles with community stats.
+**Past 30 days accuracy: 26/30 (87%)**
+**Overall accuracy: 129/135 (96%)** across all puzzles with community stats.
 
 _Showing the last 30 of 135 puzzles. See git history for older results._
 <!-- BENCHMARK:END -->
