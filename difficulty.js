@@ -338,6 +338,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
   marchedKingKnightMateWeight: -30, // Concealed-knight king-hunt mate: a king marched deep into enemy territory and mated by a hidden knight (no hidden queen) is a forced, recognizable pattern the community solves easily despite a dense attacker net
+  scatteredHiddenKingMateWeight: 34, // Hidden displaced king mated by a visible piece with dispersed hidden material (loose hidden rook, no hidden queen): no local anchor cluster to guess from, so the community finds it far harder than the sparse attacker count implies
   homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
   hiddenPieceWeights: {
     k: 2, // Hidden king identity is highly informative and often tricky
@@ -895,6 +896,25 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Scattered hidden-king mate: the mated king is hidden and displaced from
+    // its home square, but the mate is delivered by a *visible* piece
+    // (no hidden checker) and the hidden squares are dispersed far across the
+    // board (high average king distance) rather than clustered around the king.
+    // With an extra hidden rook (and no hidden queen) scattered away from the
+    // king, there is no local anchor cluster to guess from: the whole
+    // difficulty lies in locating a displaced hidden king plus loose hidden
+    // material, which the community finds much harder than the sparse visible
+    // attacker count implies.
+    const scatteredHiddenKingMate =
+      matedKingHidden &&
+      hiddenCheckers === 0 &&
+      kingDist >= 2 &&
+      avgHiddenDist >= 2 &&
+      (hiddenPieceCounts.r ?? 0) >= 1 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     return {
       totalPieces,
       avgHiddenDist,
@@ -915,6 +935,7 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenBishopMate,
       visibleKingHiddenBishopMate,
       marchedKingKnightMate,
+      scatteredHiddenKingMate,
       homeCagedKingMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
@@ -1040,6 +1061,7 @@ export function scoreDifficultyFeatures(
     features.visibleKingHiddenBishopMate *
       tuned.visibleKingHiddenBishopMateWeight +
     features.marchedKingKnightMate * tuned.marchedKingKnightMateWeight +
+    features.scatteredHiddenKingMate * tuned.scatteredHiddenKingMateWeight +
     features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
     visibleKingCongestion * tuned.visibleKingCongestionWeight +
     singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
@@ -1121,6 +1143,7 @@ export function scoreDifficultyFeatures(
       hiddenBishopMate: features.hiddenBishopMate,
       visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
       marchedKingKnightMate: features.marchedKingKnightMate,
+      scatteredHiddenKingMate: features.scatteredHiddenKingMate,
       homeCagedKingMate: features.homeCagedKingMate,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
