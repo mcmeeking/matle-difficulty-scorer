@@ -1,0 +1,53 @@
+{
+  "HiddenSquares": [
+    "f7",
+    "c7",
+    "d4",
+    "c5",
+    "e5"
+  ],
+  "Difficulty": "Basic",
+  "Board": "r . b q . b n .\np p p p . Q . .\n. . . k . n . .\n. . P . N p . .\n. . . P p . . .\n. P N . P . . .\nP . . . . P P .\nR . B . K B . .",
+  "Mainline": [
+    "c2c4",
+    "e7e5",
+    "b1c3",
+    "b8c6",
+    "g1f3",
+    "f7f5",
+    "d2d4",
+    "e5e4",
+    "f3g5",
+    "g8f6",
+    "e2e3",
+    "g7g6",
+    "h2h4",
+    "h7h6",
+    "g5h3",
+    "f8g7",
+    "h3f4",
+    "g6g5",
+    "f4g6",
+    "h8h7",
+    "h4g5",
+    "h6g5",
+    "h1h7",
+    "f6h7",
+    "d1h5",
+    "h7f6",
+    "h5g5",
+    "c6e7",
+    "g6e5",
+    "g7f8",
+    "b2b3",
+    "e7g8",
+    "g5g6",
+    "e8e7",
+    "g6f7",
+    "e7d6",
+    "c4c5"
+  ],
+  "achievements": [
+    "pawn"
+  ]
+}
