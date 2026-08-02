@@ -76,11 +76,10 @@ and commit updates. Local benchmark JSON output is now ignored.
 <!-- BENCHMARK:START -->
 ## Benchmark Results
 
-### Last updated: 2026-08-01
+### Last updated: 2026-08-02
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
-| 2026-07-02 | Medium | %≤3: 43 · Fail: 6 · Avg: 3.80  | Hard (67)   | Hard (65)   | ✅ Match | ↓S -O |
 | 2026-07-03 | Medium | %≤3: 54 · Fail: 3 · Avg: 3.58  | Medium (57) | Medium (53) | ✅ Match | -S -O |
 | 2026-07-04 | Hard   | %≤3: 83 · Fail: 1 · Avg: 2.72  | Basic (32)  | Basic (29)  | ✅ Match | ↑S -O |
 | 2026-07-05 | Basic  | %≤3: 75 · Fail: 1 · Avg: 3.02  | Medium (40) | Medium (35) | ✅ Match | ↓S -O |
@@ -110,9 +109,10 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-07-29 | Hard   | %≤3: 37 · Fail: 1 · Avg: 3.69  | Medium (56) | Medium (42) | ✅ Match | ↑S -O |
 | 2026-07-30 | Medium | %≤3: 85 · Fail: 0 · Avg: 2.90  | Medium (35) | Medium (35) | ✅ Match | -S -O |
 | 2026-07-31 | Medium | %≤3: 56 · Fail: 3 · Avg: 3.41  | Medium (52) | Medium (49) | ✅ Match | -S -O |
+| 2026-08-01 | Basic  | %≤3: 78 · Fail: 3 · Avg: 3.06  | Medium (44) | Medium (48) | ✅ Match | ↓S -O |
 
 **Past 30 days accuracy: 26/30 (87%)**
-**Overall accuracy: 135/141 (96%)** across all puzzles with community stats.
+**Overall accuracy: 136/142 (96%)** across all puzzles with community stats.
 
-_Showing the last 30 of 141 puzzles. See git history for older results._
+_Showing the last 30 of 142 puzzles. See git history for older results._
 <!-- BENCHMARK:END -->
