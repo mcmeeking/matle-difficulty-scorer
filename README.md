@@ -108,11 +108,11 @@ and commit updates. Local benchmark JSON output is now ignored.
 | 2026-08-01 | Basic  | %≤3: 78 · Fail: 3 · Avg: 3.06  | Medium (44) | Medium (48) | ✅ Match | ↓S -O |
 | 2026-08-02 | Hard   | %≤3: 60 · Fail: 1 · Avg: 3.32  | Medium (47) | Medium (59) | ✅ Match | ↑S -O |
 | 2026-08-03 | Medium | %≤3: 55 · Fail: 3 · Avg: 3.46  | Medium (54) | Medium (42) | ✅ Match | -S -O |
-| 2026-08-04 | Medium | %≤3: 74 · Fail: 1 · Avg: 2.98  | Medium (39) | Basic (26)  | ❌ Miss  | -S ↓O |
+| 2026-08-04 | Medium | %≤3: 74 · Fail: 1 · Avg: 2.98  | Medium (39) | Medium (34) | ✅ Match | -S -O |
 | 2026-08-05 | Hard   | %≤3: 73 · Fail: 1 · Avg: 3.19  | Medium (44) | Medium (41) | ✅ Match | ↑S -O |
 
-**Past 30 days accuracy: 25/30 (83%)**
-**Overall accuracy: 139/146 (95%)** across all puzzles with community stats.
+**Past 30 days accuracy: 26/30 (87%)**
+**Overall accuracy: 140/146 (96%)** across all puzzles with community stats.
 
 _Showing the last 30 of 146 puzzles. See git history for older results._
 <!-- BENCHMARK:END -->
