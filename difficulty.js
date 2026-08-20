@@ -327,6 +327,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   heavyHiddenAchievementDamp: 0.5, // Damp negative achievement effect when heavy hidden material is present
   sparseEndgameEaseWeight: -10, // Sparse boards with no hidden queen are easier than attacker count suggests
   pawnlessSparseEndgameWeight: -8, // Pawnless sparse endgames are even more reducible to clean mechanics
+  castledKingSparseEndgameEaseWeight: -25, // Sparse endgame where the hidden mated king is clearly castled and attacker king is visible: king position is trivially known, collapsing the remaining deduction
   sparseHiddenBishopMateEaseWeight: -14, // Ultra-sparse hidden-bishop mates with both kings hidden are usually direct geometry, not broad tactical ambiguity
   dispersedAttackComplexityWeight: 6, // Visible king but hidden attackers spread far adds deduction load
   concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
@@ -729,6 +730,25 @@ export function extractDifficultyFeatures(puzzle) {
     const pawnlessSparseEndgame =
       sparseEndgameEase && (hiddenPieceCounts.p ?? 0) === 0 ? 1 : 0;
 
+    // Castled-king sparse endgame ease: the hidden mated king occupies a classic
+    // castled square (g8/c8/g1/c1), immediately anchoring its identity for the
+    // community. When the attacker king is also visible (not both-kings-hidden),
+    // the board is sparse, and no hidden heavy material (Q/R) is present, the
+    // remaining deduction collapses to a narrow set of light-piece configurations.
+    // The community scores these far more easily than the baseline attacker and
+    // piece-count terms imply, because the mated king's location is effectively
+    // given and the mate geometry follows directly.
+    const castledKingSparseEndgameEase =
+      matedKingHidden &&
+      !bothKingsHidden &&
+      castledKings >= 1 &&
+      totalPieces <= 15 &&
+      mateNetAttackers >= 2 &&
+      (hiddenPieceCounts.q ?? 0) === 0 &&
+      (hiddenPieceCounts.r ?? 0) === 0
+        ? 1
+        : 0;
+
     // Ultra-sparse hidden-bishop mates (both kings hidden, one concealed checker,
     // no hidden heavy/knight/pawn material) usually collapse to direct mating
     // geometry and are easier than baseline sparse-attacker terms imply.
@@ -965,6 +985,7 @@ export function extractDifficultyFeatures(puzzle) {
       heavyHiddenMaterial,
       sparseEndgameEase,
       pawnlessSparseEndgame,
+      castledKingSparseEndgameEase,
       sparseHiddenBishopMateEase,
       dispersedAttackComplexity,
       concealedKingHeavyAttack,
@@ -1092,6 +1113,8 @@ export function scoreDifficultyFeatures(
     effectiveExcessAttackers * tuned.excessAttackerWeight +
     features.sparseEndgameEase * tuned.sparseEndgameEaseWeight +
     features.pawnlessSparseEndgame * tuned.pawnlessSparseEndgameWeight +
+    features.castledKingSparseEndgameEase *
+      tuned.castledKingSparseEndgameEaseWeight +
     features.sparseHiddenBishopMateEase * tuned.sparseHiddenBishopMateEaseWeight +
     features.dispersedAttackComplexity * tuned.dispersedAttackComplexityWeight +
     features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
@@ -1178,6 +1201,7 @@ export function scoreDifficultyFeatures(
       heavyHiddenMaterial: features.heavyHiddenMaterial,
       sparseEndgameEase: features.sparseEndgameEase,
       pawnlessSparseEndgame: features.pawnlessSparseEndgame,
+      castledKingSparseEndgameEase: features.castledKingSparseEndgameEase,
       sparseHiddenBishopMateEase: features.sparseHiddenBishopMateEase,
       dispersedAttackComplexity: features.dispersedAttackComplexity,
       concealedKingHeavyAttack: features.concealedKingHeavyAttack,
