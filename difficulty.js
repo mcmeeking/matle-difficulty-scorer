@@ -339,6 +339,7 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
   visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
   concealedBishopNetComplexityWeight: 8, // Hidden-king single-bishop checker with a moderate attacker net and only one guessable blocker is harder than blocker anchors alone suggest
+  concealedKnightCageMateWeight: 14, // Hidden castled king with no adjacent defender blockers and a concealed knight checker can be materially harder than easy-anchor signals imply
   marchedKingKnightMateWeight: -30, // Concealed-knight king-hunt mate: a king marched deep into enemy territory and mated by a hidden knight (no hidden queen) is a forced, recognizable pattern the community solves easily despite a dense attacker net
   marchedKingPawnMateWeight: -20, // King-march endgame where a visible pawn delivers checkmate: the pawn's visible position anchors the mating geometry, making the hidden king placements readily deducible in this classic forced king-chase pattern
   scatteredHiddenKingMateWeight: 34, // Hidden displaced king mated by a visible piece with dispersed hidden material (loose hidden rook, no hidden queen): no local anchor cluster to guess from, so the community finds it far harder than the sparse attacker count implies
@@ -924,6 +925,25 @@ export function extractDifficultyFeatures(puzzle) {
         ? 1
         : 0;
 
+    // Concealed castled-king knight mate: a hidden castled king with no local
+    // adjacent defender blockers can look easy due to anchor squares, but when
+    // the checking piece is a hidden knight the mating source is non-linear and
+    // under-signaled by low attacker counts.
+    const concealedKnightCageMate =
+      matedKingHidden &&
+      !bothKingsHidden &&
+      hiddenKnightCheckers >= 1 &&
+      hiddenCheckers === 1 &&
+      castledKings >= 1 &&
+      easyGuessSquares.size >= 2 &&
+      defenderBlockers === 0 &&
+      kingZoneHiddenPieces === 1 &&
+      mateNetAttackers <= 2 &&
+      (hiddenPieceCounts.n ?? 0) >= 2 &&
+      (hiddenPieceCounts.q ?? 0) === 0
+        ? 1
+        : 0;
+
     // Concealed-knight king-hunt mate: the mated king has been marched deep into
     // enemy territory (far from home) and is mated by a hidden knight, with both
     // kings hidden and no hidden queen. These king hunts are forced, recognizable
@@ -997,6 +1017,7 @@ export function extractDifficultyFeatures(puzzle) {
       hiddenBishopMate,
       visibleKingHiddenBishopMate,
       concealedBishopNetComplexity,
+      concealedKnightCageMate,
       marchedKingKnightMate,
       marchedKingPawnMate,
       scatteredHiddenKingMate,
@@ -1128,6 +1149,7 @@ export function scoreDifficultyFeatures(
       tuned.visibleKingHiddenBishopMateWeight +
     features.concealedBishopNetComplexity *
       tuned.concealedBishopNetComplexityWeight +
+    features.concealedKnightCageMate * tuned.concealedKnightCageMateWeight +
     features.marchedKingKnightMate * tuned.marchedKingKnightMateWeight +
     features.marchedKingPawnMate * tuned.marchedKingPawnMateWeight +
     features.scatteredHiddenKingMate * tuned.scatteredHiddenKingMateWeight +
@@ -1213,6 +1235,7 @@ export function scoreDifficultyFeatures(
       hiddenBishopMate: features.hiddenBishopMate,
       visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
       concealedBishopNetComplexity: features.concealedBishopNetComplexity,
+      concealedKnightCageMate: features.concealedKnightCageMate,
       marchedKingKnightMate: features.marchedKingKnightMate,
       marchedKingPawnMate: features.marchedKingPawnMate,
       scatteredHiddenKingMate: features.scatteredHiddenKingMate,
