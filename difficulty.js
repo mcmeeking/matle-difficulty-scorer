@@ -334,6 +334,8 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
   hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
   hiddenRookCageMateWeight: 18, // Sparse hidden-king cage where concealed rook support and hidden checkers keep mate geometry non-obvious
+  concealedPawnQueenCageComplexityWeight: 5, // Hidden-king pawn motif with a concealed queen checker and dense local king-zone pressure is harder than pawn labels suggest
+  dualMajorHiddenKingCageWeight: 2, // Both-kings-hidden low-attacker cage with concealed queen+rook support remains harder than baseline attacker terms imply
   overDeterminedBishopMateWeight: -20, // Clean hidden-bishop diagonal mate with a redundant attacker mesh is easier than its dense attack count implies
   hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
   hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
@@ -820,6 +822,36 @@ export function extractDifficultyFeatures(puzzle) {
       (hiddenPieceCounts.q ?? 0) === 0
         ? 1
         : 0;
+    // Pawn-tagged concealed-king positions can still be genuinely complex when
+    // a hidden queen checker sits inside a dense local king zone with few
+    // adjacent defender anchors.
+    const concealedPawnQueenCageComplexity =
+      Array.isArray(puzzle.achievements) &&
+      puzzle.achievements.includes("pawn") &&
+      matedKingHidden &&
+      !bothKingsHidden &&
+      hiddenCheckers >= 1 &&
+      (hiddenPieceCounts.q ?? 0) >= 1 &&
+      kingZoneHiddenPieces >= 3 &&
+      mateNetAttackers >= 4 &&
+      defenderBlockers <= 1
+        ? 1
+        : 0;
+
+    // Both kings hidden with a low visible attacker count can still be hard
+    // when concealed queen+rook support and local king-zone blockers leave
+    // multiple plausible mating geometries.
+    const dualMajorHiddenKingCage =
+      matedKingHidden &&
+      bothKingsHidden &&
+      hiddenCheckers >= 1 &&
+      mateNetAttackers <= 2 &&
+      kingZoneHiddenPieces >= 4 &&
+      defenderBlockers >= 2 &&
+      (hiddenPieceCounts.q ?? 0) >= 1 &&
+      (hiddenPieceCounts.r ?? 0) >= 1
+        ? 1
+        : 0;
 
     // Hidden king variant: concealed queen checker plus hidden bishop pair in
     // a tight king zone can look deceptively simple due to blocker anchors.
@@ -1012,6 +1044,8 @@ export function extractDifficultyFeatures(puzzle) {
       smotheredSupportMajor,
       hiddenQueenMate,
       hiddenRookCageMate,
+      concealedPawnQueenCageComplexity,
+      dualMajorHiddenKingCage,
       overDeterminedBishopMate,
       hiddenQueenBishopCageMate,
       hiddenBishopMate,
@@ -1142,6 +1176,9 @@ export function scoreDifficultyFeatures(
     features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
     features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
     features.hiddenRookCageMate * tuned.hiddenRookCageMateWeight +
+    features.concealedPawnQueenCageComplexity *
+      tuned.concealedPawnQueenCageComplexityWeight +
+    features.dualMajorHiddenKingCage * tuned.dualMajorHiddenKingCageWeight +
     features.overDeterminedBishopMate * tuned.overDeterminedBishopMateWeight +
     features.hiddenQueenBishopCageMate * tuned.hiddenQueenBishopCageMateWeight +
     features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
@@ -1230,6 +1267,9 @@ export function scoreDifficultyFeatures(
       smotheredSupportMajor: features.smotheredSupportMajor,
       hiddenQueenMate: features.hiddenQueenMate,
       hiddenRookCageMate: features.hiddenRookCageMate,
+      concealedPawnQueenCageComplexity:
+        features.concealedPawnQueenCageComplexity,
+      dualMajorHiddenKingCage: features.dualMajorHiddenKingCage,
       overDeterminedBishopMate: features.overDeterminedBishopMate,
       hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
       hiddenBishopMate: features.hiddenBishopMate,
