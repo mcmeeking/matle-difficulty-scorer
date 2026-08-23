@@ -514,6 +514,10 @@ export function extractDifficultyFeatures(puzzle) {
     for (const sq of ALL_SQUARES) {
       if (boardMap[sq]) totalPieces++;
     }
+    const totalHiddenPieces = Object.values(hiddenPieceCounts).reduce(
+      (s, c) => s + c,
+      0,
+    );
 
     const kingHome = matedColor === "w" ? "e1" : "e8";
     const kingDist = chebyshev(kingSq, kingHome);
@@ -694,11 +698,15 @@ export function extractDifficultyFeatures(puzzle) {
 
     // When the mated king is hidden but most hidden squares are peripheral,
     // this often narrows candidate identities rather than increasing difficulty.
+    // Requires at least one visible piece to act as an anchor; when every
+    // piece is hidden there is nothing to anchor deduction on and the ease
+    // discount does not apply.
     const sparsePeripheralReveal =
       matedKingHidden &&
       totalPieces <= 16 &&
       avgHiddenDist >= 2 &&
-      kingZoneHiddenSquares <= 2
+      kingZoneHiddenSquares <= 2 &&
+      totalHiddenPieces < totalPieces
         ? peripheralHiddenSquares
         : 0;
 
