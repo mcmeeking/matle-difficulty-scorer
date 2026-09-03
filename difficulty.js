@@ -995,7 +995,6 @@ export function extractDifficultyFeatures(puzzle) {
       castledKings >= 1 &&
       easyGuessSquares.size >= 2 &&
       defenderBlockers === 0 &&
-      hiddenKingCagePressure === 0 &&
       kingZoneHiddenPieces === 1 &&
       mateNetAttackers <= 3 &&
       (hiddenPieceCounts.q ?? 0) >= 1 &&
