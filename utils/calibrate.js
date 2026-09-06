@@ -15,31 +15,25 @@ import {
 
 const OUTPUT_PATH = "calibration-results.json";
 const SCALAR_SEARCH_SPACE = {
-  pieceWeight: [0.8, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6],
+  pieceWeight: [-1.6, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.6],
   hiddenDistWeight: [4, 6, 8, 9, 10, 11, 12, 13, 14],
   attackerWeight: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4],
   emptyWeight: [-4, -3, -2, -1, 0, 1],
-  bothKingsBase: [0, 2, 4, 6, 8],
-  bothKingsEmptyPenalty: [0, 1, 2, 3, 4],
+  bothKingsWeight: [0, 2, 4, 6, 8],
   promotedWeight: [0, 4, 6, 8, 10, 12],
   easyGuessDiscount: [0, 2, 4, 6, 8, 10],
-  baseOffset: [0, 4, 8, 12, 14, 16, 18, 20],
+  baseOffset: [0, 4, 8, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40],
   hiddenCheckerWeight: [-8, -6, -4, -2, 0, 2, 4, 6, 8],
   defenderBlockerWeight: [-8, -6, -4, -2, 0, 2, 4, 6, 8],
-  ambiguousRoamingBlockerWeight: [0, 2, 4, 6, 8],
   kingDistWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4],
   startingHomeWeight: [-8, -6, -4, -2, 0, 2],
   castledKingWeight: [-8, -6, -4, -2, 0, 2],
-  pawnNearHomeWeight: [-8, -6, -4, -2, 0, 2],
   sparseAttackerWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4],
   kingZoneHiddenWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4],
   kingZonePieceWeight: [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
   kingZoneEmptyWeight: [-6, -5, -4, -3, -2, -1, 0, 1],
   hiddenKingCageWeight: [0, 1, 2, 3, 4, 5, 6, 8],
-  ambiguousPawnPromotionWeight: [0, 4, 8, 12, 16, 20, 24, 26, 28],
-  sparsePeripheralRevealWeight: [-8, -6, -4, -2, 0],
-  crowdedAnomalyWeight: [0, 2, 4, 6, 8],
-  excessAttackerWeight: [-8, -6, -4, -2, 0, 2],
+  remainingUnknownsWeight: [0, 2, 4, 6, 8, 10],
 };
 const MAP_WEIGHT_CANDIDATES = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10];
 const HIDDEN_PIECE_TYPES = ["k", "q", "r", "b", "n", "p"];
@@ -68,12 +62,6 @@ function buildDataset() {
       };
     })
     .filter(Boolean);
-}
-
-function collectAchievementTags(dataset) {
-  return [
-    ...new Set(dataset.flatMap((item) => item.features.achievements)),
-  ].sort();
 }
 
 function predictDataset(dataset, calibration) {
@@ -151,23 +139,15 @@ function evaluatePredictions(predictions, calibration) {
 }
 
 function optimizeThresholds(predictions, calibration) {
-  let bestCalibration = { ...calibration };
-  let bestMetrics = evaluatePredictions(predictions, bestCalibration);
-
-  for (let basicMax = 20; basicMax <= 45; basicMax++) {
-    for (let hardMin = basicMax + 5; hardMin <= 80; hardMin++) {
-      const trial = { ...calibration, basicMax, hardMin };
-      const metrics = evaluatePredictions(predictions, trial);
-      if (isBetter(metrics, bestMetrics)) {
-        bestCalibration = trial;
-        bestMetrics = metrics;
-      }
-    }
-  }
-
+  // Community gates stay frozen at 34/65. Tune weights only.
+  const frozen = {
+    ...calibration,
+    basicMax: DEFAULT_CALIBRATION.basicMax,
+    hardMin: DEFAULT_CALIBRATION.hardMin,
+  };
   return {
-    calibration: bestCalibration,
-    metrics: bestMetrics,
+    calibration: frozen,
+    metrics: evaluatePredictions(predictions, frozen),
   };
 }
 
@@ -176,12 +156,24 @@ function evaluateCalibration(dataset, calibration) {
   return evaluatePredictions(predictions, calibration);
 }
 
+function hardRecall(metrics) {
+  const row = metrics.confusion?.Hard;
+  if (!row) return 0;
+  const total = row.Basic + row.Medium + row.Hard;
+  return total ? row.Hard / total : 0;
+}
+
 function isBetter(candidate, incumbent) {
+  if (Math.abs(candidate.mae - incumbent.mae) > 0.05) {
+    return candidate.mae < incumbent.mae;
+  }
+  const candidateHard = hardRecall(candidate);
+  const incumbentHard = hardRecall(incumbent);
+  if (candidateHard !== incumbentHard) {
+    return candidateHard > incumbentHard;
+  }
   if (candidate.accuracy !== incumbent.accuracy) {
     return candidate.accuracy > incumbent.accuracy;
-  }
-  if (candidate.mae !== incumbent.mae) {
-    return candidate.mae < incumbent.mae;
   }
   return candidate.rmse < incumbent.rmse;
 }
@@ -206,7 +198,7 @@ function setNestedValue(obj, path, nextValue) {
 }
 
 function buildSearchParameters(dataset) {
-  const achievementTags = collectAchievementTags(dataset);
+  void dataset;
   const parameters = Object.entries(SCALAR_SEARCH_SPACE).map(
     ([key, candidates]) => ({
       path: [key],
@@ -219,14 +211,6 @@ function buildSearchParameters(dataset) {
     parameters.push({
       path: ["hiddenPieceWeights", type],
       label: `hiddenPieceWeights.${type}`,
-      candidates: MAP_WEIGHT_CANDIDATES,
-    });
-  }
-
-  for (const tag of achievementTags) {
-    parameters.push({
-      path: ["achievementWeights", tag],
-      label: `achievementWeights.${tag}`,
       candidates: MAP_WEIGHT_CANDIDATES,
     });
   }

@@ -8,19 +8,28 @@ Heuristic difficulty scoring for [Matle.io](https://matle.io) chess puzzles.
 
 ## How it works
 
-`difficulty.js` scores each puzzle 0–100 based on board features:
+`difficulty.js` scores each puzzle 0–100 with a linear combination of
+continuous board features (no boolean motif zoo). Community ground truth is
+fail-first: stats buckets are `[fail, 1, 2, 3, 4, 5]`, and the frozen map
+
+`(avgGuesses - 2.5) * 30 + failPct * 1.5 + 50`
+
+recenters a typical puzzle (~2.5 average guesses) near 50.
 
 | Feature                            | Effect                               |
 | ---------------------------------- | ------------------------------------ |
 | Fewer total pieces                 | Harder (sparser board)               |
 | Hidden squares close to mated king | Harder (part of mating net)          |
 | Mate-net attackers                 | Harder (complex mating pattern)      |
-| Both kings hidden                  | Harder (fewer anchor points)         |
-| Promoted pieces hidden             | Harder (unexpected piece types)      |
-| Hidden empty squares               | Easier (fewer pieces to guess)       |
+| Hidden queen / promoted pieces     | Harder (unexpected identities)       |
+| King-zone cage pressure            | Harder (hidden king × local pieces)  |
+| Hidden empty / starting-home sq.   | Easier (strong deduction anchors)    |
 | Multiple easy-to-guess squares     | Easier (compound elimination effect) |
 
-**Tiers:** Basic (0–33) · Medium (34–66) · Hard (67–100)
+**Tiers:** Basic (0–33) · Medium (34–64) · Hard (65–100)
+
+Calibrate tunes weights only. It must not retune the community map or the
+34 / 65 gates.
 
 ## Usage
 
@@ -51,7 +60,7 @@ npm run benchmark
 | Script                        | Purpose                                             |
 | ----------------------------- | --------------------------------------------------- |
 | `npm run fetch -- [days]`     | Fetch puzzles + stats → `data/` (default: 2 days)   |
-| `npm run calibrate`           | Tune score weights + tier cutoffs, save local JSON  |
+| `npm run calibrate`           | Tune score weights (34/65 gates frozen), save JSON  |
 | `npm run notations -- <date>` | Print a puzzle FEN, PGN, and Lichess analysis URL   |
 | `npm run benchmark`           | Score all local puzzles, print table, update README |
 
@@ -74,45 +83,47 @@ append the latest puzzle's move-aware Lichess analysis link to the run summary,
 and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
+
 ## Benchmark Results
 
 ### Last updated: 2026-09-06
 
-| Date       | Server | Actual Results                | Actual Tier | Our Rating  | Accuracy | Δ     |
-| ---------- | ------ | ----------------------------- | ----------- | ----------- | -------- | ----- |
-| 2026-08-07 | Medium | %≤3: 70 · Fail: 1 · Avg: 3.20 | Medium (44) | Medium (48) | ✅ Match | -S -O |
-| 2026-08-08 | Medium | %≤3: 98 · Fail: 0 · Avg: 2.43 | Basic (23)  | Medium (35) | ❌ Miss  | ↑S ↑O |
-| 2026-08-09 | Medium | %≤3: 77 · Fail: 0 · Avg: 2.93 | Medium (36) | Medium (42) | ✅ Match | -S -O |
-| 2026-08-10 | Hard   | %≤3: 80 · Fail: 2 · Avg: 3.07 | Medium (42) | Medium (50) | ✅ Match | ↑S -O |
-| 2026-08-11 | Basic  | %≤3: 62 · Fail: 0 · Avg: 3.17 | Medium (42) | Medium (34) | ✅ Match | ↓S -O |
-| 2026-08-12 | Hard   | %≤3: 78 · Fail: 1 · Avg: 3.04 | Medium (40) | Medium (38) | ✅ Match | ↑S -O |
-| 2026-08-13 | Hard   | %≤3: 71 · Fail: 2 · Avg: 3.19 | Medium (45) | Medium (49) | ✅ Match | ↑S -O |
-| 2026-08-14 | Medium | %≤3: 89 · Fail: 0 · Avg: 2.63 | Basic (28)  | Basic (30)  | ✅ Match | ↑S -O |
-| 2026-08-15 | Medium | %≤3: 76 · Fail: 1 · Avg: 3.09 | Medium (41) | Medium (59) | ✅ Match | -S -O |
-| 2026-08-16 | Basic  | %≤3: 83 · Fail: 1 · Avg: 2.89 | Medium (36) | Medium (34) | ✅ Match | ↓S -O |
-| 2026-08-17 | Medium | %≤3: 76 · Fail: 1 · Avg: 2.90 | Medium (37) | Medium (52) | ✅ Match | -S -O |
-| 2026-08-18 | Medium | %≤3: 63 · Fail: 3 · Avg: 3.41 | Medium (52) | Medium (53) | ✅ Match | -S -O |
-| 2026-08-19 | Medium | %≤3: 36 · Fail: 4 · Avg: 3.80 | Medium (63) | Medium (59) | ✅ Match | -S -O |
-| 2026-08-20 | Hard   | %≤3: 82 · Fail: 2 · Avg: 2.95 | Medium (39) | Medium (42) | ✅ Match | ↑S -O |
-| 2026-08-21 | Basic  | %≤3: 83 · Fail: 2 · Avg: 2.68 | Basic (33)  | Medium (38) | ❌ Miss  | -S ↑O |
-| 2026-08-22 | Hard   | %≤3: 71 · Fail: 1 · Avg: 3.18 | Medium (44) | Medium (53) | ✅ Match | ↑S -O |
-| 2026-08-23 | Medium | %≤3: 37 · Fail: 8 · Avg: 3.84 | Hard (71)   | Medium (60) | ❌ Miss  | ↓S ↓O |
-| 2026-08-24 | Basic  | %≤3: 83 · Fail: 1 · Avg: 3.01 | Medium (39) | Medium (45) | ✅ Match | ↓S -O |
-| 2026-08-25 | Medium | %≤3: 39 · Fail: 3 · Avg: 3.74 | Medium (61) | Medium (57) | ✅ Match | -S -O |
-| 2026-08-26 | Medium | %≤3: 79 · Fail: 1 · Avg: 3.03 | Medium (40) | Medium (48) | ✅ Match | -S -O |
-| 2026-08-27 | Medium | %≤3: 55 · Fail: 2 · Avg: 3.47 | Medium (52) | Medium (62) | ✅ Match | -S -O |
-| 2026-08-28 | Hard   | %≤3: 82 · Fail: 3 · Avg: 2.73 | Medium (35) | Medium (46) | ✅ Match | ↑S -O |
-| 2026-08-29 | Hard   | %≤3: 49 · Fail: 5 · Avg: 3.53 | Medium (58) | Medium (45) | ✅ Match | ↑S -O |
-| 2026-08-30 | Hard   | %≤3: 74 · Fail: 0 · Avg: 3.07 | Medium (39) | Medium (40) | ✅ Match | ↑S -O |
-| 2026-08-31 | Medium | %≤3: 58 · Fail: 3 · Avg: 3.50 | Medium (55) | Medium (60) | ✅ Match | -S -O |
-| 2026-09-01 | Basic  | %≤3: 89 · Fail: 2 · Avg: 2.63 | Basic (31)  | Basic (33)  | ✅ Match | -S -O |
-| 2026-09-02 | Medium | %≤3: 74 · Fail: 2 · Avg: 3.07 | Medium (42) | Medium (56) | ✅ Match | -S -O |
-| 2026-09-03 | Hard   | %≤3: 70 · Fail: 2 · Avg: 3.07 | Medium (42) | Medium (46) | ✅ Match | ↑S -O |
-| 2026-09-04 | Medium | %≤3: 92 · Fail: 1 · Avg: 2.78 | Medium (34) | Medium (42) | ✅ Match | -S -O |
-| 2026-09-05 | Medium | %≤3: 56 · Fail: 3 · Avg: 3.39 | Medium (52) | Hard (66)   | ❌ Miss  | -S ↑O |
+| Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
+| ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
+| 2026-08-07 | Medium | %≤3: 93 · Fail: 1 · Avg: 2.26  | Medium (44) | Medium (47) | ✅ Match | -S -O |
+| 2026-08-08 | Medium | %≤3: 100 · Fail: 0 · Avg: 1.43 | Basic (18)  | Basic (33)  | ✅ Match | ↑S -O |
+| 2026-08-09 | Medium | %≤3: 94 · Fail: 2 · Avg: 2.05  | Medium (39) | Medium (39) | ✅ Match | -S -O |
+| 2026-08-10 | Hard   | %≤3: 94 · Fail: 1 · Avg: 2.13  | Medium (40) | Medium (55) | ✅ Match | ↑S -O |
+| 2026-08-11 | Basic  | %≤3: 95 · Fail: 2 · Avg: 2.29  | Medium (47) | Medium (45) | ✅ Match | ↓S -O |
+| 2026-08-12 | Hard   | %≤3: 94 · Fail: 1 · Avg: 2.10  | Medium (40) | Medium (37) | ✅ Match | ↑S -O |
+| 2026-08-13 | Hard   | %≤3: 91 · Fail: 1 · Avg: 2.25  | Medium (44) | Medium (46) | ✅ Match | ↑S -O |
+| 2026-08-14 | Medium | %≤3: 98 · Fail: 0 · Avg: 1.63  | Basic (24)  | Medium (47) | ❌ Miss  | ↑S ↑O |
+| 2026-08-15 | Medium | %≤3: 91 · Fail: 1 · Avg: 2.15  | Medium (41) | Hard (67)   | ❌ Miss  | -S ↑O |
+| 2026-08-16 | Basic  | %≤3: 94 · Fail: 0 · Avg: 1.89  | Basic (32)  | Basic (8)   | ✅ Match | -S -O |
+| 2026-08-17 | Medium | %≤3: 96 · Fail: 0 · Avg: 1.90  | Basic (32)  | Medium (54) | ❌ Miss  | ↑S ↑O |
+| 2026-08-18 | Medium | %≤3: 83 · Fail: 4 · Avg: 2.65  | Medium (61) | Hard (67)   | ❌ Miss  | -S ↑O |
+| 2026-08-19 | Medium | %≤3: 73 · Fail: 3 · Avg: 2.98  | Hard (69)   | Medium (62) | ❌ Miss  | ↓S ↓O |
+| 2026-08-20 | Hard   | %≤3: 90 · Fail: 1 · Avg: 2.01  | Medium (37) | Basic (26)  | ❌ Miss  | ↑S ↓O |
+| 2026-08-21 | Basic  | %≤3: 91 · Fail: 2 · Avg: 1.80  | Basic (32)  | Medium (45) | ❌ Miss  | -S ↑O |
+| 2026-08-22 | Hard   | %≤3: 90 · Fail: 3 · Avg: 2.36  | Medium (50) | Medium (55) | ✅ Match | ↑S -O |
+| 2026-08-23 | Medium | %≤3: 65 · Fail: 6 · Avg: 3.20  | Hard (80)   | Hard (72)   | ✅ Match | ↓S -O |
+| 2026-08-24 | Basic  | %≤3: 94 · Fail: 1 · Avg: 2.07  | Medium (39) | Medium (43) | ✅ Match | ↓S -O |
+| 2026-08-25 | Medium | %≤3: 81 · Fail: 2 · Avg: 2.86  | Medium (64) | Medium (55) | ✅ Match | -S -O |
+| 2026-08-26 | Medium | %≤3: 94 · Fail: 2 · Avg: 2.15  | Medium (43) | Medium (38) | ✅ Match | -S -O |
+| 2026-08-27 | Medium | %≤3: 86 · Fail: 2 · Avg: 2.59  | Medium (56) | Medium (61) | ✅ Match | -S -O |
+| 2026-08-28 | Hard   | %≤3: 92 · Fail: 1 · Avg: 1.79  | Basic (30)  | Medium (40) | ❌ Miss  | ↑S ↑O |
+| 2026-08-29 | Hard   | %≤3: 76 · Fail: 4 · Avg: 2.77  | Medium (64) | Medium (50) | ✅ Match | ↑S -O |
+| 2026-08-30 | Hard   | %≤3: 90 · Fail: 1 · Avg: 2.13  | Medium (40) | Medium (40) | ✅ Match | ↑S -O |
+| 2026-08-31 | Medium | %≤3: 91 · Fail: 0 · Avg: 2.50  | Medium (50) | Medium (60) | ✅ Match | -S -O |
+| 2026-09-01 | Basic  | %≤3: 95 · Fail: 2 · Avg: 1.75  | Basic (31)  | Medium (41) | ❌ Miss  | -S ↑O |
+| 2026-09-02 | Medium | %≤3: 90 · Fail: 2 · Avg: 2.19  | Medium (44) | Medium (55) | ✅ Match | -S -O |
+| 2026-09-03 | Hard   | %≤3: 87 · Fail: 2 · Avg: 2.19  | Medium (44) | Medium (53) | ✅ Match | ↑S -O |
+| 2026-09-04 | Medium | %≤3: 97 · Fail: 1 · Avg: 1.84  | Basic (32)  | Basic (29)  | ✅ Match | ↑S -O |
+| 2026-09-05 | Medium | %≤3: 86 · Fail: 2 · Avg: 2.51  | Medium (53) | Medium (51) | ✅ Match | -S -O |
 
-**Past 30 days accuracy: 26/30 (87%)**
-**Overall accuracy: 167/177 (94%)** across all puzzles with community stats.
+**Past 30 days accuracy: 21/30 (70%)**
+**Overall accuracy: 127/177 (72%)** across all puzzles with community stats.
 
 _Showing the last 30 of 177 puzzles. See git history for older results._
+
 <!-- BENCHMARK:END -->
