@@ -46,8 +46,8 @@ function normalizePercentages(raw) {
     byGuess.set(guess, Number(pcts[i]) || 0);
   }
 
-  if (DEFAULT_GUESS_ORDER.every((g) => byGuess.has(g))) {
-    return DEFAULT_GUESS_ORDER.map((g) => byGuess.get(g));
+  if (byGuess.size > 0) {
+    return DEFAULT_GUESS_ORDER.map((g) => byGuess.get(g) ?? 0);
   }
 
   return pcts;
