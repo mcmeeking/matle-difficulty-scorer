@@ -58,10 +58,18 @@ npm run regression-check
   section unless you are also changing the benchmark generator.
 - `benchmark-results.json` and `calibration-results.json` are local/generated
   outputs and should stay ignored.
+- Community stats are fail-first: `[fail%, 1G, 2G, 3G, 4G, 5G]`. Fail counts as
+  6 guesses in `avgGuesses`. Do not reinterpret the array as fail-last.
+- `actualDifficultyScore` in `utils/benchmark.js` is a frozen community map:
+  `(avgGuesses - 2.5) * 30 + failPct * 1.5 + 50`, clamped 0–100. Do not retune
+  those constants to chase accuracy.
+- Scoring is a linear combination of continuous board features in
+  `difficulty.js`. Do not reintroduce the boolean motif zoo.
 - The benchmark's community-ground-truth thresholds are intentionally sourced
-  from `difficulty.js` (`TIER_BASIC_MAX`, `TIER_HARD_MIN`) and consumed in
+  from `difficulty.js` (`TIER_BASIC_MAX` 34, `TIER_HARD_MIN` 65) and consumed in
   `utils/benchmark.js` so benchmark comparisons stay aligned with live tier
-  boundaries.
+  boundaries. `utils/calibrate.js` must freeze those gates and tune weights
+  only.
 - `utils/calibrate.js --apply` edits `difficulty.js` directly by replacing the
   calibration block bounded by `// CALIBRATION:START` and `// CALIBRATION:END`.
   Preserve those markers.

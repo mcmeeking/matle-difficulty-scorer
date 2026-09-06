@@ -294,65 +294,30 @@ export const DEFAULT_CALIBRATION = Object.freeze({
   basicMax: 34, // Basic if score < 34
   hardMin: 65, // Hard if score >= 65
   pieceWeight: 1.2, // Fewer total pieces generally increase difficulty
-  hiddenDistWeight: 9, // Hidden squares near the mated king are harder
+  hiddenDistWeight: 10, // Hidden squares near the mated king are harder
   attackerWeight: 4, // More king-zone attackers increase tactical complexity
   emptyWeight: 1, // Hidden empties usually make deduction easier
-  bothKingsBase: 0, // Baseline bonus when both kings are hidden
-  bothKingsEmptyPenalty: 1, // Reduce both-kings bonus when hidden squares are empty
+  bothKingsWeight: 0, // Both kings hidden is not a reliable hardness signal
   promotedWeight: 8, // Hidden promoted pieces are atypical and harder to infer
-  easyGuessDiscount: 2, // Extra discount applied when 2+ easy guesses compound
+  easyGuessDiscount: 0, // Extra discount applied when 2+ easy guesses compound
   baseOffset: 12, // Global offset to keep scores in a useful operating range
   hiddenCheckerWeight: 2, // Hidden checking piece raises pressure
-  defenderBlockerWeight: -4, // Adjacent defender blockers are often easy anchors
-  ambiguousRoamingBlockerWeight: 6, // Re-add hardness for non-obvious adjacent defenders
+  defenderBlockerWeight: 0, // Adjacent defender blockers are often easy anchors
   kingDistWeight: -1, // Kings far from home can be less constrained/predictable
-  startingHomeWeight: -2, // Hidden pieces on starting squares are easier to guess
+  startingHomeWeight: -4, // Hidden pieces on starting squares are easier to guess
   castledKingWeight: 2, // Hidden castled king can still obscure king placement
-  pawnNearHomeWeight: 0, // Near-home pawns are very common and near-neutral
   sparseAttackerWeight: 1, // Extra hardness for sparse board + active attack mesh
   kingZoneHiddenWeight: -2, // Hidden king-zone squares alone can be easier anchors
   kingZonePieceWeight: 1, // Hidden king-zone pieces restore complexity
-  kingZoneEmptyWeight: -3, // Empty king-zone squares are strong simplifiers
-  hiddenKingCageWeight: 3, // Hardness for concealed king-cage motifs
-  ambiguousPawnPromotionWeight: 28, // Strong bump for promotion-disguise patterns
-  deceptivePawnAnchorClusterWeight: 27, // Hardness bump for misleading pawn-anchor clusters
-  anchoredKnightSimplificationWeight: -15, // Ease bump for low-pressure knight motifs with strong anchors
-  knightOnlyKingShellEaseWeight: -8, // Ease bump for knight-only hidden shells around a concealed king with low attacker pressure
-  sparsePeripheralRevealWeight: -4, // Peripheral-only hiding in sparse boards is easier
-  crowdedAnomalyWeight: 0, // Neutralize crowded-anomaly amplification; it overfit a few dense cases
-  excessAttackerWeight: -2, // Diminishing returns once attackers exceed a baseline
-  visibleKingCongestionWeight: 14, // Visible king can still be hard with hidden congestion
-  singleEasyGuessDenseWeight: -9, // One easy guess can still reduce dense-cluster difficulty
-  thresholdTacticalLiftWeight: 2, // Nudge tactical near-threshold 33 scores into Medium
-  heavyHiddenAchievementDamp: 0.5, // Damp negative achievement effect when heavy hidden material is present
-  sparseEndgameEaseWeight: -10, // Sparse boards with no hidden queen are easier than attacker count suggests
-  pawnlessSparseEndgameWeight: -8, // Pawnless sparse endgames are even more reducible to clean mechanics
-  castledKingSparseEndgameEaseWeight: -25, // Sparse endgame where the hidden mated king is clearly castled and attacker king is visible: king position is trivially known, collapsing the remaining deduction
-  sparseHiddenBishopMateEaseWeight: -14, // Ultra-sparse hidden-bishop mates with both kings hidden are usually direct geometry, not broad tactical ambiguity
-  dispersedAttackComplexityWeight: 6, // Visible king but hidden attackers spread far adds deduction load
-  concealedKingHeavyAttackWeight: 12, // Concealed king with dense major-piece attack swarm expands mate candidates
-  smotheredSupportMajorWeight: 35, // Hidden attacker major infiltrating defender territory in a small dense-board mating net
-  hiddenQueenMateWeight: 12, // Visible king mated by a hidden queen: mating piece concealed, obscuring the mate geometry
-  hiddenRookCageMateWeight: 18, // Sparse hidden-king cage where concealed rook support and hidden checkers keep mate geometry non-obvious
-  concealedPawnQueenCageComplexityWeight: 5, // Hidden-king pawn motif with a concealed queen checker and dense local king-zone pressure is harder than pawn labels suggest
-  dualMajorHiddenKingCageWeight: 2, // Both-kings-hidden low-attacker cage with concealed queen+rook support remains harder than baseline attacker terms imply
-  overDeterminedBishopMateWeight: -20, // Clean hidden-bishop diagonal mate with a redundant attacker mesh is easier than its dense attack count implies
-  hiddenQueenBishopCageMateWeight: 30, // Hidden king mated by a hidden queen with hidden bishop pair in a tight local cage
-  hiddenBishopMateWeight: 15, // Hidden-king bishop mate motifs can be under-rated by adjacent-defender anchor discounts
-  visibleKingHiddenBishopMateWeight: 16, // Visible king mated by a hidden bishop slipping past adjacent defenders: concealed diagonal mate looks easier than it plays
-  concealedBishopNetComplexityWeight: 8, // Hidden-king single-bishop checker with a moderate attacker net and only one guessable blocker is harder than blocker anchors alone suggest
-  concealedKnightCageMateWeight: 14, // Hidden castled king with no adjacent defender blockers and a concealed knight checker can be materially harder than easy-anchor signals imply
-  decoyMajorKnightShellEaseWeight: -8, // Hidden castled-king knight shells with strong easy anchors and off-zone hidden majors are often easier than generic knight motifs imply
-  marchedKingKnightMateWeight: -30, // Concealed-knight king-hunt mate: a king marched deep into enemy territory and mated by a hidden knight (no hidden queen) is a forced, recognizable pattern the community solves easily despite a dense attacker net
-  marchedKingPawnMateWeight: -20, // King-march endgame where a visible pawn delivers checkmate: the pawn's visible position anchors the mating geometry, making the hidden king placements readily deducible in this classic forced king-chase pattern
-  scatteredHiddenKingMateWeight: 34, // Hidden displaced king mated by a visible piece with dispersed hidden material (loose hidden rook, no hidden queen): no local anchor cluster to guess from, so the community finds it far harder than the sparse attacker count implies
-  homeCagedKingMateWeight: -20, // Hidden king on its home square caged by a visible queen is a recognizable, easy opening-attack mate
+  kingZoneEmptyWeight: -5, // Empty king-zone squares are strong simplifiers
+  hiddenKingCageWeight: 3, // Hidden king × local hidden pieces (cage pressure)
+  remainingUnknownsWeight: 0, // Remaining hidden squares after easy anchors
   hiddenPieceWeights: {
-    k: 2, // Hidden king identity is highly informative and often tricky
-    q: 4, // Hidden queen greatly expands candidate tactical motifs
-    r: 4, // Hidden rook often changes line-attack interpretation
-    b: -2, // Hidden bishop is comparatively easier to infer from diagonals
-    n: -2, // Hidden knight often has constrained local candidates
+    k: -6, // Hidden king identity is often a strong, guessable anchor
+    q: 10, // Hidden queen greatly expands candidate tactical motifs
+    r: 2, // Hidden rook often changes line-attack interpretation
+    b: -4, // Hidden bishop is comparatively easier to infer from diagonals
+    n: -4, // Hidden knight often has constrained local candidates
     p: 0, // Hidden pawn is common and near-neutral by itself
   },
   achievementWeights: {
@@ -370,8 +335,8 @@ export const DEFAULT_CALIBRATION = Object.freeze({
 // CALIBRATION:END
 
 export const TIER_BASIC_MAX = DEFAULT_CALIBRATION.basicMax; // Basic:  score < 34  (0–33)
-export const TIER_HARD_MIN = DEFAULT_CALIBRATION.hardMin; // Hard:   score >= 67 (67–100)
-// Medium: 34–66
+export const TIER_HARD_MIN = DEFAULT_CALIBRATION.hardMin; // Hard:   score >= 65 (65–100)
+// Medium: 34–64
 
 function resolveCalibration(calibration) {
   return {
@@ -439,16 +404,11 @@ export function extractDifficultyFeatures(puzzle) {
     const easyGuessSquares = new Set();
     let startingHome = 0;
     let castledKings = 0;
-    let pawnsNearHome = 0;
     let defenderBlockers = 0;
-    let guessableDefenderBlockers = 0;
     let hiddenEmpties = 0;
     let hiddenCheckers = 0;
-    let hiddenBishopCheckers = 0;
-    let hiddenKnightCheckers = 0;
     let kingZoneHiddenSquares = 0;
     let kingZoneHiddenEmpties = 0;
-    let peripheralHiddenSquares = 0;
     let distSum = 0;
 
     for (const sq of hidden) {
@@ -458,8 +418,6 @@ export function extractDifficultyFeatures(puzzle) {
 
       if (kingDistance <= 1) {
         kingZoneHiddenSquares++;
-      } else {
-        peripheralHiddenSquares++;
       }
 
       if (!pc) {
@@ -472,42 +430,30 @@ export function extractDifficultyFeatures(puzzle) {
 
       hiddenPieceCounts[pc.type] = (hiddenPieceCounts[pc.type] || 0) + 1;
 
-      // Piece on its starting square?
       const home = STARTING[sq];
       if (home && home.type === pc.type && home.color === pc.color) {
         startingHome++;
         easyGuessSquares.add(sq);
       }
 
-      // King on castled square (g1/g8/c1/c8) – trivially guessable
       if (pc.type === "k" && CASTLED_KING.has(sq)) {
         castledKings++;
         easyGuessSquares.add(sq);
       }
 
-      // Pawn within 1 rank of its home rank – very common, easy to guess
       if (pc.type === "p") {
         const [, rank] = fr(sq);
         if (Math.abs(rank - pawnHomeRank(pc.color)) <= 1) {
-          pawnsNearHome++;
           easyGuessSquares.add(sq);
         }
       }
 
-      // Same-colour (defender) piece adjacent to mated king?
       if (pc.color === matedColor && chebyshev(sq, kingSq) === 1) {
         defenderBlockers++;
-        const home = STARTING[sq];
-        if (home && home.type === pc.type && home.color === pc.color) {
-          guessableDefenderBlockers++;
-        }
       }
 
-      // Opponent piece that checks the mated king?
       if (pc.color === attackerColor && attacks(pc, sq, kingSq, boardMap)) {
         hiddenCheckers++;
-        if (pc.type === "b") hiddenBishopCheckers++;
-        if (pc.type === "n") hiddenKnightCheckers++;
       }
     }
 
@@ -515,18 +461,12 @@ export function extractDifficultyFeatures(puzzle) {
     for (const sq of ALL_SQUARES) {
       if (boardMap[sq]) totalPieces++;
     }
-    const totalHiddenPieces = Object.values(hiddenPieceCounts).reduce(
-      (s, c) => s + c,
-      0,
-    );
 
     const kingHome = matedColor === "w" ? "e1" : "e8";
     const kingDist = chebyshev(kingSq, kingHome);
     const avgHiddenDist = distSum / hidden.length;
     const kingZoneHiddenPieces = kingZoneHiddenSquares - kingZoneHiddenEmpties;
     const matedKingHidden = hiddenSet.has(kingSq) ? 1 : 0;
-    const roamingDefenderBlockers =
-      defenderBlockers - guessableDefenderBlockers;
 
     // ── Both kings hidden ────────────────────────────────────────
     let wKingSq = null,
@@ -582,531 +522,39 @@ export function extractDifficultyFeatures(puzzle) {
       }
     }
     let mateNetAttackers = 0;
-    let infiltratingMajorSupport = 0;
     for (const sq of ALL_SQUARES) {
       const p = boardMap[sq];
       if (!p || p.color !== attackerColor) continue;
       for (const target of kingZone) {
         if (attacks(p, sq, target, boardMap)) {
           mateNetAttackers++;
-          // Hidden attacker queen/rook sitting on a square that normally
-          // belongs to a defender piece is a "smothered-support" motif:
-          // the geometry of the mating net hinges on a piece you wouldn't
-          // expect to find there.
-          if (hiddenSet.has(sq) && (p.type === "q" || p.type === "r")) {
-            const home = STARTING[sq];
-            if (home && home.color === matedColor) {
-              infiltratingMajorSupport++;
-            }
-          }
           break;
         }
       }
     }
 
-    // A *visible* attacker queen that already controls one of the mated
-    // king's escape squares does most of the caging work in plain sight,
-    // so the surrounding mate geometry is far easier to reconstruct.
-    let visibleQueenCagesKing = false;
-    for (const sq of ALL_SQUARES) {
-      const p = boardMap[sq];
-      if (!p || p.color !== attackerColor || p.type !== "q") continue;
-      if (hiddenSet.has(sq)) continue; // visible queen only
-      for (const target of kingZone) {
-        if (target === kingSq) continue; // an escape square, not the king
-        if (attacks(p, sq, target, boardMap)) {
-          visibleQueenCagesKing = true;
-          break;
-        }
-      }
-      if (visibleQueenCagesKing) break;
-    }
-
-    // Hidden king + multiple hidden king-zone squares/pieces can form a
-    // concealed mating cage even without many visible attackers.
-    const hiddenKingCagePressure =
-      matedKingHidden &&
-      !bothKingsHidden &&
-      mateNetAttackers <= 2 &&
-      easyGuessSquares.size <= 1
-        ? Math.max(0, kingZoneHiddenSquares - 2) *
-          Math.max(0, kingZoneHiddenPieces - 1)
-        : 0;
-
-    // If achievements include a pawn motif and a hidden queen is present,
-    // treat it as a potential promotion-disguise ambiguity.
-    const ambiguousPawnPromotion =
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("pawn") &&
-      matedKingHidden &&
-      !bothKingsHidden &&
-      easyGuessSquares.size === 0 &&
-      defenderBlockers === 0 &&
-      kingZoneHiddenPieces >= 3 &&
-      (hiddenPieceCounts.q ?? 0) >= 1
-        ? 1
-        : 0;
-
-    // Some pawn-themed positions expose multiple easy anchors, but the local
-    // hidden king-zone cluster and hidden queen still make them genuinely hard.
-    const deceptivePawnAnchorCluster =
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("pawn") &&
-      matedKingHidden &&
-      easyGuessSquares.size >= 2 &&
-      defenderBlockers >= 2 &&
-      kingZoneHiddenPieces >= 4 &&
-      (hiddenPieceCounts.q ?? 0) >= 1
-        ? 1
-        : 0;
-
-    // Some knight-themed puzzles look tactical but are materially simplified
-    // by multiple stable anchors and a low-attacker mating net.
-    const anchoredKnightSimplification =
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("knight") &&
-      matedKingHidden &&
-      easyGuessSquares.size >= 2 &&
-      castledKings >= 1 &&
-      startingHome >= 1 &&
-      defenderBlockers >= 1 &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers <= 2 &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      (hiddenPieceCounts.n ?? 0) >= 1
-        ? 1
-        : 0;
-
-    // Knight-only hidden king shell with low attacker pressure is often easier
-    // than generic knight motifs: candidate identities are tightly constrained.
-    const knightOnlyKingShellEase =
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("knight") &&
-      matedKingHidden &&
-      hiddenCheckers === 1 &&
-      mateNetAttackers <= 2 &&
-      easyGuessSquares.size === 0 &&
-      hiddenEmpties === 1 &&
-      defenderBlockers <= 1 &&
-      (hiddenPieceCounts.k ?? 0) === 1 &&
-      (hiddenPieceCounts.n ?? 0) >= 3 &&
-      (hiddenPieceCounts.q ?? 0) === 0 &&
-      (hiddenPieceCounts.r ?? 0) === 0 &&
-      (hiddenPieceCounts.b ?? 0) === 0 &&
-      (hiddenPieceCounts.p ?? 0) === 0
-        ? 1
-        : 0;
-
-    // When the mated king is hidden but most hidden squares are peripheral,
-    // this often narrows candidate identities rather than increasing difficulty.
-    // Requires at least one visible piece to act as an anchor; when every
-    // piece is hidden there is nothing to anchor deduction on and the ease
-    // discount does not apply.
-    const sparsePeripheralReveal =
-      matedKingHidden &&
-      totalPieces <= 16 &&
-      avgHiddenDist >= 2 &&
-      kingZoneHiddenSquares <= 2 &&
-      totalHiddenPieces < totalPieces
-        ? peripheralHiddenSquares
-        : 0;
-
-    // Only treat roaming adjacent defenders as ambiguous when cage pressure
-    // is already high; otherwise they are usually simple blockers.
-    const ambiguousRoamingBlockers =
-      hiddenKingCagePressure >= 4 ? roamingDefenderBlockers : 0;
-
-    // Scale anomaly signals with board crowding: unusual patterns are more
-    // confusing when many candidate pieces remain.
-    const crowdedAnomalyLoad =
-      (ambiguousRoamingBlockers + ambiguousPawnPromotion) *
-      Math.max(0, totalPieces - 16);
-
-    // Hidden heavy material (≥2 of queens/rooks combined) keeps the position
-    // tactically dense regardless of motif label, so achievement discounts
-    // for "easy" themes should not fully apply.
-    const heavyHiddenMaterial =
-      (hiddenPieceCounts.q ?? 0) + (hiddenPieceCounts.r ?? 0) >= 2 ? 1 : 0;
-
-    // Sparse endgame-style boards with no hidden queen tend to be reducible
-    // by the visible attack mesh, even when several attackers are present.
-    const sparseEndgameEase =
-      totalPieces <= 15 &&
-      mateNetAttackers >= 4 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-
-    // Pawnless sparse endgames lack the dynamic pawn structure that drives
-    // hidden material ambiguity; they reduce to clean king-and-piece mechanics.
-    const pawnlessSparseEndgame =
-      sparseEndgameEase && (hiddenPieceCounts.p ?? 0) === 0 ? 1 : 0;
-
-    // Castled-king sparse endgame ease: the hidden mated king occupies a classic
-    // castled square (g8/c8/g1/c1), immediately anchoring its identity for the
-    // community. When the attacker king is also visible (not both-kings-hidden),
-    // the board is sparse, and no hidden heavy material (Q/R) is present, the
-    // remaining deduction collapses to a narrow set of light-piece configurations.
-    // The community scores these far more easily than the baseline attacker and
-    // piece-count terms imply, because the mated king's location is effectively
-    // given and the mate geometry follows directly.
-    const castledKingSparseEndgameEase =
-      matedKingHidden &&
-      !bothKingsHidden &&
-      castledKings >= 1 &&
-      totalPieces <= 15 &&
-      mateNetAttackers >= 2 &&
-      (hiddenPieceCounts.q ?? 0) === 0 &&
-      (hiddenPieceCounts.r ?? 0) === 0
-        ? 1
-        : 0;
-
-    // Ultra-sparse hidden-bishop mates (both kings hidden, one concealed checker,
-    // no hidden heavy/knight/pawn material) usually collapse to direct mating
-    // geometry and are easier than baseline sparse-attacker terms imply.
-    const sparseHiddenBishopMateEase =
-      totalPieces <= 6 &&
-      matedKingHidden &&
-      bothKingsHidden &&
-      hiddenCheckers >= 1 &&
-      (hiddenPieceCounts.b ?? 0) >= 1 &&
-      (hiddenPieceCounts.q ?? 0) === 0 &&
-      (hiddenPieceCounts.r ?? 0) === 0 &&
-      (hiddenPieceCounts.n ?? 0) === 0 &&
-      (hiddenPieceCounts.p ?? 0) === 0 &&
-      mateNetAttackers <= 3
-        ? 1
-        : 0;
-
-    // King visible but hidden attackers dispersed far from king: deduction
-    // has less spatial anchor than when hidden pieces cluster near the king.
-    const dispersedAttackComplexity =
-      !matedKingHidden && avgHiddenDist >= 2.2 && mateNetAttackers >= 5 ? 1 : 0;
-
-    // Concealed king with a heavy, locally-dense attacker swarm: both kings
-    // hidden plus 5+ attackers in a 3+ piece king zone with hidden major
-    // material creates many candidate mating geometries.
-    const concealedKingHeavyAttack =
-      matedKingHidden &&
-      bothKingsHidden &&
-      mateNetAttackers >= 5 &&
-      (hiddenPieceCounts.q ?? 0) + (hiddenPieceCounts.r ?? 0) >= 2 &&
-      kingZoneHiddenPieces >= 3
-        ? 1
-        : 0;
-    // Smothered-support motif: a hidden attacker major sits deep in defender
-    // territory on a small mating net (visible checker) in a dense board.
-    // The mate geometry hinges on a piece intuition wouldn't expect there.
-    const smotheredSupportMajor =
-      infiltratingMajorSupport > 0 &&
-      totalPieces >= 22 &&
-      mateNetAttackers <= 3 &&
-      hiddenCheckers === 0
-        ? infiltratingMajorSupport
-        : 0;
-
-    // Hidden queen delivers checkmate with the king visible: the mating piece is
-    // concealed, so the player cannot see the source of check even though the king
-    // position is known. This is harder than it appears because the queen's
-    // long-range reach makes the mating geometry non-obvious from the static
-    // picture, and additional hidden pieces multiply candidate interpretations.
-    const hiddenQueenMate =
-      !matedKingHidden &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers >= 3
-        ? 1
-        : 0;
-    // Sparse endgames can look easy from anchor squares, but remain hard when a
-    // hidden rook supports a concealed king-cage mate with hidden checking pressure.
-    const hiddenRookCageMate =
-      matedKingHidden &&
-      !bothKingsHidden &&
-      sparseEndgameEase &&
-      hiddenCheckers >= 1 &&
-      kingZoneHiddenSquares >= 3 &&
-      kingZoneHiddenPieces >= 3 &&
-      easyGuessSquares.size >= 2 &&
-      (hiddenPieceCounts.r ?? 0) >= 1 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-    // Pawn-tagged concealed-king positions can still be genuinely complex when
-    // a hidden queen checker sits inside a dense local king zone with few
-    // adjacent defender anchors.
-    const concealedPawnQueenCageComplexity =
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("pawn") &&
-      matedKingHidden &&
-      !bothKingsHidden &&
-      hiddenCheckers >= 1 &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      kingZoneHiddenPieces >= 3 &&
-      mateNetAttackers >= 4 &&
-      defenderBlockers <= 1
-        ? 1
-        : 0;
-
-    // Both kings hidden with a low visible attacker count can still be hard
-    // when concealed queen+rook support and local king-zone blockers leave
-    // multiple plausible mating geometries.
-    const dualMajorHiddenKingCage =
-      matedKingHidden &&
-      bothKingsHidden &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers <= 2 &&
-      kingZoneHiddenPieces >= 4 &&
-      defenderBlockers >= 2 &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      (hiddenPieceCounts.r ?? 0) >= 1
-        ? 1
-        : 0;
-
-    // Hidden king variant: concealed queen checker plus hidden bishop pair in
-    // a tight king zone can look deceptively simple due to blocker anchors.
-    const hiddenQueenBishopCageMate =
-      matedKingHidden &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      (hiddenPieceCounts.b ?? 0) >= 2 &&
-      (hiddenPieceCounts.r ?? 0) === 0 &&
-      (hiddenPieceCounts.n ?? 0) === 0 &&
-      (hiddenPieceCounts.p ?? 0) === 0 &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers === 2 &&
-      defenderBlockers === 1 &&
-      hiddenKingCagePressure >= 1 &&
-      kingZoneHiddenPieces === 2 &&
-      easyGuessSquares.size === 1
-        ? 1
-        : 0;
-
-    // Hidden king + bishop motif + hidden queen can still be difficult even
-    // when adjacent defenders look guessable: the concealed bishop checker
-    // obscures the local mating geometry.
-    const hiddenBishopMate =
-      matedKingHidden &&
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("bishop") &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      (hiddenPieceCounts.b ?? 0) >= 2 &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers <= 2 &&
-      defenderBlockers >= 2 &&
-      guessableDefenderBlockers === defenderBlockers
-        ? 1
-        : 0;
-
-    // Over-determined hidden-bishop mate: a single concealed bishop delivers a
-    // clean diagonal check against a hidden king, with no hidden heavy material
-    // and a heavily redundant attacker mesh (6+ king-zone attackers). The
-    // redundant attackers leave essentially one mating idea, and the bishop's
-    // long diagonal is easy to spot, so these solve more easily than the dense
-    // attacker count suggests.
-    const overDeterminedBishopMate =
-      matedKingHidden &&
-      hiddenBishopCheckers >= 1 &&
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("bishop") &&
-      (hiddenPieceCounts.q ?? 0) === 0 &&
-      (hiddenPieceCounts.r ?? 0) === 0 &&
-      mateNetAttackers >= 6
-        ? 1
-        : 0;
-
-    // Home-square caged king: the mated king is hidden but sits on its own
-    // starting square (its location — the linchpin of the deduction — is the
-    // first square anyone guesses), and a *visible* attacker queen already
-    // controls an escape square, so only the checking piece is concealed.
-    // These "the queen does the obvious work, king never left home" mates are
-    // recognizable opening-attack patterns the community solves easily, even
-    // though the hidden checker and cage signals make them look harder.
-    const homeCagedKingMate =
-      matedKingHidden &&
-      kingDist === 0 &&
-      hiddenCheckers >= 1 &&
-      mateNetAttackers <= 2 &&
-      visibleQueenCagesKing
-        ? 1
-        : 0;
-
-    // Visible king mated by a concealed bishop slipping past adjacent defenders.
-    // Defender pieces flanking the king normally discount difficulty, but when a
-    // hidden bishop delivers the checkmate along an open diagonal those defenders
-    // are irrelevant: the source of the mate is concealed and the apparent
-    // defensive cover is a false anchor that makes the position look easier than
-    // it plays. Requires the bishop itself to be the hidden checker so the rule
-    // stays scoped to genuinely disguised diagonal mates.
-    const visibleKingHiddenBishopMate =
-      !matedKingHidden &&
-      hiddenBishopCheckers >= 1 &&
-      defenderBlockers >= 2 &&
-      mateNetAttackers >= 3 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-    // Hidden-king bishop-checker mates with a moderate attacker net can be
-    // under-scored when there is exactly one adjacent defender blocker that
-    // looks guessable: the blocker anchor appears simple, but the concealed
-    // diagonal checker still leaves several plausible mating geometries.
-    const concealedBishopNetComplexity =
-      matedKingHidden &&
-      hiddenBishopCheckers === 1 &&
-      hiddenCheckers === 1 &&
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("bishop") &&
-      mateNetAttackers >= 4 &&
-      mateNetAttackers <= 5 &&
-      defenderBlockers === 1 &&
-      guessableDefenderBlockers === 1 &&
-      kingZoneHiddenPieces === 2 &&
-      hiddenEmpties === 1 &&
-      (hiddenPieceCounts.q ?? 0) === 0 &&
-      (hiddenPieceCounts.r ?? 0) === 0 &&
-      (hiddenPieceCounts.n ?? 0) === 0
-        ? 1
-        : 0;
-
-    // Concealed castled-king knight mate: a hidden castled king with no local
-    // adjacent defender blockers can look easy due to anchor squares, but when
-    // the checking piece is a hidden knight the mating source is non-linear and
-    // under-signaled by low attacker counts.
-    const concealedKnightCageMate =
-      matedKingHidden &&
-      !bothKingsHidden &&
-      hiddenKnightCheckers >= 1 &&
-      hiddenCheckers === 1 &&
-      castledKings >= 1 &&
-      easyGuessSquares.size >= 2 &&
-      defenderBlockers === 0 &&
-      kingZoneHiddenPieces === 1 &&
-      mateNetAttackers <= 2 &&
-      (hiddenPieceCounts.n ?? 0) >= 2 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-    // Hidden castled-king knight shell can look tactically dense when hidden
-    // queen+rook are present, but with no local cage pressure and multiple easy
-    // king anchors those majors are usually decoys away from the mating net.
-    const decoyMajorKnightShellEase =
-      matedKingHidden &&
-      !bothKingsHidden &&
-      hiddenKnightCheckers >= 1 &&
-      hiddenCheckers === 1 &&
-      castledKings >= 1 &&
-      easyGuessSquares.size >= 2 &&
-      defenderBlockers === 0 &&
-      kingZoneHiddenPieces === 1 &&
-      mateNetAttackers <= 3 &&
-      (hiddenPieceCounts.q ?? 0) >= 1 &&
-      (hiddenPieceCounts.r ?? 0) >= 1
-        ? 1
-        : 0;
-
-    // Concealed-knight king-hunt mate: the mated king has been marched deep into
-    // enemy territory (far from home) and is mated by a hidden knight, with both
-    // kings hidden and no hidden queen. These king hunts are forced, recognizable
-    // sequences, so the community solves them easily even though the dense
-    // attacker net and concealed checker make the static picture look harder.
-    const marchedKingKnightMate =
-      matedKingHidden &&
-      bothKingsHidden &&
-      hiddenKnightCheckers >= 1 &&
-      kingDist >= 4 &&
-      mateNetAttackers >= 5 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-
-    // King-march endgame where a visible pawn delivers checkmate: both kings
-    // are hidden after a long king march, but the mating pawn is visible
-    // (hiddenCheckers === 0), anchoring the mating geometry. The "two-kings"
-    // march and the pawn checker together create a classic forced king-chase
-    // pattern the community recognises quickly, so the hidden king placements
-    // are readily deducible despite both kings being concealed.
-    const marchedKingPawnMate =
-      matedKingHidden &&
-      bothKingsHidden &&
-      hiddenCheckers === 0 &&
-      Array.isArray(puzzle.achievements) &&
-      puzzle.achievements.includes("pawn") &&
-      puzzle.achievements.includes("two-kings") &&
-      kingDist >= 4 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
-
-    // Scattered hidden-king mate: the mated king is hidden and displaced from
-    // its home square, but the mate is delivered by a *visible* piece
-    // (no hidden checker) and the hidden squares are dispersed far across the
-    // board (high average king distance) rather than clustered around the king.
-    // With an extra hidden rook (and no hidden queen) scattered away from the
-    // king, there is no local anchor cluster to guess from: the whole
-    // difficulty lies in locating a displaced hidden king plus loose hidden
-    // material, which the community finds much harder than the sparse visible
-    // attacker count implies.
-    const scatteredHiddenKingMate =
-      matedKingHidden &&
-      hiddenCheckers === 0 &&
-      kingDist >= 2 &&
-      avgHiddenDist >= 2 &&
-      (hiddenPieceCounts.r ?? 0) >= 1 &&
-      (hiddenPieceCounts.q ?? 0) === 0
-        ? 1
-        : 0;
+    const hiddenKingCage = matedKingHidden * kingZoneHiddenPieces;
+    const remainingUnknowns = hidden.length - easyGuessSquares.size;
 
     return {
       totalPieces,
       avgHiddenDist,
       mateNetAttackers,
       sparseAttackProduct: ((32 - totalPieces) * mateNetAttackers) / 10,
-      excessMateNetAttackers: Math.max(0, mateNetAttackers - 2),
-      heavyHiddenMaterial,
-      sparseEndgameEase,
-      pawnlessSparseEndgame,
-      castledKingSparseEndgameEase,
-      sparseHiddenBishopMateEase,
-      dispersedAttackComplexity,
-      concealedKingHeavyAttack,
-      smotheredSupportMajor,
-      hiddenQueenMate,
-      hiddenRookCageMate,
-      concealedPawnQueenCageComplexity,
-      dualMajorHiddenKingCage,
-      overDeterminedBishopMate,
-      hiddenQueenBishopCageMate,
-      hiddenBishopMate,
-      visibleKingHiddenBishopMate,
-      concealedBishopNetComplexity,
-      concealedKnightCageMate,
-      decoyMajorKnightShellEase,
-      marchedKingKnightMate,
-      marchedKingPawnMate,
-      scatteredHiddenKingMate,
-      homeCagedKingMate,
       hiddenEmpties,
       kingZoneHiddenSquares,
       kingZoneHiddenEmpties,
       kingZoneHiddenPieces,
       matedKingHidden,
-      hiddenKingCagePressure,
-      ambiguousPawnPromotion,
-      deceptivePawnAnchorCluster,
-      anchoredKnightSimplification,
-      knightOnlyKingShellEase,
-      sparsePeripheralReveal,
-      crowdedAnomalyLoad,
+      hiddenKingCage,
+      remainingUnknowns,
       bothKingsHidden,
       promotedHidden,
       easyGuesses: easyGuessSquares.size,
       startingHome,
       castledKings,
-      pawnsNearHome,
       hiddenCheckers,
-      hiddenKnightCheckers,
       defenderBlockers,
-      guessableDefenderBlockers,
-      roamingDefenderBlockers,
-      ambiguousRoamingBlockers,
       kingDist,
       hiddenPieceCounts,
       achievements: Array.isArray(puzzle.achievements)
@@ -1135,130 +583,36 @@ export function scoreDifficultyFeatures(
       sum + count * (tuned.hiddenPieceWeights?.[type] ?? 0),
     0,
   );
-  const rawAchievementContrib = (features.achievements ?? []).reduce(
+  const achievementContrib = (features.achievements ?? []).reduce(
     (sum, achievement) => sum + (tuned.achievementWeights?.[achievement] ?? 0),
     0,
   );
-  // When heavy hidden material (Q/R) is present, dampen negative achievement
-  // discounts: motif-driven "easy" tags often misclassify these positions.
-  const achievementContrib =
-    features.heavyHiddenMaterial && rawAchievementContrib < 0
-      ? rawAchievementContrib * tuned.heavyHiddenAchievementDamp
-      : rawAchievementContrib;
-  // Hardness override for positions where the king is visible but local
-  // hidden congestion still creates tactical ambiguity.
-  const visibleKingCongestion =
-    !features.matedKingHidden &&
-    features.hiddenCheckers >= 1 &&
-    features.defenderBlockers >= 2 &&
-    features.kingZoneHiddenPieces >= 2 &&
-    features.mateNetAttackers <= 2
-      ? 1
-      : 0;
 
-  // Ease override: a single easy anchor can materially simplify some dense
-  // hidden clusters, even though compound discount requires 2+ anchors.
-  const singleEasyGuessDense =
-    features.easyGuesses === 1 &&
-    hiddenPieceContrib <= -2 &&
-    features.kingZoneHiddenPieces >= 3
-      ? 1
-      : 0;
-  // Excess-attacker discount should not apply when both kings are hidden and
-  // the mated king is unknown: extra attackers expand candidate mate squares
-  // rather than anchoring deductions.
-  const effectiveExcessAttackers =
-    features.matedKingHidden && features.bothKingsHidden
-      ? 0
-      : features.excessMateNetAttackers;
   const additiveContrib =
     features.hiddenCheckers * tuned.hiddenCheckerWeight +
     features.defenderBlockers * tuned.defenderBlockerWeight +
-    features.ambiguousRoamingBlockers * tuned.ambiguousRoamingBlockerWeight +
     features.kingDist * tuned.kingDistWeight +
     features.startingHome * tuned.startingHomeWeight +
     features.castledKings * tuned.castledKingWeight +
-    features.pawnsNearHome * tuned.pawnNearHomeWeight +
     features.sparseAttackProduct * tuned.sparseAttackerWeight +
     features.kingZoneHiddenSquares * tuned.kingZoneHiddenWeight +
     features.kingZoneHiddenPieces * tuned.kingZonePieceWeight +
+    features.remainingUnknowns * tuned.remainingUnknownsWeight +
     features.kingZoneHiddenEmpties * tuned.kingZoneEmptyWeight +
-    features.hiddenKingCagePressure * tuned.hiddenKingCageWeight +
-    features.ambiguousPawnPromotion * tuned.ambiguousPawnPromotionWeight +
-    features.deceptivePawnAnchorCluster *
-      tuned.deceptivePawnAnchorClusterWeight +
-    features.anchoredKnightSimplification *
-      tuned.anchoredKnightSimplificationWeight +
-    features.knightOnlyKingShellEase * tuned.knightOnlyKingShellEaseWeight +
-    features.sparsePeripheralReveal * tuned.sparsePeripheralRevealWeight +
-    features.crowdedAnomalyLoad * tuned.crowdedAnomalyWeight +
-    effectiveExcessAttackers * tuned.excessAttackerWeight +
-    features.sparseEndgameEase * tuned.sparseEndgameEaseWeight +
-    features.pawnlessSparseEndgame * tuned.pawnlessSparseEndgameWeight +
-    features.castledKingSparseEndgameEase *
-      tuned.castledKingSparseEndgameEaseWeight +
-    features.sparseHiddenBishopMateEase * tuned.sparseHiddenBishopMateEaseWeight +
-    features.dispersedAttackComplexity * tuned.dispersedAttackComplexityWeight +
-    features.concealedKingHeavyAttack * tuned.concealedKingHeavyAttackWeight +
-    features.smotheredSupportMajor * tuned.smotheredSupportMajorWeight +
-    features.hiddenQueenMate * tuned.hiddenQueenMateWeight +
-    features.hiddenRookCageMate * tuned.hiddenRookCageMateWeight +
-    features.concealedPawnQueenCageComplexity *
-      tuned.concealedPawnQueenCageComplexityWeight +
-    features.dualMajorHiddenKingCage * tuned.dualMajorHiddenKingCageWeight +
-    features.overDeterminedBishopMate * tuned.overDeterminedBishopMateWeight +
-    features.hiddenQueenBishopCageMate * tuned.hiddenQueenBishopCageMateWeight +
-    features.hiddenBishopMate * tuned.hiddenBishopMateWeight +
-    features.visibleKingHiddenBishopMate *
-      tuned.visibleKingHiddenBishopMateWeight +
-    features.concealedBishopNetComplexity *
-      tuned.concealedBishopNetComplexityWeight +
-    features.concealedKnightCageMate * tuned.concealedKnightCageMateWeight +
-    features.decoyMajorKnightShellEase * tuned.decoyMajorKnightShellEaseWeight +
-    features.marchedKingKnightMate * tuned.marchedKingKnightMateWeight +
-    features.marchedKingPawnMate * tuned.marchedKingPawnMateWeight +
-    features.scatteredHiddenKingMate * tuned.scatteredHiddenKingMateWeight +
-    features.homeCagedKingMate * tuned.homeCagedKingMateWeight +
-    visibleKingCongestion * tuned.visibleKingCongestionWeight +
-    singleEasyGuessDense * tuned.singleEasyGuessDenseWeight +
+    features.hiddenKingCage * tuned.hiddenKingCageWeight +
+    features.bothKingsHidden * tuned.bothKingsWeight +
     hiddenPieceContrib +
     achievementContrib;
 
-  // ── Score ────────────────────────────────────────────────────
-  // Compound ease: a single "easy guess" doesn't help much (4 unknowns
-  // remain), but 2+ easy guesses compound — each narrows the field.
-
-  // Both kings hidden is offset when empties reduce unknowns.
-  const bothKingsContrib = features.bothKingsHidden
-    ? Math.max(
-        0,
-        tuned.bothKingsBase -
-          features.hiddenEmpties * tuned.bothKingsEmptyPenalty,
-      )
-    : 0;
-
-  const baseRaw =
+  const raw =
     (32 - features.totalPieces) * tuned.pieceWeight +
     (2 - features.avgHiddenDist) * tuned.hiddenDistWeight +
     features.mateNetAttackers * tuned.attackerWeight +
     features.hiddenEmpties * tuned.emptyWeight +
-    bothKingsContrib +
     features.promotedHidden * tuned.promotedWeight -
     compoundDiscount +
     tuned.baseOffset +
     additiveContrib;
-
-  // Threshold rescue for tactical hidden-king positions that repeatedly land
-  // at 33 and under-classify as Basic by a small margin.
-  const thresholdTacticalLift =
-    Math.round(Math.max(0, Math.min(100, baseRaw))) === 33 &&
-    features.matedKingHidden &&
-    features.hiddenCheckers >= 1 &&
-    features.kingDist >= 3
-      ? 1
-      : 0;
-  const raw =
-    baseRaw + thresholdTacticalLift * tuned.thresholdTacticalLiftWeight;
 
   const score = Math.round(Math.max(0, Math.min(100, raw)));
   const tier = tierFromScore(score, tuned);
@@ -1271,66 +625,26 @@ export function scoreDifficultyFeatures(
       avgHiddenDist: Math.round(features.avgHiddenDist * 100) / 100,
       mateNetAttackers: features.mateNetAttackers,
       sparseAttackProduct: Math.round(features.sparseAttackProduct * 100) / 100,
-      excessMateNetAttackers: features.excessMateNetAttackers,
       hiddenEmpties: features.hiddenEmpties,
       kingZoneHiddenSquares: features.kingZoneHiddenSquares,
       kingZoneHiddenPieces: features.kingZoneHiddenPieces,
+      remainingUnknowns: features.remainingUnknowns,
       kingZoneHiddenEmpties: features.kingZoneHiddenEmpties,
       matedKingHidden: features.matedKingHidden,
-      hiddenKingCagePressure:
-        Math.round(features.hiddenKingCagePressure * 100) / 100,
-      ambiguousPawnPromotion: features.ambiguousPawnPromotion,
-      deceptivePawnAnchorCluster: features.deceptivePawnAnchorCluster,
-      anchoredKnightSimplification: features.anchoredKnightSimplification,
-      knightOnlyKingShellEase: features.knightOnlyKingShellEase,
-      sparsePeripheralReveal: features.sparsePeripheralReveal,
-      crowdedAnomalyLoad: features.crowdedAnomalyLoad,
-      heavyHiddenMaterial: features.heavyHiddenMaterial,
-      sparseEndgameEase: features.sparseEndgameEase,
-      pawnlessSparseEndgame: features.pawnlessSparseEndgame,
-      castledKingSparseEndgameEase: features.castledKingSparseEndgameEase,
-      sparseHiddenBishopMateEase: features.sparseHiddenBishopMateEase,
-      dispersedAttackComplexity: features.dispersedAttackComplexity,
-      concealedKingHeavyAttack: features.concealedKingHeavyAttack,
-      smotheredSupportMajor: features.smotheredSupportMajor,
-      hiddenQueenMate: features.hiddenQueenMate,
-      hiddenRookCageMate: features.hiddenRookCageMate,
-      concealedPawnQueenCageComplexity:
-        features.concealedPawnQueenCageComplexity,
-      dualMajorHiddenKingCage: features.dualMajorHiddenKingCage,
-      overDeterminedBishopMate: features.overDeterminedBishopMate,
-      hiddenQueenBishopCageMate: features.hiddenQueenBishopCageMate,
-      hiddenBishopMate: features.hiddenBishopMate,
-      visibleKingHiddenBishopMate: features.visibleKingHiddenBishopMate,
-      concealedBishopNetComplexity: features.concealedBishopNetComplexity,
-      concealedKnightCageMate: features.concealedKnightCageMate,
-      decoyMajorKnightShellEase: features.decoyMajorKnightShellEase,
-      marchedKingKnightMate: features.marchedKingKnightMate,
-      marchedKingPawnMate: features.marchedKingPawnMate,
-      scatteredHiddenKingMate: features.scatteredHiddenKingMate,
-      homeCagedKingMate: features.homeCagedKingMate,
+      hiddenKingCage: features.hiddenKingCage,
       bothKingsHidden: features.bothKingsHidden,
       promotedHidden: features.promotedHidden,
       easyGuesses: features.easyGuesses,
       startingHome: features.startingHome,
       castledKings: features.castledKings,
-      pawnsNearHome: features.pawnsNearHome,
       hiddenCheckers: features.hiddenCheckers,
-      hiddenKnightCheckers: features.hiddenKnightCheckers,
       defenderBlockers: features.defenderBlockers,
-      guessableDefenderBlockers: features.guessableDefenderBlockers,
-      roamingDefenderBlockers: features.roamingDefenderBlockers,
-      ambiguousRoamingBlockers: features.ambiguousRoamingBlockers,
       kingDist: features.kingDist,
       hiddenPieceCounts: features.hiddenPieceCounts,
       achievements: features.achievements,
       compoundDiscount,
-      bothKingsContrib,
       hiddenPieceContrib,
       achievementContrib,
-      visibleKingCongestion,
-      singleEasyGuessDense,
-      thresholdTacticalLift,
       additiveContrib: Math.round(additiveContrib * 100) / 100,
       rawScore: Math.round(raw * 100) / 100,
     },

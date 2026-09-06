@@ -78,7 +78,11 @@ export function actualDifficultyScore(s) {
   if (!s.total) return null;
   const avg = parseFloat(s.avgGuesses);
   const fail = parseFloat(s.failPct);
-  return Math.round(Math.max(0, Math.min(100, (avg - 1.5) * 25 + fail * 1.5)));
+  // Frozen fail-first map: a typical puzzle (~2.5 avg guesses) scores ~50.
+  // Calibrate must not retune these constants.
+  return Math.round(
+    Math.max(0, Math.min(100, (avg - 2.5) * 30 + fail * 1.5 + 50)),
+  );
 }
 
 export function actualTier(s) {
