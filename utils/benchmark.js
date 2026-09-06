@@ -18,6 +18,40 @@ import { fileURLToPath } from "node:url";
 
 export const PUZZLE_DIR = "data/puzzles";
 export const STATS_DIR = "data/stats";
+const DEFAULT_GUESS_ORDER = ["1", "2", "3", "4", "5", "X"];
+
+function normalizeGuessLabel(label) {
+  if (label == null) return null;
+  const s = String(label).trim().toUpperCase();
+  if (["X", "FAIL", "FAILED", "MISS", "LOSE", "LOSS", "6"].includes(s)) {
+    return "X";
+  }
+  return /^[1-5]$/.test(s) ? s : null;
+}
+
+function normalizePercentages(raw) {
+  if (!raw || !Array.isArray(raw.percentages)) return null;
+  const pcts = raw.percentages;
+
+  const orderedLabels = ["guesses", "labels", "order", "buckets"]
+    .map((k) => raw[k])
+    .find((v) => Array.isArray(v) && v.length === pcts.length);
+
+  if (!orderedLabels) return pcts;
+
+  const byGuess = new Map();
+  for (let i = 0; i < orderedLabels.length; i++) {
+    const guess = normalizeGuessLabel(orderedLabels[i]);
+    if (!guess) continue;
+    byGuess.set(guess, Number(pcts[i]) || 0);
+  }
+
+  if (DEFAULT_GUESS_ORDER.every((g) => byGuess.has(g))) {
+    return DEFAULT_GUESS_ORDER.map((g) => byGuess.get(g));
+  }
+
+  return pcts;
+}
 
 /** Measure display width, counting emoji as 2 columns wide. */
 function displayWidth(str) {
@@ -37,7 +71,7 @@ function displayWidth(str) {
 export function extractStats(raw) {
   if (!raw) return {};
 
-  const pcts = raw.percentages;
+  const pcts = normalizePercentages(raw);
   if (Array.isArray(pcts)) {
     let solved3 = 0,
       fails = 0,
