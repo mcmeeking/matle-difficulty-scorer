@@ -39,6 +39,7 @@ export function extractStats(raw) {
 
   const pcts = raw.percentages;
   if (Array.isArray(pcts)) {
+    // Community buckets are fail-first: [X, 1, 2, 3, 4, 5].
     let solved3 = 0,
       fails = 0,
       guessSum = 0,
@@ -46,9 +47,9 @@ export function extractStats(raw) {
     for (let i = 0; i < pcts.length; i++) {
       const p = pcts[i];
       totalPct += p;
-      if (i <= 2) solved3 += p;
-      if (i === 5) fails += p;
-      guessSum += (i < 5 ? i + 1 : 6) * p;
+      if (i === 0) fails += p;
+      else if (i <= 3) solved3 += p;
+      guessSum += (i === 0 ? 6 : i) * p;
     }
     if (totalPct > 0) {
       return {
