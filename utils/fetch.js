@@ -1,7 +1,7 @@
 /**
- * Fetch today's Matle puzzle plus the previous N days of puzzles, and fetch
- * community stats for prior days only.
- * and save them to data/puzzles/ and data/stats/.
+ * Fetch today's Matle puzzle plus the previous N days of puzzles, fetch
+ * community stats for prior days only, and save them to data/puzzles/ and
+ * data/stats/.
  *
  * Usage: npm run fetch -- [days]
  */
