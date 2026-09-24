@@ -26,12 +26,8 @@ published board state and community stats.
 - `utils/summary.js`: generates the GitHub Actions daily run summary
   (includes the latest puzzle, pending-community-status messaging, and the full
   benchmark table).
-- `utils/regression-check.js`: detects new "non-close" benchmark misses by
-  diffing the current run against the previously committed `README.md`. Used by
-  the daily workflow to open an issue assigned to Copilot when a regression is
-  introduced.
 - `.github/workflows/daily.yml`: daily automation for fetch, benchmark, summary,
-  regression check, optional issue creation, and commit.
+  and commit.
 - `README.md`: human-facing usage docs plus the generated benchmark section.
 
 ## Common Commands
@@ -48,7 +44,6 @@ npm run calibrate -- --prompt
 npm run calibrate -- --apply
 npm run notations -- 2026-04-24
 npm run daily-summary
-npm run regression-check
 ```
 
 ## Repo-Specific Guidance
