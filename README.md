@@ -36,7 +36,7 @@ Calibrate tunes weights only. It must not retune the community map or the
 ```bash
 npm install
 
-# Fetch the latest puzzle dates (today first, default: 2 dates)
+# Fetch today's puzzle plus the previous 2 days
 npm run fetch
 
 # Search for better weight and tier values from local data
@@ -59,7 +59,7 @@ npm run benchmark
 
 | Script                        | Purpose                                             |
 | ----------------------------- | --------------------------------------------------- |
-| `npm run fetch -- [days]`     | Fetch today-first puzzles + stats → `data/` (default: 2 dates) |
+| `npm run fetch -- [days]`     | Fetch today's puzzle plus the previous N days of puzzles + stats → `data/` |
 | `npm run calibrate`           | Tune score weights (34/65 gates frozen), save JSON  |
 | `npm run notations -- <date>` | Print a puzzle FEN, PGN, and Lichess analysis URL   |
 | `npm run benchmark`           | Score all local puzzles, print table, update README |

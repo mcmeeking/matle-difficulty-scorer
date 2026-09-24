@@ -15,8 +15,8 @@ published board state and community stats.
 
 - `difficulty.js`: core difficulty features, scoring, calibration defaults, and
   notation/Lichess export helpers.
-- `utils/fetch.js`: fetches recent puzzle and stats JSON into `data/`, including
-  today's puzzle when available.
+- `utils/fetch.js`: fetches today's puzzle plus recent puzzle/stats JSON into
+  `data/`.
 - `utils/benchmark.js`: scores local puzzles, updates `README.md`, and writes
   `benchmark-results.json` locally.
 - `utils/calibrate.js`: searches for better calibration values and can write
