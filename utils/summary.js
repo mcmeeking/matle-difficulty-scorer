@@ -20,6 +20,8 @@ export function buildDailySummary(result) {
   const actualScore = actualDifficultyScore(result.stats);
   if (actualTierLabel && actualScore !== null) {
     lines.push(`- Community result: ${actualTierLabel} (${actualScore})`);
+  } else {
+    lines.push("- Community result: pending until the next daily run");
   }
 
   const analysis = puzzleToLichessAnalysis(result.puzzle);

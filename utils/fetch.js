@@ -1,6 +1,7 @@
 /**
- * Fetch the last N days of Matle puzzles + community stats
- * and save them to data/puzzles/ and data/stats/.
+ * Fetch today's Matle puzzle plus the previous N days of puzzles, fetch
+ * community stats for prior days only, and save them to data/puzzles/ and
+ * data/stats/.
  *
  * Usage: npm run fetch -- [days]
  */
@@ -45,17 +46,20 @@ async function main() {
   let fetched = 0;
   let skipped = 0;
 
-  console.log(`Fetching up to ${LOOKBACK} days of puzzles…\n`);
+  console.log(
+    `Fetching today's puzzle plus the previous ${LOOKBACK} day(s)…\n`,
+  );
 
-  for (let i = 1; i <= LOOKBACK; i++) {
+  for (let i = 0; i <= LOOKBACK; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const ds = fmtDate(d);
+    const isToday = i === 0;
 
     const puzzlePath = join(PUZZLE_DIR, `${ds}.json`);
     const statsPath = join(STATS_DIR, `${ds}.json`);
 
-    if (existsSync(puzzlePath) && existsSync(statsPath)) {
+    if (existsSync(puzzlePath) && (isToday || existsSync(statsPath))) {
       console.log(`  ${ds}  already exists, skipping`);
       skipped++;
       continue;
@@ -74,6 +78,11 @@ async function main() {
     }
 
     if (!existsSync(statsPath)) {
+      if (isToday) {
+        console.log(`  ${ds}  stats  deferred until tomorrow`);
+        fetched++;
+        continue;
+      }
       const stats = await fetchJSON(STATS_URL(ds));
       await sleep(DELAY_MS);
       if (stats) {

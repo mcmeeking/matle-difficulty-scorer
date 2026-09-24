@@ -93,8 +93,16 @@ export function actualTier(s) {
   return "Medium";
 }
 
+export function shouldIgnoreStatsDate(date, today = new Date().toISOString().split("T")[0]) {
+  return date === today;
+}
+
 export function loadLocalData(options = {}) {
-  const { calibration, includePuzzle = false } = options;
+  const {
+    calibration,
+    includePuzzle = false,
+    today = new Date().toISOString().split("T")[0],
+  } = options;
   if (!existsSync(PUZZLE_DIR)) return [];
 
   const files = readdirSync(PUZZLE_DIR)
@@ -107,7 +115,7 @@ export function loadLocalData(options = {}) {
     try {
       const puzzle = JSON.parse(readFileSync(join(PUZZLE_DIR, file), "utf8"));
       const statsPath = join(STATS_DIR, file);
-      const stats = existsSync(statsPath)
+      const stats = !shouldIgnoreStatsDate(date, today) && existsSync(statsPath)
         ? JSON.parse(readFileSync(statsPath, "utf8"))
         : null;
 
@@ -158,11 +166,11 @@ export function buildTable(results, options = {}) {
     const s = r.stats;
     const actual = s.total
       ? `%≤3: ${s.pctSolved3} · Fail: ${s.failPct} · Avg: ${s.avgGuesses}`
-      : "no stats";
+      : "pending community stats";
 
     const gt = actualTier(s);
     const actualScore = actualDifficultyScore(s);
-    const actualTierStr = gt ? `${gt} (${actualScore})` : "-";
+    const actualTierStr = gt ? `${gt} (${actualScore})` : "Pending";
     const ourRating = `${r.tier} (${r.score})`;
 
     let accuracy,
