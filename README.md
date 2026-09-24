@@ -36,7 +36,7 @@ Calibrate tunes weights only. It must not retune the community map or the
 ```bash
 npm install
 
-# Fetch the latest puzzles (last 2 days available on S3)
+# Fetch the latest puzzle dates (today first, default: 2 dates)
 npm run fetch
 
 # Search for better weight and tier values from local data
@@ -59,7 +59,7 @@ npm run benchmark
 
 | Script                        | Purpose                                             |
 | ----------------------------- | --------------------------------------------------- |
-| `npm run fetch -- [days]`     | Fetch puzzles + stats → `data/` (default: 2 days)   |
+| `npm run fetch -- [days]`     | Fetch today-first puzzles + stats → `data/` (default: 2 dates) |
 | `npm run calibrate`           | Tune score weights (34/65 gates frozen), save JSON  |
 | `npm run notations -- <date>` | Print a puzzle FEN, PGN, and Lichess analysis URL   |
 | `npm run benchmark`           | Score all local puzzles, print table, update README |
@@ -78,14 +78,16 @@ entry point for the scoring logic itself remains `difficulty.js`.
 
 ## Automation
 
-A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
+A GitHub Action runs daily at 07:00 UTC to fetch today’s puzzle, run the benchmark,
 append the latest puzzle's move-aware Lichess analysis link to the run summary,
-and commit updates. Local benchmark JSON output is now ignored.
+and commit updates. When community stats are not yet available, the README gains
+a predictive row with the server rating and our rating until the following run
+fills in the community result. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
 ## Benchmark Results
 
-### Last updated: 2026-09-23
+### Last updated: 2026-09-24
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |

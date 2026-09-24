@@ -15,7 +15,8 @@ published board state and community stats.
 
 - `difficulty.js`: core difficulty features, scoring, calibration defaults, and
   notation/Lichess export helpers.
-- `utils/fetch.js`: fetches recent puzzle and stats JSON into `data/`.
+- `utils/fetch.js`: fetches recent puzzle and stats JSON into `data/`, including
+  today's puzzle when available.
 - `utils/benchmark.js`: scores local puzzles, updates `README.md`, and writes
   `benchmark-results.json` locally.
 - `utils/calibrate.js`: searches for better calibration values and can write
@@ -23,7 +24,8 @@ published board state and community stats.
 - `utils/notations.js`: prints a puzzle FEN, reconstructed PGN, and Lichess
   analysis URL for a given date.
 - `utils/summary.js`: generates the GitHub Actions daily run summary
-  (includes the latest puzzle and the full benchmark table).
+  (includes the latest puzzle, pending-community-status messaging, and the full
+  benchmark table).
 - `utils/regression-check.js`: detects new "non-close" benchmark misses by
   diffing the current run against the previously committed `README.md`. Used by
   the daily workflow to open an issue assigned to Copilot when a regression is

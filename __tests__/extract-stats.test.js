@@ -5,12 +5,14 @@ import {
   extractStats,
   actualDifficultyScore,
   actualTier,
+  buildTable,
 } from "../utils/benchmark.js";
 import {
   DEFAULT_CALIBRATION,
   extractDifficultyFeatures,
   scoreDifficultyFeatures,
 } from "../difficulty.js";
+import { buildDailySummary } from "../utils/summary.js";
 
 const MOTIF_FEATURE_KEYS = [
   "ambiguousPawnPromotion",
@@ -218,4 +220,35 @@ test("DEFAULT_CALIBRATION and score details omit motif-zoo weights", () => {
       `unexpected motif detail ${key}`,
     );
   }
+});
+
+test("buildTable shows a predictive row when community stats are pending", () => {
+  const table = buildTable([
+    {
+      date: "2026-09-24",
+      serverDiff: "Hard",
+      tier: "Medium",
+      score: 58,
+      stats: {},
+    },
+  ]);
+
+  assert.match(table, /2026-09-24/);
+  assert.match(table, /pending community stats/);
+  assert.match(table, /\|\s*2026-09-24\s*\|[^|]*Hard[^|]*\|[^|]*pending community stats[^|]*\|[^|]*Pending[^|]*\|[^|]*Medium \(58\)/);
+  assert.doesNotMatch(table, /Accuracy:/);
+});
+
+test("buildDailySummary marks missing community stats as pending", () => {
+  const puzzle = JSON.parse(readFileSync("data/puzzles/2026-08-08.json", "utf8"));
+  const summary = buildDailySummary({
+    date: "2026-09-24",
+    serverDiff: "Hard",
+    tier: "Medium",
+    score: 58,
+    stats: {},
+    puzzle,
+  });
+
+  assert.match(summary, /Community result: pending until the next daily run/);
 });

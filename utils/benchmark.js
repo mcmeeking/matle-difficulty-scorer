@@ -158,11 +158,11 @@ export function buildTable(results, options = {}) {
     const s = r.stats;
     const actual = s.total
       ? `%≤3: ${s.pctSolved3} · Fail: ${s.failPct} · Avg: ${s.avgGuesses}`
-      : "no stats";
+      : "pending community stats";
 
     const gt = actualTier(s);
     const actualScore = actualDifficultyScore(s);
-    const actualTierStr = gt ? `${gt} (${actualScore})` : "-";
+    const actualTierStr = gt ? `${gt} (${actualScore})` : "Pending";
     const ourRating = `${r.tier} (${r.score})`;
 
     let accuracy,
