@@ -36,7 +36,7 @@ Calibrate tunes weights only. It must not retune the community map or the
 ```bash
 npm install
 
-# Fetch today's puzzle plus the previous 2 days
+# Fetch the latest puzzles (last 2 days available on S3)
 npm run fetch
 
 # Search for better weight and tier values from local data
@@ -59,7 +59,7 @@ npm run benchmark
 
 | Script                        | Purpose                                             |
 | ----------------------------- | --------------------------------------------------- |
-| `npm run fetch -- [days]`     | Fetch today's puzzle plus the previous N days; today's stats are deferred until tomorrow |
+| `npm run fetch -- [days]`     | Fetch puzzles + stats → `data/` (default: 2 days)   |
 | `npm run calibrate`           | Tune score weights (34/65 gates frozen), save JSON  |
 | `npm run notations -- <date>` | Print a puzzle FEN, PGN, and Lichess analysis URL   |
 | `npm run benchmark`           | Score all local puzzles, print table, update README |
@@ -78,16 +78,14 @@ entry point for the scoring logic itself remains `difficulty.js`.
 
 ## Automation
 
-A GitHub Action runs daily at 07:00 UTC to fetch today’s puzzle, defer today’s
-community stats until the following run, append the latest puzzle's move-aware
-Lichess analysis link to the run summary, and commit updates. The README gains
-a predictive row with the server rating and our rating until the following run
-fills in the community result. Local benchmark JSON output is now ignored.
+A GitHub Action runs daily at 08:00 UTC to fetch new puzzles, run the benchmark,
+append the latest puzzle's move-aware Lichess analysis link to the run summary,
+and commit updates. Local benchmark JSON output is now ignored.
 
 <!-- BENCHMARK:START -->
 ## Benchmark Results
 
-### Last updated: 2026-09-24
+### Last updated: 2026-09-23
 
 | Date       | Server | Actual Results                 | Actual Tier | Our Rating  | Accuracy | Δ     |
 | ---------- | ------ | ------------------------------ | ----------- | ----------- | -------- | ----- |
