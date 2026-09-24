@@ -1,6 +1,6 @@
 /**
- * Fetch today's Matle puzzle plus the previous N days of puzzles + community
- * stats
+ * Fetch today's Matle puzzle plus the previous N days of puzzles, and fetch
+ * community stats for prior days only.
  * and save them to data/puzzles/ and data/stats/.
  *
  * Usage: npm run fetch -- [days]
@@ -54,11 +54,12 @@ async function main() {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const ds = fmtDate(d);
+    const isToday = i === 0;
 
     const puzzlePath = join(PUZZLE_DIR, `${ds}.json`);
     const statsPath = join(STATS_DIR, `${ds}.json`);
 
-    if (existsSync(puzzlePath) && existsSync(statsPath)) {
+    if (existsSync(puzzlePath) && (isToday || existsSync(statsPath))) {
       console.log(`  ${ds}  already exists, skipping`);
       skipped++;
       continue;
@@ -77,6 +78,11 @@ async function main() {
     }
 
     if (!existsSync(statsPath)) {
+      if (isToday) {
+        console.log(`  ${ds}  stats  deferred until tomorrow`);
+        fetched++;
+        continue;
+      }
       const stats = await fetchJSON(STATS_URL(ds));
       await sleep(DELAY_MS);
       if (stats) {

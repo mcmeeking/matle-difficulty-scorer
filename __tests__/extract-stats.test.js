@@ -6,6 +6,8 @@ import {
   actualDifficultyScore,
   actualTier,
   buildTable,
+  shouldIgnoreStatsDate,
+  loadLocalData,
 } from "../utils/benchmark.js";
 import {
   DEFAULT_CALIBRATION,
@@ -251,4 +253,20 @@ test("buildDailySummary marks missing community stats as pending", () => {
   });
 
   assert.match(summary, /Community result: pending until the next daily run/);
+});
+
+test("shouldIgnoreStatsDate ignores today's date only", () => {
+  assert.equal(shouldIgnoreStatsDate("2026-09-24", "2026-09-24"), true);
+  assert.equal(shouldIgnoreStatsDate("2026-09-23", "2026-09-24"), false);
+});
+
+test("loadLocalData ignores today's stats even if a stats file exists", () => {
+  const results = loadLocalData({ today: "2026-09-22" });
+  const todayResult = results.find((entry) => entry.date === "2026-09-22");
+  const priorResult = results.find((entry) => entry.date === "2026-09-21");
+
+  assert.ok(todayResult);
+  assert.deepEqual(todayResult.stats, {});
+  assert.ok(priorResult);
+  assert.notDeepEqual(priorResult.stats, {});
 });
